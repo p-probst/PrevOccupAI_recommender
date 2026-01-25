@@ -41,6 +41,8 @@ noise_continuous_recommendations = recommender.get_continuous_noise_recommendati
 sitting_proportions_recommendations = recommender.get_sitting_proportions_recommendations(har_subject_data_df, subject_id, recommendation_system)
 sitting_total_recommendations = recommender.get_total_sitting_duration_recommendation(har_subject_data_df, subject_id, recommendation_system)
 sitting_continuous_recommendations = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system, activity_class_label=['Sentado'])
+standing_proportions_recommendations = recommender.get_standing_proportions_recommendations(har_subject_data_df, subject_id, recommendation_system)
+steps_recommendations = recommender.get_steps_recommendations(har_subject_data_df, subject_id, recommendation_system)
 
 print('test')
 
