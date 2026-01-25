@@ -22,12 +22,16 @@ RISK_PT = (
     "à sua redução. As secções que se encontrem a amarelo ou vermelho são consideradas de risco, logo, recomendações"
     "para essas secções são apresentadas"
 )
-PLOT_EXPLAIN_PT = (
+PLOT_EXPLAIN_1_PT = (
     "O gráfico abaixo apresenta os resultados calculados com base nas respostas dadas ao questionário de "
-    "avaliação ambiental. "
-    "Da esquerda para a direita, são apresentados os resultados correspondentes ao nível de iluminação (1), ar (2), "
-    "ruído (3), design do escritório (4), privacidade do escritório (5) e organização do escritório (6)."
+    "avaliação ambiental. A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados."
 )
+PLOT_EXPLAIN_2_1_PT = "1. Iluminação"
+PLOT_EXPLAIN_2_2_PT = "2. Ar"
+PLOT_EXPLAIN_2_3_PT = "3. Ruído"
+PLOT_EXPLAIN_2_4_PT = "4. Design do escritório"
+PLOT_EXPLAIN_2_5_PT = "5. Privacidade do escritório"
+PLOT_EXPLAIN_2_6_PT = "6. Organização do escritório"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
@@ -44,7 +48,8 @@ ENVIRONMENT_DICT = {
     PT: {
         INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
         RISK_RULE_KEY: [RISK_PT],
-        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_PT]
+        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_1_PT, PLOT_EXPLAIN_2_2_PT, PLOT_EXPLAIN_2_3_PT, PLOT_EXPLAIN_2_4_PT,
+                           PLOT_EXPLAIN_2_5_PT, PLOT_EXPLAIN_2_6_PT],
     },
 
     ENG: {

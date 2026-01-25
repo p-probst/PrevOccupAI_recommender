@@ -23,12 +23,18 @@ RISK_1_PT = (
     "para essas secções são apresentadas"
 )
 
-PLOT_EXPLAIN_1_PT = (
+PLOT_EXPLAIN_0_PT = (
     "O gráfico abaixo apresenta os resultados calculados com base nas respostas dadas ao questionário de "
     "avaliação biomecânica, para os diferentes equipamentos utilizados ao longo do dia de trabalho. "
-    "Da esquerda para a direita, são apresentados os resultados correspondentes à cadeira (1), monitor (2), "
-    "telefone (3), rato (4), teclado (5) e ao resultado geral final (6)."
+    "A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados."
 )
+
+PLOT_EXPLAIN_1_1_PT = "1. Cadeira"
+PLOT_EXPLAIN_1_2_PT = "2. Monitor"
+PLOT_EXPLAIN_1_3_PT = "3. Telefone"
+PLOT_EXPLAIN_1_4_PT = "4. Rato"
+PLOT_EXPLAIN_1_5_PT = "5. Teclado"
+PLOT_EXPLAIN_1_6_PT = "6. Resultado geral final"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
@@ -45,7 +51,7 @@ ROSA_DICT = {
     PT: {
         INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
         RISK_RULE_KEY: [RISK_1_PT],
-        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT]
+        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_0_PT, PLOT_EXPLAIN_1_1_PT, PLOT_EXPLAIN_1_2_PT, PLOT_EXPLAIN_1_3_PT, PLOT_EXPLAIN_1_4_PT, PLOT_EXPLAIN_1_5_PT, PLOT_EXPLAIN_1_6_PT]
     },
 
     ENG: {
