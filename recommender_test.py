@@ -1,9 +1,9 @@
 # file for testing the recommender
 import json
 from pathlib import Path
-import pandas as pd
 
-from recommender.noise import generate_noise_csv, get_noise_exposure_recommendations, get_continuous_noise_recommendations
+import recommender as recommender
+
 
 
 # set path to OH profiles
@@ -27,12 +27,17 @@ with open(Path(OH_PROFILES_PATH) /f"{subject_id}_OH_profile.json", "r", encoding
 
 
 # load noise risk subjects
-noise_risk_subjects_df = generate_noise_csv(cwd_, OH_PROFILES_PATH)
+noise_risk_subjects_df = recommender.generate_noise_csv(cwd_, OH_PROFILES_PATH)
+
+# load HAR subject data
+har_risk_subjects_df = recommender.generate_har_csv(cwd_, OH_PROFILES_PATH)
 
 
-# get noise exposure recommendations
-noise_exposure_recommendations = get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id, recommendation_system)
-noise_continuous_recommendations = get_continuous_noise_recommendations(oh_profile, recommendation_system)
+# ------- get noise exposure recommendations --------- #
+noise_exposure_recommendations = recommender.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id, recommendation_system)
+noise_continuous_recommendations = recommender.get_continuous_noise_recommendations(oh_profile, recommendation_system)
 
-print(noise_exposure_recommendations)
+# ------- get human activities recommendations --------- #
+
+print('test')
 

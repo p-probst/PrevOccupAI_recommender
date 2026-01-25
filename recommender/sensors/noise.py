@@ -3,23 +3,23 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 import sys
 from pathlib import Path
-
-from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS
-
-project_path = Path("C:/Users/phill/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
 from typing import Dict, List, Tuple
 import pandas as pd
 
 # external imports
+project_path = Path("C:/Users/phill/PycharmProjects/OH_Toolkit")
+sys.path.append(str(project_path))
 from oh_parser import load_profiles, extract_nested
 
 # internal imports
-from .utils import dates_to_weekdays, get_timeline_risk_durations
+from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS
+from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
+NOISE_CSV_FILENAME = "noise_risk_subjects.csv"
+
 NOISE_RULE_2 = 'noise_rule_2'
 NOISE_RULE_2_THRESHOLD = 0.5
 
@@ -33,7 +33,7 @@ def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str) ->
     :return:
     """
 
-    if not (Path(noise_risk_csv_path) / "noise_risk_subjects.csv").exists():
+    if not (Path(noise_risk_csv_path) / NOISE_CSV_FILENAME).exists():
         # load the profiles
         profiles = load_profiles(oh_profile_path)
 
@@ -58,10 +58,10 @@ def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str) ->
         df_risk_subjects = df_sessions[df_sessions[NOISE_RULE_2] >= NOISE_RULE_2_THRESHOLD]
 
         # save the DataFrame
-        df_risk_subjects.to_csv('noise_risk_subjects.csv', index=False)
+        df_risk_subjects.to_csv(NOISE_CSV_FILENAME, index=False)
 
     else:
-        df_risk_subjects = pd.read_csv('noise_risk_subjects.csv')
+        df_risk_subjects = pd.read_csv(NOISE_CSV_FILENAME)
 
     return df_risk_subjects
 
@@ -170,8 +170,6 @@ def get_noise_exposure_recommendations(noise_risk_subjects_df: pd.DataFrame, sub
         recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
 
     return recommendations_dict
-
-
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
