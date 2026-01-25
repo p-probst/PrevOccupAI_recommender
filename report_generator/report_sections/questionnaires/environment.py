@@ -7,9 +7,27 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_PT = "this is the intro"
-RISK_PT = "this is the risk"
-PLOT_EXPLAIN_PT = "this is the plot explain"
+INTRO_1_PT = "Avaliação Ambiental"
+INTRO_2_PT = (
+    "Ambientes de trabalho com condições inadequadas aumentam o risco de lesões músculo-esqueléticas e "
+    "influenciam negativamente a produtividade e o bem-estar geral do trabalhador. Neste contexto, foram "
+    "avaliados fatores ambientais, tais como a organização do posto de trabalho, o nível de ruído e a iluminação. "
+    "A entidade patronal desempenha um papel fundamental na redução destes riscos. "
+    "Nesse sentido, foram também identificadas e transmitidas as medidas coletivas a implementar."
+)
+RISK_PT = (
+    "A cada tópico está associado uma cor que representa o nível de risco identificado. "
+    "A cor verde indica baixo risco, a cor amarela sinaliza a existência de algum risco, "
+    "e a cor vermelha corresponde a um risco elevado, para o qual devem ser adotadas medidas com vista "
+    "à sua redução. As secções que se encontrem a amarelo ou vermelho são consideradas de risco, logo, recomendações"
+    "para essas secções são apresentadas"
+)
+PLOT_EXPLAIN_PT = (
+    "O gráfico abaixo apresenta os resultados calculados com base nas respostas dadas ao questionário de "
+    "avaliação ambiental. "
+    "Da esquerda para a direita, são apresentados os resultados correspondentes ao nível de iluminação (1), ar (2), "
+    "ruído (3), design do escritório (4), privacidade do escritório (5) e organização do escritório (6)."
+)
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
@@ -24,9 +42,9 @@ PLOT_ENG = ""
 # ------------------------------------------------------------------------------------------------------------------- #
 ENVIRONMENT_DICT = {
     PT: {
-        INTRODUCTION_KEY: {INTRO_PT},
-        RISK_RULE_KEY: {RISK_PT},
-        PLOT_EXPLAIN_KEY: {PLOT_EXPLAIN_PT}
+        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
+        RISK_RULE_KEY: [RISK_PT],
+        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_PT]
     },
 
     ENG: {
