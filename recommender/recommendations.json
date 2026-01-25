@@ -1,0 +1,273 @@
+{
+    "sensors": {
+        "human_activities": {
+            "sitting": {
+                "rule": [
+                    "If there are at least two continuous 1-hour sitting segments in a day.",
+                    "If there is at least one continuous sitting segment lasting 2 hours in a day.",
+                    "If the total time spent sitting exceeds 5 hours in a day.",
+                    "If more than 50% of the monitored time is spent sitting."
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Levantar-se da cadeira a cada 20-30 minutos.",
+                        "Levantar-se e movimentar-se durante, pelo menos, 10 minutos após duas horas de postura sentada. Sempre que possível, evite sentar-se por longos períodos de tempo.",
+                        "Trabalhar de forma ativa, alternando entre estar sentado, estar de pé e movimentar-se.",
+                        "Para contrariar trabalho muito sedentário, tentar ultrapassar os limites minimos de atividade física semanal: 150 minutos/semana de atividade física aeróbica moderada ou 75 minutos/semana de atividade aeróbica vigorosa."
+                    ],
+                    "en": [
+                        "Stand up from your chair every 20–30 minutes.",
+                        "Stand up and move for at least 10 minutes after two hours of sitting. Whenever possible, avoid sitting for long periods of time.",
+                        "Work actively by alternating between sitting, standing, and moving.",
+                        "To counteract highly sedentary work, aim to exceed the minimum weekly physical activity recommendations: 150 minutes per week of moderate aerobic physical activity or 75 minutes per week of vigorous aerobic activity."
+                    ]
+                }
+            },
+            "standing": {
+                "rule": [
+                    "If more than 50% of the monitored time is spent standing."
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Fazer pausas ativas. Longos períodos de posturas sedentárias, tanto de pé , como sentado, são prejudiciais para a saúde."
+                    ],
+                    "en": [
+                        "Take active breaks. Long periods of sedentary postures, whether standing or sitting, are harmful to health."
+                    ]
+                }
+            },
+            "walking": {
+                "rule": [
+                    "If the number of steps per day is less than 700 (10 % of 7000) or less than 900 (10 % of 9000)."
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Fazer pausas ativas, interrompendo o tempo sentado com períodos de caminhada."
+                    ],
+                    "en": [
+                        "Take active breaks by interrupting sitting time with periods of walking."
+                    ]
+                }
+            }
+        },
+        "heart_rate": {
+            "rule": [
+                "If the maximum heart rate exceeds 100 bpm at least twice in a day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3..",
+                "If the heart rate ratio is classified as 'slightly elevated' for at least 25% of the time on at least two occasions in a day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3..",
+                "If the heart rate ratio is classified as 'elevated' for at least 12.5% of the time on at least two occasions in a day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3.."
+            ],
+            "recommendation": {
+                "pt": [
+                    "Se se sentir sobrecarregada/o e aflita/o, fazer uma pausa durante alguns minutos, respirar fundo, e só depois retornar ao trabalho.",
+                    "Apanhar ar durante a hora de almoço ou dar um passeio durante o dia.",
+                    "Desenvolver boas relações com os colegas criando uma rede de apoio.",
+                    "Realizar exercício físico. Atividade física, tanto aeróbica como treino de força, tem beneficios para a saúde mental, nomeadamente na redução do stress, ansiedade e sintomas depressivos."
+                ],
+                "en": [
+                    "If you feel overwhelmed or distressed, take a short break for a few minutes, breathe deeply, and only then return to work.",
+                    "Get some fresh air during your lunch break or take a walk during the day.",
+                    "Develop good relationships with colleagues by building a support network.",
+                    "Engage in physical exercise. Physical activity, both aerobic and strength training, has benefits for mental health, particularly in reducing stress, anxiety, and depressive symptoms."
+                ]
+            }
+        },
+        "noise": {
+            "rule": [
+                "If there is at least one continuous 1-hour segment of disturbing noise.",
+                "If the combined exposure to disturbing noise and high noise is equal to or greater than 50% of the monitored time."
+            ],
+            "recommendation": {
+                "pt": [
+                    "A exposição durante longos períodos de tempo a ruído incomodativo pode provocar stresse, fadiga e distração. Fazer pausas ativas e em contacto com a natureza, podem ajudar a recuperar a energia e o bem estar.",
+                    "Utilizar equipamento que permita atenuar o ruido (exemplo: ariculares com cancelamento de ruído)."
+                ],
+                "en": [
+                    "Prolonged exposure to disturbing noise can cause stress, fatigue, and distraction. Taking active breaks and spending time in contact with nature can help restore energy and wellbeing.",
+                    "Use equipment that helps reduce noise exposure (e.g., noise-cancelling headphones)."
+                ]
+            }
+        },
+        "posture": {
+            "rule": [
+                "to be determined"
+            ],
+            "recommendation": {
+                "pt": [
+                    "Alterar regularmente a postura quando sentado por longos períodos de tempo. Uma postura sentada dinâmica é mais saúdavel do que uma postura rígida e estática."
+                ],
+                "en": [
+                    "Change posture regularly when sitting for long periods. A dynamic sitting posture is healthier than a rigid, static posture."
+                ]
+            }
+        },
+        "emg": {
+            "rule": [
+                "if 'high_for_you_pct' > 30 % for at least two sessions of the day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3."
+            ],
+            "recommendation": {
+                "pt": [
+                    "Realizar exercício físico. Atividade física, tanto aeróbica como treino de força, tem beneficios para a saúde mental, nomeadamente na redução do stress, ansiedade e sintomas depressivos. ",
+                    "Apanhar ar durante a hora de almoço ou dar um passeio durante o dia."
+                ],
+                "en": [
+                    "Engage in physical exercise. Physical activity, both aerobic and strength training, has benefits for mental health, particularly in reducing stress, anxiety, and depressive symptoms.",
+                    "Get some fresh air during your lunch break or take a walk during the day."
+                ]
+            }
+        }
+    },
+    "questionnaires": {
+        "biomechanical": {
+            "score_a_adapted": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Ajustar a cadeira em altura permitindo ter os pés bem assentes no chão.",
+                        "Ajustar a cadeira ou a mesa por forma a que os antebraços estejam relaxados",
+                        "Ajustar o apoio de braços por forma a manter os cotovelos alinhados com os ombros."
+                    ],
+                    "en": [
+                        "Adjust the chair height so that your feet are flat on the floor.",
+                        "Adjust the chair or desk so that your forearms are relaxed.",
+                        "Adjust the armrests to keep your elbows aligned with your shoulders."
+                    ]
+                }
+            },
+            "monitor_score_adapted": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Ajustar o monitor por forma a que o seu topo esteja ligeiramente abaixo do nível dos olhos, permitindo manter a cabeça numa postura neutra.",
+                        "Posicionar o monitor à distância do comprimento do seu braço.",
+                        "Utilizar um suporte para ler documentos"
+                    ],
+                    "en": [
+                        "Adjust the monitor so that the top of the screen is slightly below eye level, allowing the head to remain in a neutral posture.",
+                        "Position the monitor at approximately arm’s length distance.",
+                        "Use a document holder to read documents."
+                    ]
+                }
+            },
+            "phone_score_adapted": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Utilizar, de preferência, auscultadores.",
+                        "Segurar o telefone com uma mão e manter um postura neutra do pescoço.",
+                        "Posicionar o telefone a uma área de alcance inferior a 30 cm."
+                    ],
+                    "en": [
+                        "Preferably use a headset or headphones.",
+                        "Hold the phone with one hand and maintain a neutral neck posture.",
+                        "Position the phone within a reach distance of less than 30 cm."
+                    ]
+                }
+            },
+            "mouse_score_adapted": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Posicionar o rato em linha com o ombro, mantendo o pulso direito.",
+                        "Colocar o rato na mesma superfície que o teclado e o mais próximo possível do mesmo."
+                    ],
+                    "en": [
+                        "Position the mouse in line with the shoulder, keeping the wrist straight.",
+                        "Place the mouse on the same surface as the keyboard and as close to it as possible."
+                    ]
+                }
+            },
+            "keyboard_score_adapted": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Utilizar o teclado numa posição neutra, de forma a que os cotovelos estejam a fazer um ângulo de, aproximadamente, 90 graus.",
+                        "Posicionar o teclado à sua frente e centrado."
+                    ],
+                    "en": [
+                        "Use the keyboard in a neutral position so that the elbows are at approximately a 90-degree angle.",
+                        "Position the keyboard directly in front of you and centred."
+                    ]
+                }
+            }
+        },
+        "environmental": {
+            "Nível de Iluminação": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Ajustar persiana por forma a reduzir encadeamentos",
+                        "Utilizar candeeiro de secretária do lado oposto à mão dominante"
+                    ],
+                    "en": [
+                        "Adjust the blinds to reduce glare.",
+                        "Use a desk lamp on the side opposite to your dominant hand."
+                    ]
+                }
+            },
+            "Ar": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Utilizar, de preferência, a ventilação natural, abrindo periodicamente as janelas ou portas."
+                    ],
+                    "en": [
+                        "Preferably use natural ventilation by periodically opening windows or doors."
+                    ]
+                }
+            },
+            "Ruído": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Utilizar equipamento de proteção indivídual quando o ruído é elevado. No caso de ruído incomodativo, utilizar auriculares com cancelamento de ruído."
+                    ],
+                    "en": [
+                        "Use personal protective equipment when noise levels are high. In the case of disturbing noise, use noise-cancelling headphones."
+                    ]
+                }
+            },
+            "Design do Escritório": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Configurar o seu local de trabalho com objectos que lhe transmitam bem-estar"
+                    ],
+                    "en": [
+                        "Configure your workspace with objects that promote a sense of wellbeing."
+                    ]
+                }
+            },
+            "Organização do Escritório": {
+                "rule": [
+                    "If the value (normalized) is over 0.3333"
+                ],
+                "recommendation": {
+                    "pt": [
+                        "Organizar o local de trabalho, colocando na área de trabalho mais utilizada items que são utilizados mais frequentemente."
+                    ],
+                    "en": [
+                        "Organise the workspace by placing the items used most frequently within the primary work area."
+                    ]
+                }
+            }
+        }
+    }
+}
