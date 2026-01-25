@@ -2,12 +2,20 @@
     "sensors": {
         "human_activities": {
             "sitting": {
-                "rule": [
-                    "If there are at least two continuous 1-hour sitting segments in a day.",
-                    "If there is at least one continuous sitting segment lasting 2 hours in a day.",
-                    "If the total time spent sitting exceeds 5 hours in a day.",
-                    "If more than 50% of the monitored time is spent sitting."
-                ],
+                "rule": {
+                    "pt": [
+                        "Se existirem pelo menos dois períodos contínuos de 1 hora em postura sentada num dia.",
+                        "Se existir pelo menos um período contínuo de postura sentada com duração de 2 horas num dia.",
+                        "Se o tempo total passado em postura sentada exceder 5 horas num dia.",
+                        "Se mais de 50% do tempo monitorizado for passado em postura sentada."
+                    ],
+                    "en": [
+                        "If there are at least two continuous 1-hour sitting segments in a day.",
+                        "If there is at least one continuous sitting segment lasting 2 hours in a day.",
+                        "If the total time spent sitting exceeds 5 hours in a day.",
+                        "If more than 50% of the monitored time is spent sitting."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Levantar-se da cadeira a cada 20-30 minutos.",
@@ -24,9 +32,14 @@
                 }
             },
             "standing": {
-                "rule": [
-                    "If more than 50% of the monitored time is spent standing."
-                ],
+                "rule": {
+                    "pt": [
+                        "Se mais de 50% do tempo monitorizado for passado em pé."
+                    ],
+                    "en": [
+                        "If more than 50% of the monitored time is spent standing."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Fazer pausas ativas. Longos períodos de posturas sedentárias, tanto de pé , como sentado, são prejudiciais para a saúde."
@@ -37,9 +50,14 @@
                 }
             },
             "walking": {
-                "rule": [
-                    "If the number of steps per day is less than 700 (10 % of 7000) or less than 900 (10 % of 9000)."
-                ],
+                "rule": {
+                    "pt": [
+                        "Se o número de passos por dia for inferior a 700 (10% de 7000)."
+                    ],
+                    "en": [
+                        "If the number of steps per day is less than 700 (10 % of 7000)"
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Fazer pausas ativas, interrompendo o tempo sentado com períodos de caminhada."
@@ -51,11 +69,20 @@
             }
         },
         "heart_rate": {
-            "rule": [
-                "If the maximum heart rate exceeds 100 bpm at least twice in a day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3..",
-                "If the heart rate ratio is classified as 'slightly elevated' for at least 25% of the time on at least two occasions in a day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3..",
-                "If the heart rate ratio is classified as 'elevated' for at least 12.5% of the time on at least two occasions in a day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3.."
-            ],
+            "rule": {
+                "pt": [
+                    "Se a frequência cardíaca máxima exceder 100 bpm pelo menos duas vezes num dia.",
+                    "Se o rácio da frequência cardíaca for classificado como 'ligeiramente elevado' durante pelo menos 25% do tempo, em pelo menos duas ocasiões num dia.",
+                    "Se o rácio da frequência cardíaca for classificado como 'elevado' durante pelo menos 12,5% do tempo, em pelo menos duas ocasiões num dia.",
+                    "Para confirmar a interpretação dos dados dos sensores, foram também consideradas as respostas ao questionário de carga de trabalho que foi realizado ao fim de trabalho. Se concordou ou concordou totalmente com afirmações relacionadas com dificuldade de concentração, esforço mental, pressão para terminar as tarefas ou uma carga de trabalho elevada ao longo do dia."
+                ],
+                "en": [
+                    "If the maximum heart rate exceeds 100 beats per minute at least twice in a day.",
+                    "If the heart rate ratio is classified as 'slightly elevated' for at least 25% of the time on at least two occasions in a day.",
+                    "If the heart rate ratio is classified as 'elevated' for at least 12.5% of the time on at least two occasions in a day.",
+                    "To support the interpretation of the sensor data, answers from the workload questionnaire were also considered. If you agreed or strongly agreed with statements related to difficulty concentrating, mental strain, feeling rushed or under pressure, and having a heavy workload during the day."
+                ]
+            },
             "recommendation": {
                 "pt": [
                     "Se se sentir sobrecarregada/o e aflita/o, fazer uma pausa durante alguns minutos, respirar fundo, e só depois retornar ao trabalho.",
@@ -72,10 +99,16 @@
             }
         },
         "noise": {
-            "rule": [
-                "If there is at least one continuous 1-hour segment of disturbing noise.",
-                "If the combined exposure to disturbing noise and high noise is equal to or greater than 50% of the monitored time."
-            ],
+            "rule": {
+                "pt": [
+                    "Se existir pelo menos um período contínuo de 1 hora de ruído incomodativo.",
+                    "Se a exposição combinada a ruído incomodativo e ruído elevado for igual ou superior a 50% do tempo monitorizado."
+                ],
+                "en": [
+                    "If there is at least one continuous 1-hour segment of disturbing noise.",
+                    "If the combined exposure to disturbing noise and high noise is equal to or greater than 50% of the monitored time."
+                ]
+            },
             "recommendation": {
                 "pt": [
                     "A exposição durante longos períodos de tempo a ruído incomodativo pode provocar stresse, fadiga e distração. Fazer pausas ativas e em contacto com a natureza, podem ajudar a recuperar a energia e o bem estar.",
@@ -88,9 +121,14 @@
             }
         },
         "posture": {
-            "rule": [
-                "to be determined"
-            ],
+            "rule": {
+                "pt": [
+                    "por determinar"
+                ],
+                "en": [
+                    "to be determined"
+                ]
+            },
             "recommendation": {
                 "pt": [
                     "Alterar regularmente a postura quando sentado por longos períodos de tempo. Uma postura sentada dinâmica é mais saúdavel do que uma postura rígida e estática."
@@ -101,9 +139,14 @@
             }
         },
         "emg": {
-            "rule": [
-                "if 'high_for_you_pct' > 30 % for at least two sessions of the day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3."
-            ],
+            "rule": {
+                "pt": [
+                    "emg regra"
+                ],
+                "en": [
+                    "if 'high_for_you_pct' > 30 % for at least two sessions of the day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3."
+                ]
+            },
             "recommendation": {
                 "pt": [
                     "Realizar exercício físico. Atividade física, tanto aeróbica como treino de força, tem beneficios para a saúde mental, nomeadamente na redução do stress, ansiedade e sintomas depressivos. ",
@@ -119,9 +162,14 @@
     "questionnaires": {
         "biomechanical": {
             "score_a_adapted": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Ajustar a cadeira em altura permitindo ter os pés bem assentes no chão.",
@@ -136,9 +184,14 @@
                 }
             },
             "monitor_score_adapted": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Ajustar o monitor por forma a que o seu topo esteja ligeiramente abaixo do nível dos olhos, permitindo manter a cabeça numa postura neutra.",
@@ -153,9 +206,14 @@
                 }
             },
             "phone_score_adapted": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Utilizar, de preferência, auscultadores.",
@@ -170,9 +228,14 @@
                 }
             },
             "mouse_score_adapted": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Posicionar o rato em linha com o ombro, mantendo o pulso direito.",
@@ -185,9 +248,14 @@
                 }
             },
             "keyboard_score_adapted": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Utilizar o teclado numa posição neutra, de forma a que os cotovelos estejam a fazer um ângulo de, aproximadamente, 90 graus.",
@@ -202,9 +270,14 @@
         },
         "environmental": {
             "Nível de Iluminação": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Ajustar persiana por forma a reduzir encadeamentos",
@@ -217,9 +290,14 @@
                 }
             },
             "Ar": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Utilizar, de preferência, a ventilação natural, abrindo periodicamente as janelas ou portas."
@@ -230,9 +308,14 @@
                 }
             },
             "Ruído": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Utilizar equipamento de proteção indivídual quando o ruído é elevado. No caso de ruído incomodativo, utilizar auriculares com cancelamento de ruído."
@@ -243,9 +326,14 @@
                 }
             },
             "Design do Escritório": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Configurar o seu local de trabalho com objectos que lhe transmitam bem-estar"
@@ -256,9 +344,14 @@
                 }
             },
             "Organização do Escritório": {
-                "rule": [
-                    "If the value (normalized) is over 0.3333"
-                ],
+                "rule": {
+                    "pt": [
+                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                    ],
+                    "en": [
+                        "If the color is yellow or red for that topic of the questionnaire."
+                    ]
+                },
                 "recommendation": {
                     "pt": [
                         "Organizar o local de trabalho, colocando na área de trabalho mais utilizada items que são utilizados mais frequentemente."
