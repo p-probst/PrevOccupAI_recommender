@@ -4,20 +4,25 @@
 import sys
 from pathlib import Path
 import pandas as pd
-
-
-# external imports
-project_path = Path("C:/Users/phill/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
+from typing import Dict, List
 
 
 # internal imports
-from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS
+from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
+from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
+
+# external imports
+project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
+sys.path.append(str(project_path))
+from oh_parser import load_profiles, extract_nested
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
 HAR_CSV_FILENAME = "har_risk_subjects.csv"
+
+HAR_RULE_3_THRESHOLD_SECONDS = 5.0 * 3600 # total of 5 hours of sitting
+HAR_RULE_4_THRESHOLD = 0.5 # 50 percent sitting during the day
+
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
@@ -56,6 +61,161 @@ def generate_har_csv(noise_risk_csv_path: str | Path, oh_profile_path: str) -> p
         df_sessions = pd.read_csv(HAR_CSV_FILENAME)
 
     return df_sessions
+
+
+def get_sitting_proportions_recommendations(har_subject_metrics_df: pd.DataFrame, subject_id: int,
+                                           full_recommender_dict: Dict, language: str = 'pt') -> Dict:
+    """
+
+    :param har_subject_metrics_df:
+    :param subject_id:
+    :param full_recommender_dict:
+    :param language:
+    :return:
+    """
+
+    # init the recommendations dict with the rule
+    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language]}
+
+    # filter the DataFrame according to the rule
+    har_risk_subjects_df = har_subject_metrics_df[har_subject_metrics_df['HAR_distributions.Sentado'] > HAR_RULE_4_THRESHOLD]
+
+    # get the unique subjects
+    risk_subjects = har_risk_subjects_df['subject_id'].unique().tolist()
+
+    if subject_id in risk_subjects:
+
+        # get rows that belong to subject
+        subject_data = har_risk_subjects_df[har_risk_subjects_df['subject_id'] == subject_id]
+
+        # count the number of instances
+        num_instances = len(subject_data)
+
+        # get the dates
+        risk_dates = subject_data['date'].tolist()
+
+        # transform dates to strings
+        risk_dates = dates_to_weekdays(risk_dates, date_format="%d-%m-%Y", locale=language)
+
+        # generate dict
+        recommendations_dict[RISK_DATES_KEY] = risk_dates
+        recommendations_dict[NUM_INSTANCES_KEY] = num_instances
+        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors']['human_activities']['sitting']['recommendation'][language]
+
+    else:
+
+        # add that there are no recommendations needed
+        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+
+    return recommendations_dict
+
+
+def get_total_sitting_duration_recommendation(har_subject_metrics_df: pd.DataFrame, subject_id: int,
+                                           full_recommender_dict: Dict, language: str = 'pt') -> Dict:
+    """
+
+    :param har_subject_metrics_df:
+    :param subject_id:
+    :param full_recommender_dict:
+    :param language:
+    :return:
+    """
+
+    # init the recommendations dict with the rule
+    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language]}
+
+    # filter the DataFrame according to the rule
+    har_risk_subjects_df = har_subject_metrics_df[
+        har_subject_metrics_df['HAR_durations.Sentado_duration_sec'] > HAR_RULE_3_THRESHOLD_SECONDS]
+
+    # get the unique subjects
+    risk_subjects = har_risk_subjects_df['subject_id'].unique().tolist()
+
+    if subject_id in risk_subjects:
+
+        # get rows that belong to subject
+        subject_data = har_risk_subjects_df[har_risk_subjects_df['subject_id'] == subject_id]
+
+        # count the number of instances
+        num_instances = len(subject_data)
+
+        # get the dates
+        risk_dates = subject_data['date'].tolist()
+
+        # transform dates to strings
+        risk_dates = dates_to_weekdays(risk_dates, date_format="%d-%m-%Y", locale=language)
+
+        # generate dict
+        recommendations_dict[RISK_DATES_KEY] = risk_dates
+        recommendations_dict[NUM_INSTANCES_KEY] = num_instances
+        recommendations_dict[RECOMMENDATIONS_KEY] = \
+        full_recommender_dict['sensors']['human_activities']['sitting']['recommendation'][language]
+
+    else:
+
+        # add that there are no recommendations needed
+        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+
+    return recommendations_dict
+
+
+def get_continuous_sitting_recommendations(oh_profile: Dict,
+                                           full_recommender_dict: Dict, activity_class_label: List[str] = None,
+                                           exposure_limit_minutes: float = 60.0, language: str ='pt') -> Dict:
+    """
+
+    :param oh_profile:
+    :param full_recommender_dict:
+    :param activity_class_label:
+    :param exposure_limit_minutes:
+    :param language:
+    :return:
+    """
+
+    # get the human activity metrics
+    har_metrics = oh_profile['sensor_metrics']['human_activities']
+
+    # init the recommendations dict with the rule
+    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language]}
+
+    # init list for holding the dates and counter for tracking risk instances
+    risk_dates = []
+    total_num_instances = 0
+
+    # cycle over the noise metrics
+    for acquisition_date, session_dict in har_metrics.items():
+
+        for acquisition_time, metrics_dict in session_dict.items():
+
+            har_timeline_dict = metrics_dict['HAR_timeline']
+
+            # get number of instances
+            num_risk_instances = get_timeline_risk_durations(har_timeline_dict, activity_class_label,
+                                                             min_duration_minutes=exposure_limit_minutes)
+
+            if num_risk_instances > 0:
+                # add acquisition date to the list
+                risk_dates.append(acquisition_date)
+                total_num_instances += num_risk_instances
+
+    if len(risk_dates) > 0:
+
+        # transform dates to strings
+        risk_dates = dates_to_weekdays(risk_dates, date_format="%d-%m-%Y", locale=language)
+
+        # generate dict
+        recommendations_dict[RISK_DATES_KEY] = risk_dates
+        recommendations_dict[NUM_INSTANCES_KEY] = total_num_instances
+        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors']['human_activities']['sitting']['recommendation'][language]
+
+    else:
+
+        # add that there are no recommendations needed
+        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+
+    return recommendations_dict
+
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #

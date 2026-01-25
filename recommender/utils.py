@@ -45,7 +45,7 @@ def dates_to_weekdays(
         for d in dates
     ]
 
-def get_timeline_risk_durations(noise_dict, risk_labels: Tuple[str, str], min_duration_minutes=60 ) -> int:
+def get_timeline_risk_durations(noise_dict, risk_labels: List[str], min_duration_minutes=60 ) -> int:
     """
     Count continuous instances of specified risk_labels in OH profile timeline metrics that last at least a given duration.
     :param noise_dict: Dictionary with time intervals as keys and noise labels as values.

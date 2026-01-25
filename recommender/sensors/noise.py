@@ -6,14 +6,14 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 import pandas as pd
 
+# internal imports
+from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
+from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
+
 # external imports
-project_path = Path("C:/Users/phill/PycharmProjects/OH_Toolkit")
+project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
 sys.path.append(str(project_path))
 from oh_parser import load_profiles, extract_nested
-
-# internal imports
-from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS
-from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -70,7 +70,7 @@ def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str) ->
 
 def get_continuous_noise_recommendations(oh_profile: Dict,
                                          full_recommender_dict: Dict,
-                                         noise_level_label: Tuple[str, str] = ('Ruído incomodativo', 'Ruído elevado'),
+                                         noise_level_label: List[str] = None,
                                          exposure_limit_minutes: float = 60.0, language: str ='pt') -> Dict:
     """
 
@@ -138,11 +138,13 @@ def get_noise_exposure_recommendations(noise_risk_subjects_df: pd.DataFrame, sub
     :return:
     """
 
+    # TODO: move filtering to here
+
     # init the recommendations dict with the rule
     recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['noise']['rule'][language]}
 
     # get the unique subject IDs
-    risk_subjects = noise_risk_subjects_df['subject_id'].tolist()
+    risk_subjects = noise_risk_subjects_df['subject_id'].unique().tolist()
 
     if subject_id in risk_subjects:
 

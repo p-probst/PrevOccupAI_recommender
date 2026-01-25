@@ -4,6 +4,9 @@
 PT = 'pt'
 ENG = 'eng'
 
+USER = 'phill'
+
+
 # general file keys
 INTRODUCTION_KEY = 'intro_and_context'
 RISK_RULE_KEY = 'risk_rule'

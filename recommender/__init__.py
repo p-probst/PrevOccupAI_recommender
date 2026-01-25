@@ -1,7 +1,11 @@
 from recommender.sensors.noise import get_continuous_noise_recommendations, generate_noise_csv, get_noise_exposure_recommendations
-from recommender.sensors.human_activities import generate_har_csv
+from recommender.sensors.human_activities import generate_har_csv, get_sitting_proportions_recommendations, get_total_sitting_duration_recommendation, get_continuous_sitting_recommendations
 
 __all__ = [
     'get_continuous_noise_recommendations',
     'get_noise_exposure_recommendations',
-    'generate_noise_csv']
+    'generate_noise_csv',
+    'generate_har_csv',
+    'get_sitting_proportions_recommendations',
+    'get_total_sitting_duration_recommendation',
+    'get_continuous_sitting_recommendations',]

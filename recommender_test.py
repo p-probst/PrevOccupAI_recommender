@@ -30,14 +30,17 @@ with open(Path(OH_PROFILES_PATH) /f"{subject_id}_OH_profile.json", "r", encoding
 noise_risk_subjects_df = recommender.generate_noise_csv(cwd_, OH_PROFILES_PATH)
 
 # load HAR subject data
-har_risk_subjects_df = recommender.generate_har_csv(cwd_, OH_PROFILES_PATH)
+har_subject_data_df = recommender.generate_har_csv(cwd_, OH_PROFILES_PATH)
 
 
 # ------- get noise exposure recommendations --------- #
 noise_exposure_recommendations = recommender.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id, recommendation_system)
-noise_continuous_recommendations = recommender.get_continuous_noise_recommendations(oh_profile, recommendation_system)
+noise_continuous_recommendations = recommender.get_continuous_noise_recommendations(oh_profile, recommendation_system, noise_level_label=['Ruído incomodativo', 'Ruído elevado'])
 
 # ------- get human activities recommendations --------- #
+sitting_proportions_recommendations = recommender.get_sitting_proportions_recommendations(har_subject_data_df, subject_id, recommendation_system)
+sitting_total_recommendations = recommender.get_total_sitting_duration_recommendation(har_subject_data_df, subject_id, recommendation_system)
+sitting_continuous_recommendations = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system, activity_class_label=['Sentado'])
 
 print('test')
 
