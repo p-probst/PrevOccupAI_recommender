@@ -188,10 +188,12 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
         mdFile.new_paragraph(f"- Regra {i+1}. {noise_continuous_recommendations['rule']}")
         mdFile.write("\n")
 
-    mdFile.new_paragraph(f"Foram detetadas")
+    if 'num_instances' in noise_continuous_recommendations.keys():
+        mdFile.new_paragraph(f"Foram detetadas {noise_continuous_recommendations['num_instances']} nos dias: {noise_continuous_recommendations['risk_dates']}")
+        mdFile.write("\n")
 
 
-    mdFile.write("\n")
+
 
 def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_dict = SENSOR_TIMELINE_DICT[PT]):
 

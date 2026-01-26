@@ -6,14 +6,14 @@ import recommender as recommender
 from recommender import assess_low_postural_variability
 
 # set path to OH profiles
-OH_PROFILES_PATH = "D:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
+OH_PROFILES_PATH = "E:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 
 
 # define working directory
 cwd_ = Path.cwd()
 
 # define subject (for testing)
-subject_id = 95
+subject_id = 80
 
 # load the OH profile and the recommendation system json
 with open(cwd_ / "recommender/recommendations.json", "r", encoding="utf-8") as file:
