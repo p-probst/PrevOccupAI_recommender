@@ -52,10 +52,10 @@
             "walking": {
                 "rule": {
                     "pt": [
-                        "Se o número de passos por dia for inferior a 700 (10% de 7000)."
+                        "Se o número de passos em pelo menos num dia for inferior a 700 (10% de 7000)."
                     ],
                     "en": [
-                        "If the number of steps per day is less than 700 (10 % of 7000)"
+                        "If the number of steps on at least one day of the week is less than 700 (10 % of 7000)"
                     ]
                 },
                 "recommendation": {

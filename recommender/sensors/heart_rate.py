@@ -79,7 +79,7 @@ def get_max_frequency_recommendation(hr_subject_metrics_df: pd.DataFrame, oh_pro
     """
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['heart_rate']['rule'][language]}
+    recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['heart_rate']['rule'][language][0]]}
 
     # filter the DataFrame according to the rule
     hr_risk_subjects_df = hr_subject_metrics_df[hr_subject_metrics_df['HR_BPM_stats.max'] > MAX_HR_THRESHOLD]
@@ -128,7 +128,7 @@ def get_max_frequency_recommendation(hr_subject_metrics_df: pd.DataFrame, oh_pro
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 
@@ -147,7 +147,7 @@ def get_elevated_hr_recommendations(hr_subject_metrics_df: pd.DataFrame, oh_prof
     """
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['heart_rate']['rule'][language]}
+    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['heart_rate']['rule'][language][1:3]}
 
     # get threshold based on hr class
     if hr_class == 'Ligeiramente elevado':
@@ -205,7 +205,7 @@ def get_elevated_hr_recommendations(hr_subject_metrics_df: pd.DataFrame, oh_prof
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 

@@ -7,14 +7,14 @@ import recommender as recommender
 
 
 # set path to OH profiles
-OH_PROFILES_PATH = "E:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
+OH_PROFILES_PATH = "D:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 
 
 # define working directory
 cwd_ = Path.cwd()
 
 # define subject (for testing)
-subject_id = 80
+subject_id = 95
 
 # load the OH profile and the recommendation system json
 with open(cwd_ / "recommender/recommendations.json", "r", encoding="utf-8") as file:
@@ -47,7 +47,8 @@ noise_continuous_recommendations = recommender.get_continuous_noise_recommendati
 # ------- get human activities recommendations --------- #
 sitting_proportions_recommendations = recommender.get_sitting_proportions_recommendations(har_subject_data_df, subject_id, recommendation_system)
 sitting_total_recommendations = recommender.get_total_sitting_duration_recommendation(har_subject_data_df, subject_id, recommendation_system)
-sitting_continuous_recommendations = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system, activity_class_label=['Sentado'])
+sitting_continuous_recommendations_2h = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system, activity_class_label=['Sentado'], exposure_limit_minutes=120.0)
+sitting_continuous_recommendations_1h = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system, activity_class_label=['Sentado'], exposure_limit_minutes=60.0)
 standing_proportions_recommendations = recommender.get_standing_proportions_recommendations(har_subject_data_df, subject_id, recommendation_system)
 steps_recommendations = recommender.get_steps_recommendations(har_subject_data_df, subject_id, recommendation_system)
 

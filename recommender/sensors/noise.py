@@ -121,7 +121,7 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 
@@ -167,7 +167,7 @@ def get_noise_exposure_recommendations(noise_risk_subjects_df: pd.DataFrame, sub
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 

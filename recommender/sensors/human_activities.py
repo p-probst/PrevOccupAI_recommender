@@ -23,6 +23,8 @@ HAR_CSV_FILENAME = "har_subject_metrics.csv"
 HAR_RULE_MAX_SITTING_TIME_SECONDS = 5.0 * 3600 # total of 5 hours of sitting
 HAR_RULE_MAX_ACTIVITY_PERCENTAGE = 0.5 # 50 percent sitting during the day
 HAR_RULE_MIN_STEPS = 700
+HAR_EXPOSURE_LIMIT_1H = 60.0 # 60 minutes
+HAR_EXPOSURE_LIMIT_2H = 120.0
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -76,7 +78,7 @@ def get_sitting_proportions_recommendations(har_subject_metrics_df: pd.DataFrame
     """
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language]}
+    recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language][3]]}
 
     # filter the DataFrame according to the rule
     har_risk_subjects_df = har_subject_metrics_df[har_subject_metrics_df['HAR_distributions.Sentado'] > HAR_RULE_MAX_ACTIVITY_PERCENTAGE]
@@ -106,13 +108,13 @@ def get_sitting_proportions_recommendations(har_subject_metrics_df: pd.DataFrame
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 
 
 def get_total_sitting_duration_recommendation(har_subject_metrics_df: pd.DataFrame, subject_id: int,
-                                           full_recommender_dict: Dict, language: str = 'pt') -> Dict:
+                                              full_recommender_dict: Dict, language: str = 'pt') -> Dict:
     """
 
     :param har_subject_metrics_df:
@@ -123,7 +125,7 @@ def get_total_sitting_duration_recommendation(har_subject_metrics_df: pd.DataFra
     """
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language]}
+    recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language][2]]}
 
     # filter the DataFrame according to the rule
     har_risk_subjects_df = har_subject_metrics_df[
@@ -155,7 +157,7 @@ def get_total_sitting_duration_recommendation(har_subject_metrics_df: pd.DataFra
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 
@@ -173,11 +175,23 @@ def get_continuous_sitting_recommendations(oh_profile: Dict,
     :return:
     """
 
+    # init the recommendations dict with the rule based on exposure limit number of instances to track
+    if exposure_limit_minutes == HAR_EXPOSURE_LIMIT_1H:
+        recommendations_dict = {
+            RULE_KEY: [full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language][0]]}
+
+        min_num_risk_instances = 2
+    elif exposure_limit_minutes == HAR_EXPOSURE_LIMIT_2H:
+        recommendations_dict = {
+            RULE_KEY: [full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language][1]]}
+
+        min_num_risk_instances = 1
+
+    else:
+        raise ValueError('Exposure limit must be either 60.0 min, or 120.0 min')
+
     # get the human activity metrics
     har_metrics = oh_profile['sensor_metrics']['human_activities']
-
-    # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language]}
 
     # init list for holding the dates and counter for tracking risk instances
     risk_dates = []
@@ -194,10 +208,10 @@ def get_continuous_sitting_recommendations(oh_profile: Dict,
             num_risk_instances = get_timeline_risk_durations(har_timeline_dict, activity_class_label,
                                                              min_duration_minutes=exposure_limit_minutes)
 
-            if num_risk_instances > 0:
+            if num_risk_instances >= min_num_risk_instances:
                 # add acquisition date to the list
                 risk_dates.append(acquisition_date)
-                total_num_instances += num_risk_instances
+                total_num_instances += 1
 
     if len(risk_dates) > 0:
 
@@ -212,7 +226,7 @@ def get_continuous_sitting_recommendations(oh_profile: Dict,
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 
@@ -258,7 +272,7 @@ def get_standing_proportions_recommendations(har_subject_metrics_df: pd.DataFram
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 
@@ -308,7 +322,7 @@ def get_steps_recommendations(har_subject_metrics_df: pd.DataFrame, subject_id: 
     else:
 
         # add that there are no recommendations needed
-        recommendations_dict[RECOMMENDATIONS_KEY] = NO_RECOMMENDATIONS[language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
 
