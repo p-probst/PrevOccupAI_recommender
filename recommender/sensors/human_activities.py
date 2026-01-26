@@ -28,15 +28,15 @@ HAR_RULE_MIN_STEPS = 700
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_har_csv(noise_risk_csv_path: str | Path, oh_profile_path: str) -> pd.DataFrame:
+def generate_har_csv(har_data_csv_path: str | Path, oh_profile_path: str) -> pd.DataFrame:
     """
 
-    :param noise_risk_csv_path:
+    :param har_data_csv_path:
     :param oh_profile_path:
     :return:
     """
 
-    if not (Path(noise_risk_csv_path) / HAR_CSV_FILENAME).exists():
+    if not (Path(har_data_csv_path) / HAR_CSV_FILENAME).exists():
         # load the profiles
         profiles = load_profiles(oh_profile_path)
 

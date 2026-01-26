@@ -26,11 +26,15 @@ with open(Path(OH_PROFILES_PATH) /f"{subject_id}_OH_profile.json", "r", encoding
     oh_profile = json.load(file)
 
 
+# ------- get CSV data --------- #
 # load noise risk subjects
 noise_risk_subjects_df = recommender.generate_noise_csv(cwd_, OH_PROFILES_PATH)
 
 # load HAR subject data
 har_subject_data_df = recommender.generate_har_csv(cwd_, OH_PROFILES_PATH)
+
+# load HR subject data
+hr_subject_data_df = recommender.generate_hr_csv(cwd_, OH_PROFILES_PATH)
 
 
 # ------- get noise exposure recommendations --------- #
@@ -43,6 +47,11 @@ sitting_total_recommendations = recommender.get_total_sitting_duration_recommend
 sitting_continuous_recommendations = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system, activity_class_label=['Sentado'])
 standing_proportions_recommendations = recommender.get_standing_proportions_recommendations(har_subject_data_df, subject_id, recommendation_system)
 steps_recommendations = recommender.get_steps_recommendations(har_subject_data_df, subject_id, recommendation_system)
+
+# ------- get human noise recommendations --------- #
+max_hr_recommendations = recommender.get_max_frequency_recommendation(hr_subject_data_df, oh_profile, subject_id, recommendation_system)
+slightly_elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile, subject_id, 'Ligeiramente elevado', recommendation_system)
+elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile, subject_id, 'Elevado', recommendation_system)
 
 print('test')
 

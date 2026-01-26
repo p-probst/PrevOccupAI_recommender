@@ -20,8 +20,8 @@ from oh_parser import load_profiles, extract_nested
 # ------------------------------------------------------------------------------------------------------------------- #
 NOISE_CSV_FILENAME = "noise_risk_subjects.csv"
 
-NOISE_RULE_2 = 'noise_rule_2'
-NOISE_RULE_2_THRESHOLD = 0.5
+LOUD_NOISE_SUM = 'sum_loud_noise'
+NOISE_RULE_MAX_LOUD_NOISE_PERCENTAGE = 0.5
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
@@ -51,11 +51,11 @@ def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str) ->
         )
 
         # add up disturbing and high noise
-        df_sessions[NOISE_RULE_2] = df_sessions['Noise_distributions.Ruído incomodativo'] + df_sessions[
+        df_sessions[LOUD_NOISE_SUM] = df_sessions['Noise_distributions.Ruído incomodativo'] + df_sessions[
             'Noise_distributions.Ruído elevado']
 
         # filter the DataFrame to only contain subjects that exceed the noise rule
-        df_risk_subjects = df_sessions[df_sessions[NOISE_RULE_2] >= NOISE_RULE_2_THRESHOLD]
+        df_risk_subjects = df_sessions[df_sessions[LOUD_NOISE_SUM] >= NOISE_RULE_MAX_LOUD_NOISE_PERCENTAGE]
 
         # save the DataFrame
         df_risk_subjects.to_csv(NOISE_CSV_FILENAME, index=False)
@@ -64,8 +64,6 @@ def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str) ->
         df_risk_subjects = pd.read_csv(NOISE_CSV_FILENAME)
 
     return df_risk_subjects
-
-
 
 
 def get_continuous_noise_recommendations(oh_profile: Dict,
