@@ -39,9 +39,23 @@ INTRO_6_PT = (
     "auditivos, sendo comparáveis a trabalhar perto de equipamentos ruidosos, como uma trituradora."
 )
 
-PLOT_EXPLAIN_PT = "this is the plot explain"
+PLOT_EXPLAIN_1_PT = (
+    "O gráfico abaixo apresenta um cronograma do nível de ruído a que esteve exposta/o ao longo do dia, "
+    "durante todos os dias de aquisição. Cada barra horizontal corresponde a um dia da semana, e as linhas "
+    "verticais tracejadas indicam as diferentes horas do dia. "
+    "Foram utilizados tons de verde para representar os períodos em que o nível de ruído foi silencioso ou baixo, "
+    "amarelo para ruído incomodativo e vermelho para ruído elevado. "
+    "Para construir este gráfico, os dados de ruído foram organizados em intervalos de 10 minutos, sendo "
+    "atribuído a cada intervalo o nível de ruído que ocorreu com maior frequência nesse período."
+)
 
-RISK_PT = "Tendo em conta estas classes de ruído, foram delineadas dois regras à definir o risco. "
+PLOT_EXPLAIN_2_PT = (
+    "O gráfico seguinte mostra a distribuição dos níveis de ruído por dia, ajudando a compreender a proporção "
+    "do tempo, relativamente à duração total do seu turno de trabalho, durante a qual esteve exposta/o aos "
+    "diferentes níveis de ruído. Cada barra vertical corresponde a um dia de aquisição."
+)
+
+RISK_1_PT = "Em relação ao cronograma de exposição ao ruído ao longo do dia, foi delineado o seguinte risco:  "
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
@@ -57,8 +71,8 @@ PLOT_ENG = ""
 NOISE_DICT = {
     PT: {
         INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT, INTRO_4_PT, INTRO_5_PT, INTRO_6_PT],
-        RISK_RULE_KEY: {RISK_PT},
-        PLOT_EXPLAIN_KEY: {PLOT_EXPLAIN_PT}
+        RISK_RULE_KEY: [RISK_1_PT],
+        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_PT]
     },
 
     ENG: {

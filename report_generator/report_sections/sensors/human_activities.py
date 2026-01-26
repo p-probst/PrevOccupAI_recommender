@@ -7,9 +7,54 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_PT = "this is the intro"
-RISK_PT = "this is the risk"
-PLOT_EXPLAIN_PT = "this is the plot explain"
+INTRO_1_PT = "Sensores de movimento: atividades realizadas durante o dia"
+INTRO_2_PT = (
+    "Devido à natureza do seu trabalho, os trabalhadores de escritório estão geralmente sujeitos a permanecer "
+    "longos períodos de tempo sentados. O trabalho estático e sedentário encontra-se fortemente associado ao "
+    "aparecimento de lesões músculo-esqueléticas, em particular na região lombar, no pescoço, nos ombros e nos joelhos. "
+    "Para além destes problemas, a permanência prolongada em postura sentada pode também estar associada a outros "
+    "efeitos negativos na saúde, como diabetes tipo 2, obesidade, doenças cardiovasculares e impactos na saúde mental. "
+
+)
+INTRO_3_PT = ("Deste modo, torna-se fundamental identificar situações de risco relacionadas com a postura sentada prolongada, "
+    "de forma a permitir a adoção de medidas que contribuam para a melhoria da saúde do trabalhador. "
+    "Uma das estratégias para prevenir estas doenças ocupacionais passa pela promoção de práticas mais ativas ao longo "
+    "do dia de trabalho, reduzindo o tempo passado sentado e incentivando a realização de mais movimento.")
+
+INTRO_4_PT = (
+    "Para o estudo das atividades realizadas ao longo do dia de trabalho, foram desenvolvidos modelos de inteligência artificial que, "
+    "com base nos dados dos sensores de movimento do smartphone, permitem distinguir entre três atividades principais: "
+    "estar sentado, estar de pé e caminhar. A partir desta informação, é possível determinar quanto tempo cada trabalhador "
+    "passou em cada uma destas atividades e, assim, identificar possíveis padrões de risco."
+)
+
+RISK_1_PT = "Em relação ao cronograma das atividades ao longo do dia, foram delineados os seguinte riscos:"
+RISK_2_PT = "Em relação à distribuição das atividades ao longo do dia, foram delineados os seguinte riscos:"
+RISK_3_PT = "Em relação ao número de passoas realizados ao longo do dia, foram delineados os seguinte riscos:"
+
+PLOT_EXPLAIN_1_PT = (
+    "Para cada dia de aquisição, foram construídos cronogramas das atividades realizadas ao longo de todo o turno de trabalho. "
+    "As três barras horizontais representam os períodos em que esteve em postura sentada (a verde), de pé (a salmão) e a caminhar (a azul). "
+    "Sempre que permaneceu sentada/o durante mais de uma hora consecutiva, a barra verde passa a amarelo. "
+    "Caso a postura sentada se prolongue por mais de duas horas consecutivas sem interrupção, a barra passa a vermelho."
+)
+PLOT_EXPLAIN_2_PT = (
+    "Segue-se o gráfico que apresenta a distribuição das atividades realizadas em cada dia da semana. "
+    "Este gráfico permite compreender de forma mais intuitiva a proporção do tempo do seu dia de trabalho "
+    "que passou sentada/o, de pé e a caminhar. "
+    "A barra da esquerda representa a perceção que indicou no questionário relativamente ao tempo que considera "
+    "passar em cada uma destas atividades, enquanto as barras da direita mostram os resultados obtidos a partir "
+    "dos dados recolhidos pelos sensores. As percentagens de cada atividade estão escritas em cada barra, excepto percentagens menores que 2 %, que foram omitidas "
+    "para facilitar a interpretação do gráfico."
+)
+PLOT_EXPLAIN_3_PT = (
+    "O último gráfico apresentado relativamente às atividades corresponde ao gráfico do número de passos "
+    "e da distância percorrida. Nesta figura, cada barra horizontal representa o número de passos realizados "
+    "em cada dia. A parte da barra a azul corresponde ao número de passos efetivamente realizados, enquanto a "
+    "parte a cinzento indica o número de passos recomendado para um dia. "
+    "Este valor recomendado depende da idade do trabalhador e encontra-se indicado no topo do gráfico. "
+    "A distância percorrida no respetivo dia, expressa em quilómetros (km), é apresentada à direita de cada barra."
+)
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
@@ -24,9 +69,9 @@ PLOT_ENG = ""
 # ------------------------------------------------------------------------------------------------------------------- #
 HAR_DICT = {
     PT: {
-        INTRODUCTION_KEY: {INTRO_PT},
-        RISK_RULE_KEY: {RISK_PT},
-        PLOT_EXPLAIN_KEY: {PLOT_EXPLAIN_PT}
+        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
+        RISK_RULE_KEY: [RISK_1_PT, RISK_2_PT, RISK_3_PT],
+        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_PT, PLOT_EXPLAIN_3_PT],
     },
 
     ENG: {

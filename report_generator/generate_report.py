@@ -6,6 +6,7 @@ import os
 import json
 import os, shutil
 import re
+from pathlib import Path
 from mdutils import Html
 from mdutils.mdutils import MdUtils
 from report_generator.report_sections.general.introduction import *
@@ -16,7 +17,9 @@ from report_generator.report_sections.questionnaires.copsoq import COPSOQ_DICT, 
 from report_generator.report_sections.sensors.cml_sensors import CML_SENSORS_DICT
 from report_generator.report_sections.general.common import SENSORS_INTRODUCTION
 from report_generator.report_sections.sensors.sensor_timeline import SENSOR_TIMELINE_DICT
+from report_generator.report_sections.sensors.noise import NOISE_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
+import recommender as recommender
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -33,17 +36,25 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
     _generate_introduction_section(mdFile)
 
     work_type = 'CML'
+
     # get work type from OH profile
     for oh_profile_path in os.listdir(oh_profiles_path):
 
         if oh_profile_path.split('_')[0] == str(subject_id):
 
-            # load json
+            #  ---------------------  OH profile -------------------------------------
             with open(os.path.join(oh_profiles_path, oh_profile_path), "r", encoding="utf-8") as json_file:
                 oh_profile = json.load(json_file)
 
             # get work type
             work_type = oh_profile['meta_data']['work_type']
+
+    # ------------------------------------------recommender ------------------------------------------#
+
+    # load the OH profile and the recommendation system json
+    with open(Path.cwd() / "recommender/recommendations.json", "r", encoding="utf-8") as file:
+
+        recommendation_system = json.load(file)
 
     # questionnaires
     _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type)
@@ -64,6 +75,7 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
     _generate_sensor_timeline_section(mdFile, subject_id, plots_path)
 
     # noise
+    _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system)
 
     # generate pdf
 
@@ -71,8 +83,8 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
     template_path = r"C:\Users\srale\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
     header_path = r"C:\Users\srale\PycharmProjects\PrevOccupAI_recommender\report_generator\header.tex"
 
-    md_path = os.path.join(report_folder_path, f"Relatorio_{subject_id}.md")
-    pdf_path = os.path.join(report_folder_path, f"relatorio_{subject_id}.pdf")
+    md_path = os.path.join(report_folder_path, f"{subject_id}_report.md")
+    pdf_path = os.path.join(report_folder_path, f"{subject_id}_report.pdf")
 
     mdFile.create_md_file()
 
@@ -96,7 +108,7 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
 def _generate_file_and_cover(report_folder_path, subject_id):
 
     # create new file
-    mdFile = MdUtils(file_name=os.path.join(report_folder_path, f'Relatorio_{subject_id}'))
+    mdFile = MdUtils(file_name=os.path.join(report_folder_path, f'{subject_id}_report'))
 
     return mdFile
 
@@ -137,6 +149,49 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.new_line(' \pagebreak ')
     mdFile.write("\n")
 
+
+def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system, noise_dict=NOISE_DICT[PT]):
+
+    # get noise recommender
+
+    # load noise risk subjects
+    noise_risk_subjects_df = recommender.generate_noise_csv(Path.cwd(), oh_profiles_path)
+
+    # ger noise recommendations
+    noise_exposure_recommendations = recommender.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id, recommendation_system)
+    noise_continuous_recommendations = recommender.get_continuous_noise_recommendations(oh_profile, recommendation_system, noise_level_label=['Ruído incomodativo','Ruído elevado'])
+
+    mdFile.write("\n")
+    # introduction title
+    mdFile.new_header(level=1, title=noise_dict[INTRODUCTION_KEY][0])
+
+    # write intro
+    mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][2])
+    mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][3])
+    mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][4])
+    mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][5])
+    mdFile.write("\n")
+    # describe plot
+    mdFile.new_paragraph(noise_dict[PLOT_EXPLAIN_KEY][0])
+
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'noise_plots', f'{subject_id}_noise_timeline.png'),
+                        caption=None, max_width=1, max_height=0.5)
+
+    mdFile.write("\n")
+    mdFile.new_paragraph(noise_dict[RISK_RULE_KEY][0])
+    #
+    # for i, rule in enumerate(noise_continuous_recommendations['rule']):
+    #
+    #     mdFile.new_paragraph(f"- Regra {i+1}. {noise_continuous_recommendations['rule']}")
+    #     mdFile.write("\n")
+
+    mdFile.new_paragraph(f"Foram det")
+
+
+    mdFile.write("\n")
 
 def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_dict = SENSOR_TIMELINE_DICT[PT]):
 

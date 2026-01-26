@@ -7,7 +7,7 @@ import recommender as recommender
 
 
 # set path to OH profiles
-OH_PROFILES_PATH = "D:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
+OH_PROFILES_PATH = "E:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 
 
 # define working directory
