@@ -51,7 +51,7 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
     mdFile.write("\n")
 
     # introduction title
-    mdFile.new_header(level=1, title="Resultados dos sensores")
+    mdFile.new_header(level=1, title="Resultados das suas aquisições")
 
     # write paragraphs
     mdFile.new_paragraph(SENSORS_INTRODUCTION)

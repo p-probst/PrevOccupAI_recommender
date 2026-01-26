@@ -84,7 +84,7 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
     noise_metrics = oh_profile['sensor_metrics']['noise']
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['noise']['rule'][language]}
+    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['noise']['rule'][language][0]}
 
     # init list for holding the dates and counter for tracking risk instances
     risk_dates = []
@@ -116,7 +116,7 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
         # generate dict
         recommendations_dict[RISK_DATES_KEY] = risk_dates
         recommendations_dict[NUM_INSTANCES_KEY] = total_num_instances
-        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors']['noise']['recommendation'][language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors']['noise']['recommendation'][language][1]
 
     else:
 

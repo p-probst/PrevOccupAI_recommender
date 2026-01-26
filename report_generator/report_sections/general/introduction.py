@@ -22,8 +22,8 @@ SECTION_13 = 'section_13'
 # ------------------------------------------------------------------------------------------------------------------- #
 SECTION_0_PT = "Relatório Ocupacional Individual - PrevOccupAI+"
 SECTION_1_PT = ("Este relatório reporta os resultados das aquisições realizadas ao longo de "
-                "uma semana, com informação anónima e individual. Estes dados irão ser agregados a dados "
-                "recolhidos com outros trabalhadores da Câmara Municipal de Lisboa, "
+                "uma semana, com informação anónima e individual. Estes dados irão ser agregados aos dados "
+                "recolhidos restantes trabalhadores da Câmara Municipal de Lisboa que participaram no estudo, "
                 "por forma a dar corpo ao conjunto final de dados do projeto PrevOccupAI+.")
 SECTION_2_PT = (
     "As doenças músculo-esqueléticas são o problema de saúde mais frequentemente reportado pelos trabalhadores da União Europeia. "
@@ -33,9 +33,9 @@ SECTION_2_PT = (
     "o que contribui para o desenvolvimento de problemas de natureza psicológica, como stress, ansiedade e depressão."
 )
 SECTION_3_PT = (
-    "A elevada exposição a fatores de risco associados a doenças ocupacionais pode resultar em impactos negativos "
+    "A elevada exposição a estes fatores de risco pode resultar em impactos negativos "
     "tanto para o trabalhador como para a entidade empregadora, tornando necessário o recurso a ferramentas "
-    "de avaliação destes fatores. Para esse efeito, devem ser consideradas múltiplas influências, incluindo "
+    "de avaliação destes riscos. Para esse efeito, devem ser consideradas múltiplas influências, incluindo "
     "fatores relacionados com o local de trabalho e fatores individuais do trabalhador. "
     "A avaliação de indicadores fisiológicos ou de padrões de movimento através de sensores permite uma análise "
     "mais objetiva e individualizada dos fatores de risco, quando comparada com os questionários. "
@@ -44,7 +44,7 @@ SECTION_3_PT = (
 )
 SECTION_4_PT = (
     "Através da quantificação destes fatores, torna-se possível identificar os domínios em que é necessário "
-    "intervir, tanto a nível individual ou como organizacional, com o objetivo de promover a saúde, "
+    "intervir, tanto a nível individual como organizacional, com o objetivo de promover a saúde, "
     "a eficiência e o bem-estar dos colaboradores, assegurando um trabalho seguro, satisfatório e produtivo."
 )
 SECTION_5_PT = ("O projeto PrevOccupAI+, Prevenção de Doenças Ocupacionais na Administração Pública "
@@ -59,7 +59,7 @@ SECTION_10_PT = (
     "Neste relatório, partilhado exclusivamente com o participante, são apresentados os resultados dos "
     "questionários e das aquisições realizadas ao longo de uma semana de trabalho. Para os diferentes itens "
     "avaliados, são propostas recomendações personalizadas, de acordo com o risco identificado, "
-    "que podem ser adotadas pelo participante na procura contínua de melhorias nas suas condições de trabalho. "
+    "que podem ser adotadas pelo participante na procura contínua de melhorar as suas condições de trabalho. "
     "Estas recomendações baseiam-se em publicações de organizações internacionais e em literatura científica "
     "assente no consenso de peritos."
 )
@@ -72,7 +72,7 @@ SECTION_12_PT = ("**Importante**: A informação neste documento foi apresentada
                          "O/A participante é o/a **único proprietário/a** da informação compilada neste documento e, "
                          "como tal, **não pode ser coagido/a**, em qualquer circunstâncias, a partilhar o documento "
                          "com ninguém, incluindo a entidade patronal. Recomendamos que **não partilhe o documento"
-                         " com ninguém.**")
+                         " com ninguém CHANGE.**")
 SECTION_13_PT = ("Caso tenha alguma(s) questão(ões) relativamente ao documento e/ou à informação nele contida, "
                          "é possível contactar-nos em: **biosignals.libphys@gmail.com**.")
 # ------------------------------------------------------------------------------------------------------------------- #

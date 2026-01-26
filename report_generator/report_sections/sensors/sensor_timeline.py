@@ -16,7 +16,7 @@ INTRO_3_PT = ("- um **smartphone**, que realizou aquisições ao longo de **todo
               "dados de movimento e de nível de ruído.")
 INTRO_4_PT = ("- Um **smartwatch**, agendado para adquirir **quatro vezes por dia durante 20 minutos**, recolheu sinais de movimento e "
               "frequência cardíaca.")
-INTRO_5_PT = ("- **dois** dispositivos de medição de **atividade elétrica muscular** (mBAN), colocados no trapézio esquerdo e direito,"
+INTRO_5_PT = ("- **dois** dispositivos de medição de **atividade elétrica muscular** (mBAN), colocados no trapézio esquerdo (esq.) e direito (dir.),"
               "programados para adquirir **quatro vezes por dia durante 20 minutos**.")
 PLOT_EXPLAIN_PT = (
     "A figura abaixo apresenta o cronograma de aquisição dos sensores, com o objetivo de relembrar o trabalhador "

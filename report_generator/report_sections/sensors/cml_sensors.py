@@ -11,7 +11,7 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 INTRO_1_PT = "Sensores ambientais: medição única"
 INTRO_2_PT = (
     "As aquisições de dados dos sensores ambientais foram realizadas por profissionais da Câmara Municipal de Lisboa. "
-    "Estes dados foram recolhidos apenas uma vez no local de trabalho de cada participante. Uma vez sendo fatores alheios"
+    "Estes dados foram recolhidos apenas uma vez no local de trabalho de cada participante. Uma vez sendo fatores alheios "
     "ao trabalhador, não existem recomendações relativas a estes dados."
     "Os sensores permitiram medir: "
 )
