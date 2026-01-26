@@ -3,11 +3,10 @@ import json
 from pathlib import Path
 
 import recommender as recommender
-
-
+from recommender import assess_low_postural_variability
 
 # set path to OH profiles
-OH_PROFILES_PATH = "E:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
+OH_PROFILES_PATH = "D:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 
 
 # define working directory
@@ -39,6 +38,8 @@ hr_subject_data_df = recommender.generate_hr_csv(cwd_, OH_PROFILES_PATH)
 # load EMG data
 emg_subject_data_df = recommender.generate_emg_csv(cwd_, OH_PROFILES_PATH)
 
+posture_subject_data_df = recommender.generate_posture_csv(cwd_, OH_PROFILES_PATH)
+
 
 # ------- get noise exposure recommendations --------- #
 noise_exposure_recommendations = recommender.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id, recommendation_system)
@@ -60,6 +61,10 @@ elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_sub
 
 # ------- get emg recommendations --------- #
 emg_recommendations = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id, recommendation_system)
+
+# ------- get posture recommendations --------- #
+low_variability_subjects_df, low_variability_threshold = assess_low_postural_variability(posture_subject_data_df, subject_col='subject_id', ellipse_area_col='posture_95_confidence_ellipse_area')
+posture_recommendations = recommender.get_postural_displacement_recommendation(posture_subject_data_df, subject_id, recommendation_system)
 
 print('test')
 
