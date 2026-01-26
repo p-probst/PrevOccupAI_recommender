@@ -12,7 +12,7 @@ from datetime import datetime
 from babel.dates import format_date
 from typing import List
 from datetime import datetime, timedelta
-from typing import Tuple
+from typing import Dict
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # file constants
@@ -88,3 +88,32 @@ def get_timeline_risk_durations(noise_dict, risk_labels: List[str], min_duration
         count += 1
 
     return count
+
+
+def get_mean_workload_score(workload_answers_dict: Dict[str, int], workload_question_keys: List[str]) -> float:
+    """
+
+    :param workload_answers_dict:
+    :param workload_question_keys:
+    :return:
+    """
+
+    if not workload_answers_dict:
+
+        return 0
+
+    # init the score sum
+    score_sum = 0
+
+    # get the number of questions
+    num_questions = len(workload_question_keys)
+
+    # cycle over the workload question keys
+    for question_key in workload_question_keys:
+
+        # check whether the keys are in the dictionary
+        if question_key in workload_answers_dict:
+
+            score_sum += workload_answers_dict[question_key]
+
+    return score_sum / num_questions

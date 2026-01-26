@@ -5,6 +5,7 @@ from recommender.sensors.human_activities import (generate_har_csv, get_sitting_
                                                   get_standing_proportions_recommendations,
                                                   get_steps_recommendations)
 from recommender.sensors.heart_rate import generate_hr_csv, get_max_frequency_recommendation, get_elevated_hr_recommendations
+from recommender.sensors.emg import generate_emg_csv, get_emg_recommendations
 
 __all__ = [
     'get_continuous_noise_recommendations',
@@ -17,4 +18,6 @@ __all__ = [
     'get_standing_proportions_recommendations',
     'get_steps_recommendations',
     'get_max_frequency_recommendation',
-    'get_elevated_hr_recommendations']
+    'get_elevated_hr_recommendations',
+    'generate_emg_csv',
+    'get_emg_recommendations']

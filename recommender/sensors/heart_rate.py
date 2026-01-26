@@ -9,7 +9,7 @@ from typing import Dict, List
 
 # internal imports
 from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
-from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
+from recommender.utils import dates_to_weekdays, get_mean_workload_score
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -19,7 +19,7 @@ from oh_parser import load_profiles, extract_nested
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-HR_CSV_FILENAME = "hr_risk_subjects.csv"
+HR_CSV_FILENAME = "hr_subject_metrics.csv"
 
 MAX_HR_THRESHOLD = 100
 NUM_INSTANCES_MAX_HR = 2
@@ -105,7 +105,7 @@ def get_max_frequency_recommendation(hr_subject_metrics_df: pd.DataFrame, oh_pro
                 day_workload_dict = oh_profile['daily_questionnaires']['workload'][acquisition_date]
 
                 # calculate the mean of the workload questions
-                workload_mean = _get_mean_workload_score(day_workload_dict, ['focus_and_mental_strain', 'rushed_and_under_pressure', 'heavy_workload'])
+                workload_mean = get_mean_workload_score(day_workload_dict, ['focus_and_mental_strain', 'rushed_and_under_pressure', 'heavy_workload'])
 
                 if workload_mean >= MAX_THRESHOLD_WORKLOAD:
 
@@ -181,7 +181,7 @@ def get_elevated_hr_recommendations(hr_subject_metrics_df: pd.DataFrame, oh_prof
                 day_workload_dict = oh_profile['daily_questionnaires']['workload'][acquisition_date]
 
                 # calculate the mean of the workload questions
-                workload_mean = _get_mean_workload_score(day_workload_dict,
+                workload_mean = get_mean_workload_score(day_workload_dict,
                                                          ['focus_and_mental_strain', 'rushed_and_under_pressure',
                                                           'heavy_workload'])
 
@@ -210,36 +210,6 @@ def get_elevated_hr_recommendations(hr_subject_metrics_df: pd.DataFrame, oh_prof
     return recommendations_dict
 
 
-
-
-
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def _get_mean_workload_score(workload_answers_dict: Dict[str, int], workload_question_keys: List[str]) -> float:
-    """
-
-    :param workload_answers_dict:
-    :param workload_question_keys:
-    :return:
-    """
-
-    if not workload_answers_dict:
-
-        return 0
-
-    # init the score sum
-    score_sum = 0
-
-    # get the number of questions
-    num_questions = len(workload_question_keys)
-
-    # cycle over the workload question keys
-    for question_key in workload_question_keys:
-
-        # check whether the keys are in the dictionary
-        if question_key in workload_answers_dict:
-
-            score_sum += workload_answers_dict[question_key]
-
-    return score_sum / num_questions

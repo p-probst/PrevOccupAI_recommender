@@ -18,7 +18,7 @@ from oh_parser import load_profiles, extract_nested
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-HAR_CSV_FILENAME = "har_risk_subjects.csv"
+HAR_CSV_FILENAME = "har_subject_metrics.csv"
 
 HAR_RULE_MAX_SITTING_TIME_SECONDS = 5.0 * 3600 # total of 5 hours of sitting
 HAR_RULE_MAX_ACTIVITY_PERCENTAGE = 0.5 # 50 percent sitting during the day

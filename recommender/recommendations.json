@@ -141,10 +141,12 @@
         "emg": {
             "rule": {
                 "pt": [
-                    "emg regra"
+                    "emg regra ADD RULE HERE --> AT LEAST ONE SIDE (EITHER LEFT OR RIGHT)",
+                    "Para confirmar a interpretação dos dados dos sensores, foram também consideradas as respostas ao questionário de carga de trabalho que foi realizado ao fim de trabalho. Se concordou ou concordou totalmente com afirmações relacionadas com dificuldade de concentração, esforço mental, pressão para terminar as tarefas ou uma carga de trabalho elevada ao longo do dia."
+
                 ],
                 "en": [
-                    "if 'high_for_you_pct' > 30 % for at least two sessions of the day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3."
+                    "if 'high_for_you_pct' > 30 % for at least two sessions of the day and mean(focus_and_mental_strain, rushed_under_pressure, heavy_workload) >3."
                 ]
             },
             "recommendation": {
