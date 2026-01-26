@@ -38,7 +38,15 @@ hr_subject_data_df = recommender.generate_hr_csv(cwd_, OH_PROFILES_PATH)
 # load EMG data
 emg_subject_data_df = recommender.generate_emg_csv(cwd_, OH_PROFILES_PATH)
 
+# load posture data
 posture_subject_data_df = recommender.generate_posture_csv(cwd_, OH_PROFILES_PATH)
+
+# load rosa data
+rosa_subjects_data_df = recommender.generate_rosa_csv(cwd_, OH_PROFILES_PATH)
+
+# load environment data
+environment_data_df = recommender.generate_environment_csv(cwd_, OH_PROFILES_PATH)
+
 
 
 # ------- get noise exposure recommendations --------- #
@@ -65,6 +73,10 @@ emg_recommendations = recommender.get_emg_recommendations(emg_subject_data_df, o
 # ------- get posture recommendations --------- #
 low_variability_subjects_df, low_variability_threshold = assess_low_postural_variability(posture_subject_data_df, subject_col='subject_id', ellipse_area_col='posture_95_confidence_ellipse_area')
 posture_recommendations = recommender.get_postural_displacement_recommendation(posture_subject_data_df, subject_id, recommendation_system)
+
+# ------- get ROSA and environment recommendations --------- #
+rosa_recommendations = recommender.get_rosa_recommendations(rosa_subjects_data_df, subject_id, recommendation_system)
+environment_recommendations = recommender.get_environment_recommendations(environment_data_df, subject_id, recommendation_system)
 
 print('test')
 

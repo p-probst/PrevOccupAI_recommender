@@ -52,10 +52,10 @@
             "walking": {
                 "rule": {
                     "pt": [
-                        "Se o número de passos em pelo menos num dia for inferior a 700 (10% de 7000)."
+                        "Se o número de passos por dia for inferior a 700 (10% de 7000)."
                     ],
                     "en": [
-                        "If the number of steps on at least one day of the week is less than 700 (10 % of 7000)"
+                        "If the number of steps per day is less than 700 (10 % of 7000)"
                     ]
                 },
                 "recommendation": {
@@ -141,12 +141,10 @@
         "emg": {
             "rule": {
                 "pt": [
-                    "emg regra ADD RULE HERE --> AT LEAST ONE SIDE (EITHER LEFT OR RIGHT)",
-                    "Para confirmar a interpretação dos dados dos sensores, foram também consideradas as respostas ao questionário de carga de trabalho que foi realizado ao fim de trabalho. Se concordou ou concordou totalmente com afirmações relacionadas com dificuldade de concentração, esforço mental, pressão para terminar as tarefas ou uma carga de trabalho elevada ao longo do dia."
-
+                    "emg regra"
                 ],
                 "en": [
-                    "if 'high_for_you_pct' > 30 % for at least two sessions of the day and mean(focus_and_mental_strain, rushed_under_pressure, heavy_workload) >3."
+                    "if 'high_for_you_pct' > 30 % for at least two sessions of the day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3."
                 ]
             },
             "recommendation": {
@@ -163,110 +161,112 @@
     },
     "questionnaires": {
         "biomechanical": {
-            "score_a_adapted": {
-                "rule": {
-                    "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
-                    ],
-                    "en": [
-                        "If the color is yellow or red for that topic of the questionnaire."
-                    ]
+            "ROSA": {
+                "score_a_adapted": {
+                    "rule": {
+                        "pt": [
+                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        ],
+                        "en": [
+                            "If the color is yellow or red for that topic of the questionnaire."
+                        ]
+                    },
+                    "recommendation": {
+                        "pt": [
+                            "Ajustar a cadeira em altura permitindo ter os pés bem assentes no chão.",
+                            "Ajustar a cadeira ou a mesa por forma a que os antebraços estejam relaxados",
+                            "Ajustar o apoio de braços por forma a manter os cotovelos alinhados com os ombros."
+                        ],
+                        "en": [
+                            "Adjust the chair height so that your feet are flat on the floor.",
+                            "Adjust the chair or desk so that your forearms are relaxed.",
+                            "Adjust the armrests to keep your elbows aligned with your shoulders."
+                        ]
+                    }
                 },
-                "recommendation": {
-                    "pt": [
-                        "Ajustar a cadeira em altura permitindo ter os pés bem assentes no chão.",
-                        "Ajustar a cadeira ou a mesa por forma a que os antebraços estejam relaxados",
-                        "Ajustar o apoio de braços por forma a manter os cotovelos alinhados com os ombros."
-                    ],
-                    "en": [
-                        "Adjust the chair height so that your feet are flat on the floor.",
-                        "Adjust the chair or desk so that your forearms are relaxed.",
-                        "Adjust the armrests to keep your elbows aligned with your shoulders."
-                    ]
-                }
-            },
-            "monitor_score_adapted": {
-                "rule": {
-                    "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
-                    ],
-                    "en": [
-                        "If the color is yellow or red for that topic of the questionnaire."
-                    ]
+                "monitor_adapted_norm": {
+                    "rule": {
+                        "pt": [
+                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        ],
+                        "en": [
+                            "If the color is yellow or red for that topic of the questionnaire."
+                        ]
+                    },
+                    "recommendation": {
+                        "pt": [
+                            "Ajustar o monitor por forma a que o seu topo esteja ligeiramente abaixo do nível dos olhos, permitindo manter a cabeça numa postura neutra.",
+                            "Posicionar o monitor à distância do comprimento do seu braço.",
+                            "Utilizar um suporte para ler documentos"
+                        ],
+                        "en": [
+                            "Adjust the monitor so that the top of the screen is slightly below eye level, allowing the head to remain in a neutral posture.",
+                            "Position the monitor at approximately arm’s length distance.",
+                            "Use a document holder to read documents."
+                        ]
+                    }
                 },
-                "recommendation": {
-                    "pt": [
-                        "Ajustar o monitor por forma a que o seu topo esteja ligeiramente abaixo do nível dos olhos, permitindo manter a cabeça numa postura neutra.",
-                        "Posicionar o monitor à distância do comprimento do seu braço.",
-                        "Utilizar um suporte para ler documentos"
-                    ],
-                    "en": [
-                        "Adjust the monitor so that the top of the screen is slightly below eye level, allowing the head to remain in a neutral posture.",
-                        "Position the monitor at approximately arm’s length distance.",
-                        "Use a document holder to read documents."
-                    ]
-                }
-            },
-            "phone_score_adapted": {
-                "rule": {
-                    "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
-                    ],
-                    "en": [
-                        "If the color is yellow or red for that topic of the questionnaire."
-                    ]
+                "phone_adapted_norm": {
+                    "rule": {
+                        "pt": [
+                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        ],
+                        "en": [
+                            "If the color is yellow or red for that topic of the questionnaire."
+                        ]
+                    },
+                    "recommendation": {
+                        "pt": [
+                            "Utilizar, de preferência, auscultadores.",
+                            "Segurar o telefone com uma mão e manter um postura neutra do pescoço.",
+                            "Posicionar o telefone a uma área de alcance inferior a 30 cm."
+                        ],
+                        "en": [
+                            "Preferably use a headset or headphones.",
+                            "Hold the phone with one hand and maintain a neutral neck posture.",
+                            "Position the phone within a reach distance of less than 30 cm."
+                        ]
+                    }
                 },
-                "recommendation": {
-                    "pt": [
-                        "Utilizar, de preferência, auscultadores.",
-                        "Segurar o telefone com uma mão e manter um postura neutra do pescoço.",
-                        "Posicionar o telefone a uma área de alcance inferior a 30 cm."
-                    ],
-                    "en": [
-                        "Preferably use a headset or headphones.",
-                        "Hold the phone with one hand and maintain a neutral neck posture.",
-                        "Position the phone within a reach distance of less than 30 cm."
-                    ]
-                }
-            },
-            "mouse_score_adapted": {
-                "rule": {
-                    "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
-                    ],
-                    "en": [
-                        "If the color is yellow or red for that topic of the questionnaire."
-                    ]
+                "mouse_adapted_norm": {
+                    "rule": {
+                        "pt": [
+                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        ],
+                        "en": [
+                            "If the color is yellow or red for that topic of the questionnaire."
+                        ]
+                    },
+                    "recommendation": {
+                        "pt": [
+                            "Posicionar o rato em linha com o ombro, mantendo o pulso direito.",
+                            "Colocar o rato na mesma superfície que o teclado e o mais próximo possível do mesmo."
+                        ],
+                        "en": [
+                            "Position the mouse in line with the shoulder, keeping the wrist straight.",
+                            "Place the mouse on the same surface as the keyboard and as close to it as possible."
+                        ]
+                    }
                 },
-                "recommendation": {
-                    "pt": [
-                        "Posicionar o rato em linha com o ombro, mantendo o pulso direito.",
-                        "Colocar o rato na mesma superfície que o teclado e o mais próximo possível do mesmo."
-                    ],
-                    "en": [
-                        "Position the mouse in line with the shoulder, keeping the wrist straight.",
-                        "Place the mouse on the same surface as the keyboard and as close to it as possible."
-                    ]
-                }
-            },
-            "keyboard_score_adapted": {
-                "rule": {
-                    "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
-                    ],
-                    "en": [
-                        "If the color is yellow or red for that topic of the questionnaire."
-                    ]
-                },
-                "recommendation": {
-                    "pt": [
-                        "Utilizar o teclado numa posição neutra, de forma a que os cotovelos estejam a fazer um ângulo de, aproximadamente, 90 graus.",
-                        "Posicionar o teclado à sua frente e centrado."
-                    ],
-                    "en": [
-                        "Use the keyboard in a neutral position so that the elbows are at approximately a 90-degree angle.",
-                        "Position the keyboard directly in front of you and centred."
-                    ]
+                "keyboard_adapted_norm": {
+                    "rule": {
+                        "pt": [
+                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        ],
+                        "en": [
+                            "If the color is yellow or red for that topic of the questionnaire."
+                        ]
+                    },
+                    "recommendation": {
+                        "pt": [
+                            "Utilizar o teclado numa posição neutra, de forma a que os cotovelos estejam a fazer um ângulo de, aproximadamente, 90 graus.",
+                            "Posicionar o teclado à sua frente e centrado."
+                        ],
+                        "en": [
+                            "Use the keyboard in a neutral position so that the elbows are at approximately a 90-degree angle.",
+                            "Position the keyboard directly in front of you and centred."
+                        ]
+                    }
                 }
             }
         },

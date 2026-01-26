@@ -18,6 +18,7 @@ RISK_DATES_KEY = 'risk_dates'
 NUM_INSTANCES_KEY = 'num_instances'
 RECOMMENDATIONS_KEY = 'recommendations'
 RULE_KEY = 'rule'
+RISK_DIMENSIONS_KEY = 'risk_dimensions' # only for questionnaire related risks
 
 # no recommendations
 NO_RECOMMENDATIONS = {
