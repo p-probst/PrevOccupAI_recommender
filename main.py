@@ -23,7 +23,7 @@ generate_report(report_folder_path, subject_id, plots_path, oh_profile_path)
 # (2.1) biomechanical: ROSA, etc.
 # (2.2) environmental
 # (3.3) COPSOQ: important state that these are population results for all FO/BO (depending on work_type) workers
-# (3.4) workload questionnaire? (probably not for simplicity)
+# (3.4) pain
 
 # (3) sensors
 # (3.1) CML sensors (one time sensors)

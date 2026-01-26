@@ -15,6 +15,7 @@ from report_generator.report_sections.questionnaires.environment import ENVIRONM
 from report_generator.report_sections.questionnaires.copsoq import COPSOQ_DICT, COPSOQ_EXPLAIN_KEY, MUEQ_EXPLAIN_KEY
 from report_generator.report_sections.sensors.cml_sensors import CML_SENSORS_DICT
 from report_generator.report_sections.general.common import SENSORS_INTRODUCTION
+from report_generator.report_sections.sensors.sensor_timeline import SENSOR_TIMELINE_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 
 
@@ -46,6 +47,8 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
 
     # questionnaires
     _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type)
+    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
 
     # introduction title
     mdFile.new_header(level=1, title="Resultados dos sensores")
@@ -56,7 +59,14 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
 
     # generate environmental sensors
     _generate_environmental_sensors_section(mdFile, subject_id, plots_path)
+
+    # sensor timeline
+    _generate_sensor_timeline_section(mdFile, subject_id, plots_path)
+
+    # noise
+
     # generate pdf
+
 
     template_path = r"C:\Users\srale\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
     header_path = r"C:\Users\srale\PycharmProjects\PrevOccupAI_recommender\report_generator\header.tex"
@@ -128,12 +138,41 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.write("\n")
 
 
-def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_dict = CML_SENSORS_DICT[PT] ):
+def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_dict = SENSOR_TIMELINE_DICT[PT]):
+
+    mdFile.write("\n")
+    # introduction title
+    mdFile.new_header(level=1, title=timeline_dict[INTRODUCTION_KEY][0])
+
+    # write intro
+    mdFile.new_paragraph(timeline_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(timeline_dict[INTRODUCTION_KEY][2])
+    mdFile.new_paragraph(timeline_dict[INTRODUCTION_KEY][3])
+    mdFile.new_paragraph(timeline_dict[INTRODUCTION_KEY][4])
+    mdFile.write("\n")
+    # describe plot
+    mdFile.new_paragraph(timeline_dict[PLOT_EXPLAIN_KEY][0])
+    mdFile.write("\n")
+
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id) , f'{subject_id}_sensor_timeline_plot.png'),
+                        caption=None, max_width=1, max_height=0.5)
+
+
+def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_dict = CML_SENSORS_DICT[PT]):
+    mdFile.write("\n")
     # introduction title
     mdFile.new_header(level=1, title=cml_dict[INTRODUCTION_KEY][0])
 
     # write intro
     mdFile.new_paragraph(cml_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(cml_dict[INTRODUCTION_KEY][2])
+    mdFile.new_paragraph(cml_dict[INTRODUCTION_KEY][3])
+    mdFile.new_paragraph(cml_dict[INTRODUCTION_KEY][4])
+    mdFile.new_paragraph(cml_dict[INTRODUCTION_KEY][5])
+    mdFile.new_paragraph(cml_dict[INTRODUCTION_KEY][6])
     mdFile.write("\n")
 
     # describe plot
@@ -143,19 +182,24 @@ def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_
     # generate path to the folder containing the environment plots
     env_plots_path = os.path.join(plots_path, str(subject_id), 'environment')
 
-    # generate subplot temperature, humidity and illuminance
-    temp_path = _tex_escape_path(os.path.join(env_plots_path, f"{subject_id}_Temperature_plot.png"))
-    hum_path = _tex_escape_path(os.path.join(env_plots_path, f"{subject_id}_Humidity_plot.png"))
-    illu_path = _tex_escape_path(os.path.join(env_plots_path, f"{subject_id}_Illuminance_plot.png"))
-
-    _add_three_panel_figure(mdFile,[temp_path, hum_path, illu_path])
-
     mdFile.write("\n")
     _add_centered_image(mdFile,
                         os.path.join(env_plots_path, f'{subject_id}_CO2_CO_COV_plot.png'),
                         caption=None, max_width=1, max_height=0.3)
 
+    mdFile.write("\n")
 
+    # generate subplot temperature, humidity and illuminance
+    temp_path = _tex_escape_path(os.path.join(env_plots_path, f"{subject_id}_Temperature_plot.png"))
+    hum_path = _tex_escape_path(os.path.join(env_plots_path, f"{subject_id}_Humidity_plot.png"))
+    illu_path = _tex_escape_path(os.path.join(env_plots_path, f"{subject_id}_Illuminance_plot.png"))
+
+    _add_three_panel_figure(mdFile, [temp_path, hum_path, illu_path])
+
+    mdFile.write("\n")
+    _add_centered_image(mdFile,
+                        os.path.join(env_plots_path, f'{subject_id}_PM10_PM025_plot.png'),
+                        caption=None, max_width=1, max_height=0.2)
 
 
 
@@ -264,6 +308,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type, 
     # add description
     items_mueq = [s for s in psycho_dict[MUEQ_EXPLAIN_KEY] if re.match(r"^\d+\.\s", s)]
     _add_two_column_table(mdFile, items_mueq, header_left="Dimensão", header_right="Dimensão", text_align="left")
+    mdFile.write("\n")
 
     # show ------------------------------ MUEQ population
     _add_centered_image(mdFile,
@@ -276,6 +321,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type, 
                         os.path.join(plots_path, str(subject_id), 'questionnaire_plots', f'mueq_{work_type}.png'),
                         caption=f'Resultados do questionário MUEQ: média de trabalhadores de {work_type_full}')
 
+    mdFile.write("\n")
 
 
 def _tex_escape_path(p: str) -> str:
@@ -333,7 +379,7 @@ def _add_two_column_table(mdFile, items, header_left="Dimensão", header_right="
     mdFile.new_table(columns=cols, rows=rows, text=table_text, text_align=text_align)
 
 
-def _add_three_panel_figure(mdFile, img_paths, caption=None, subcaptions=None, height="3.4 cm"):
+def _add_three_panel_figure(mdFile, img_paths, caption=None, subcaptions=None, height="4.5 cm"):
     """
     3-panel LaTeX figure with consistent panel height and centered subcaptions.
     height: string with LaTeX unit (e.g., "4cm", "45mm", "0.25\\textheight")
@@ -350,15 +396,17 @@ def _add_three_panel_figure(mdFile, img_paths, caption=None, subcaptions=None, h
     mdFile.write(r"\centering" + "\n")
     mdFile.write(r"\captionsetup[subfigure]{justification=centering}" + "\n")  # center subcaptions
 
-    for p, sc in [(p1, sc1), (p2, sc2), (p3, sc3)]:
-        mdFile.write(r"\begin{subfigure}[t]{0.32\linewidth}" + "\n")
+    widths = ["0.3025\\linewidth", "0.315\\linewidth", "0.3025\\linewidth"]
+
+    for i, ((p, sc), w) in enumerate(zip([(p1, sc1), (p2, sc2), (p3, sc3)], widths)):
+        mdFile.write(rf"\begin{{subfigure}}[t]{{{w}}}" + "\n")
         mdFile.write(r"\centering" + "\n")
-        # fixed height -> consistent visual size; keepaspectratio avoids distortion
-        mdFile.write(rf"\includegraphics[height={height},keepaspectratio]{{{p}}}" + "\n")
+        mdFile.write(rf"\includegraphics[width=\linewidth,height={height},keepaspectratio]{{{p}}}" + "\n")
         if sc:
             mdFile.write(rf"\caption{{{sc}}}" + "\n")
         mdFile.write(r"\end{subfigure}" + "\n")
-        mdFile.write(r"\hfill" + "\n")
+        if i < 2:
+            mdFile.write(r"\hfill" + "\n")
 
     if caption:
         mdFile.write(rf"\caption{{{caption}}}" + "\n")
