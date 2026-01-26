@@ -182,13 +182,13 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
 
     mdFile.write("\n")
     mdFile.new_paragraph(noise_dict[RISK_RULE_KEY][0])
-    #
-    # for i, rule in enumerate(noise_continuous_recommendations['rule']):
-    #
-    #     mdFile.new_paragraph(f"- Regra {i+1}. {noise_continuous_recommendations['rule']}")
-    #     mdFile.write("\n")
 
-    mdFile.new_paragraph(f"Foram det")
+    for i, rule in enumerate(noise_continuous_recommendations['rule']):
+
+        mdFile.new_paragraph(f"- Regra {i+1}. {noise_continuous_recommendations['rule']}")
+        mdFile.write("\n")
+
+    mdFile.new_paragraph(f"Foram detetadas")
 
 
     mdFile.write("\n")

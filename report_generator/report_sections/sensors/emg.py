@@ -7,9 +7,55 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_PT = "this is the intro"
+INTRO_1_EMG_PT = "Sensor de atividade muscular (EMG)"
+INTRO_2_EMG_PT = (
+    "Os sinais de atividade muscular (EMG) foram recolhidos ao longo do turno de trabalho, "
+    "com o objetivo de avaliar o esforço realizado pelos músculos trapézios. "
+    "Este tipo de medição permite perceber quando o músculo está em repouso, em atividade ligeira "
+    "ou sujeito a esforço mais intenso e prolongado."
+)
+INTRO_3_EMG_PT = (
+    "Para que os valores possam ser comparados entre diferentes trabalhadores, a atividade muscular "
+    "é expressa em percentagem de uma contração máxima voluntária, tendo esta sido adquirida todos os dias no início do turno. "
+    "Isto significa que a atividade muscular de cada pessoa é avaliada em relação à sua própria força máxima, "
+    "permitindo uma interpretação mais justa e personalizada."
+)
+INTRO_4_EMG_PT = (
+    "Durante o trabalho, o músculo alterna naturalmente entre momentos de atividade e momentos de repouso. "
+    "Valores muito baixos de atividade muscular correspondem a repouso ou relaxamento, "
+    "enquanto valores mais elevados indicam esforço muscular. "
+    "Para esta análise, considera-se que o músculo está ativo quando a atividade ultrapassa 0,5 % da força máxima."
+)
+INTRO_5_EMG_PT = (
+    "Para compreender melhor se o esforço muscular é leve, normal ou excessivo para cada trabalhador, "
+    "a atividade muscular foi classificada em níveis de intensidade relativa. "
+    "Esta classificação não compara pessoas entre si, mas sim cada trabalhador consigo próprio, "
+    "tendo como referência o seu padrão habitual de atividade ao longo da semana."
+)
+INTRO_6_EMG_PT = (
+    "A análise é feita em pequenos intervalos de tempo (5 segundos) e indica quanto tempo o músculo "
+    "esteve em diferentes níveis de esforço, considerando apenas os períodos em que o músculo esteve ativo. "
+    "Foram definidas as seguintes classes:"
+)
+INTRO_7_EMG_PT = "- **Abaixo do habitual**: esforço muscular inferior ao normalmente observado para essa pessoa. Corresponde a trabalho leve."
+INTRO_8_EMG_PT = "- **Habitual – baixo**: esforço dentro do padrão normal da pessoa, mas no intervalo mais baixo de intensidade."
+INTRO_9_EMG_PT = "- **Habitual – elevado**: esforço ainda considerado normal para a pessoa, mas mais próximo do seu limite habitual."
+INTRO_10_EMG_PT = (
+    "- **Elevado para a pessoa**: esforço muscular acima do que é habitual para esse trabalhador. "
+    "A permanência prolongada neste nível pode indicar sobrecarga muscular e maior risco de fadiga ou desconforto."
+)
+
 RISK_PT = "this is the risk"
-PLOT_EXPLAIN_PT = "this is the plot explain"
+PLOT_EXPLAIN_1_PT = ("O gráfico que se segue apresenta uma visão geral semanal da intensidade relativa da atividade "
+                     "muscular nos ombros (trapézios) esquerdo e direito. Cada linha corresponde a uma sessão de trabalho, "
+                     "identificada pelo horário, e mostra a percentagem do tempo em que o músculo esteve ativo, distribuída por diferentes níveis de esforço."
+                    "As cores representam quanto intenso foi o esforço em relação ao padrão habitual da própria pessoa:")
+PLOT_EXPLAIN_2_PT = "- **Abaixo do habitual (verde claro)**: esforço mais leve do que o normal para a pessoa."
+PLOT_EXPLAIN_3_PT = "- **Típico-baixo (verde)**: esforço dentro do padrão normal, em níveis mais baixos."
+PLOT_EXPLAIN_4_PT = "- **Típico-alto (laranja)**: esforço ainda considerado normal, mas mais elevado."
+PLOT_EXPLAIN_5_PT = ("- **Alto para si (vermelho)**: esforço acima do habitual para a pessoa, "
+    "podendo indicar maior exigência muscular.")
+
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
@@ -24,9 +70,10 @@ PLOT_ENG = ""
 # ------------------------------------------------------------------------------------------------------------------- #
 EMG_DICT = {
     PT: {
-        INTRODUCTION_KEY: {INTRO_PT},
-        RISK_RULE_KEY: {RISK_PT},
-        PLOT_EXPLAIN_KEY: {PLOT_EXPLAIN_PT}
+        INTRODUCTION_KEY: [INTRO_1_EMG_PT, INTRO_2_EMG_PT, INTRO_3_EMG_PT, INTRO_4_EMG_PT, INTRO_5_EMG_PT, INTRO_6_EMG_PT,
+                           INTRO_7_EMG_PT, INTRO_8_EMG_PT, INTRO_9_EMG_PT, INTRO_10_EMG_PT],
+        RISK_RULE_KEY: [RISK_PT],
+        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_PT, PLOT_EXPLAIN_3_PT, PLOT_EXPLAIN_4_PT, PLOT_EXPLAIN_5_PT]
     },
 
     ENG: {
