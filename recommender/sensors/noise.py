@@ -84,7 +84,7 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
     noise_metrics = oh_profile['sensor_metrics']['noise']
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['noise']['rule'][language][0]}
+    recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['noise']['rule'][language][0]]}
 
     # init list for holding the dates and counter for tracking risk instances
     risk_dates = []
@@ -139,7 +139,7 @@ def get_noise_exposure_recommendations(noise_risk_subjects_df: pd.DataFrame, sub
     # TODO: move filtering to here
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['noise']['rule'][language]}
+    recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['noise']['rule'][language][1]]}
 
     # get the unique subject IDs
     risk_subjects = noise_risk_subjects_df['subject_id'].unique().tolist()
