@@ -146,8 +146,14 @@ def get_elevated_hr_recommendations(hr_subject_metrics_df: pd.DataFrame, oh_prof
     :return:
     """
 
-    # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['heart_rate']['rule'][language][1:3]}
+    # check hr class and init the recommendations dict with corresponding rule
+    if hr_class == 'Ligeiramente elevado':
+        recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['heart_rate']['rule'][language][1]]}
+    elif hr_class == 'Elevado':
+        recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['heart_rate']['rule'][language][2]]}
+
+    else:
+        raise ValueError("hr_class must be 'Ligeiramente elevado' or 'Elevado'")
 
     # get threshold based on hr class
     if hr_class == 'Ligeiramente elevado':

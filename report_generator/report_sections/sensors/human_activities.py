@@ -30,7 +30,7 @@ INTRO_4_PT = (
 
 RISK_1_PT = "Em relação ao cronograma das atividades ao longo do dia, foram delineados os seguinte riscos:"
 RISK_2_PT = "Em relação à distribuição das atividades ao longo do dia, foram delineados os seguinte riscos:"
-RISK_3_PT = "Em relação ao número de passoas realizados ao longo do dia, foram delineados os seguinte riscos:"
+RISK_3_PT = "Em relação ao número de passoas realizados ao longo do dia, foram delineados o seguinte risco:"
 
 PLOT_EXPLAIN_1_PT = (
     "Para cada dia de aquisição, foram construídos cronogramas das atividades realizadas ao longo de todo o turno de trabalho. "

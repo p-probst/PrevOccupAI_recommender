@@ -1,11 +1,16 @@
 from report_generator.generate_report import generate_report
 
-report_folder_path = r"C:\Users\srale\Desktop\reports_test"
-subject_id = 80
-plots_path = r"E:\Backup PrevOccupAI_PLUS Data\OH_plots"
-oh_profile_path = r"E:\Backup PrevOccupAI_PLUS Data\OH_profiles"
 
-generate_report(report_folder_path, subject_id, plots_path, oh_profile_path)
+DRIVE = 'D'
+OH_PROFILE_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
+PLOTS_OUTPUT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_plots"
+EMG_PLOT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\results\\emg_pipeline\\plots"
+REPORT_OUTPUT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_reports"
+
+subject_id = 80
+
+
+generate_report(REPORT_OUTPUT_PATH, subject_id, PLOTS_OUTPUT_PATH, EMG_PLOT_PATH, OH_PROFILE_PATH)
 # run here the recommender together with report generator
 
 # input: the OH-profiles

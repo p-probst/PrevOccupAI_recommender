@@ -25,7 +25,8 @@ from report_generator.report_sections.sensors.wrist_movements import WRIST_MOVEM
 from report_generator.report_sections.sensors.heart_rate import HEART_RATE_DICT
 from report_generator.report_sections.sensors.emg import EMG_DICT
 from report_generator.report_sections.questionnaires.pain import PAIN_DICT
-from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS
+from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
+    USER
 import recommender as recommender
 
 
@@ -34,7 +35,7 @@ import recommender as recommender
 # ------------------------------------------------------------------------------------------------------------------- #
 
 
-def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path):
+def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, oh_profiles_path):
 
     # generate file with cover
     mdFile = _generate_file_and_cover(report_folder_path, subject_id)
@@ -95,11 +96,12 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
     # heart rate
     _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
 
+    # emg
+    _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
+
     # generate pdf
-
-
-    template_path = r"C:\Users\srale\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
-    header_path = r"C:\Users\srale\PycharmProjects\PrevOccupAI_recommender\report_generator\header.tex"
+    template_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
+    header_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\header.tex"
 
     md_path = os.path.join(report_folder_path, f"{subject_id}_report.md")
     pdf_path = os.path.join(report_folder_path, f"{subject_id}_report.pdf")
@@ -199,8 +201,22 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
     mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][9])
 
     # explain plot
-    # hr ranges plot
+    # emg plot
     mdFile.new_paragraph(emg_dict[PLOT_EXPLAIN_KEY][0])
+
+    # show plot
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'week',
+                                     f'relative_bins_sessions_week.png'),
+                        caption=None, max_width=1, max_height=0.9)
+
+    # add risk rules and detection
+    _add_rules_and_risk_occurrences(mdFile, emg_recommendations)
+    mdFile.write("\n")
+
+    # show recommendations
+    _add_recommendation_section(mdFile, emg_recommendations[RECOMMENDATIONS_KEY])
+    mdFile.write("\n")
 
 
 def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system, hr_dict=HEART_RATE_DICT[PT]):
@@ -301,9 +317,15 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
             max_width=1,
             max_height=0.6
         )
+
+    # timeline risks
+    mdFile.new_paragraph(har_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, sitting_continuous_recommendations_1h)
     mdFile.write("\n")
     _add_rules_and_risk_occurrences(mdFile, sitting_continuous_recommendations_2h)
+    mdFile.write("\n")
+    _add_rules_and_risk_occurrences(mdFile, sitting_total_recommendations)
+    mdFile.write("\n")
 
     # describe plot - distributions
     mdFile.new_paragraph(har_dict[PLOT_EXPLAIN_KEY][1])
@@ -312,10 +334,9 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
                         os.path.join(plots_path, str(subject_id), 'human_activities', f'{subject_id}_ospaq_vs_real_activity_distribution.png'),
                         caption=None, max_width=1, max_height=0.5)
 
+    # proportions risks
+    mdFile.new_paragraph(har_dict[RISK_RULE_KEY][1])
     _add_rules_and_risk_occurrences(mdFile, sitting_proportions_recommendations)
-    mdFile.write("\n")
-    _add_rules_and_risk_occurrences(mdFile, sitting_total_recommendations)
-    mdFile.write("\n")
     _add_rules_and_risk_occurrences(mdFile, standing_proportions_recommendations)
     mdFile.write("\n")
 
@@ -324,12 +345,15 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
     _add_recommendation_section(mdFile, recommendations)
     mdFile.write("\n")
 
-    # describe plot - timeline
+    # describe plot - steps
     mdFile.new_paragraph(har_dict[PLOT_EXPLAIN_KEY][2])
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'human_activities',
                                      f'{subject_id}_daily_steps_distance.png'),
                         caption=None, max_width=1, max_height=0.5)
+
+    # steps risks
+    mdFile.new_paragraph(har_dict[RISK_RULE_KEY][2])
     _add_rules_and_risk_occurrences(mdFile, steps_recommendations)
     mdFile.write("\n")
 
@@ -722,14 +746,14 @@ def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
 
     if len(recommendations_dict['rule']) == 1:
 
-        mdFile.new_paragraph(f"\n**Regra**: {recommendations_dict['rule'][0]}")
+        mdFile.new_paragraph(f"\n**Risco**: {recommendations_dict['rule'][0]}")
         mdFile.write("\n")
 
     else:
 
         for i, rule in enumerate(recommendations_dict['rule']):
 
-            mdFile.new_paragraph(f"\n**Regra {i+1}**: {recommendations_dict['rule'][i]}")
+            mdFile.new_paragraph(f"\n**Risco {i+1}**: {recommendations_dict['rule'][i]}")
             mdFile.write("\n")
 
     # only show risk cases if they exist
@@ -740,11 +764,11 @@ def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
 
         if len(dates) == 1:
             mdFile.new_paragraph(
-                fr"$\rightarrow$ Foi detetada **1 ocorrência** no dia: **"f"{', '.join(dates)}**")
+                fr"$\hookrightarrow$ Foi detetada **1 ocorrência** no dia: **"f"{', '.join(dates)}**")
             mdFile.write("\n")
         else:
             mdFile.new_paragraph(
-                fr"$\rightarrow$ Foram detetadas **{recommendations_dict['num_instances']} ocorrências** nos dias: **"f"{', '.join(dates)}**")
+                fr"$\hookrightarrow$ Foram detetadas **{recommendations_dict['num_instances']} ocorrências** nos dias: **"f"{', '.join(dates)}**")
             mdFile.write("\n")
 
     else:
