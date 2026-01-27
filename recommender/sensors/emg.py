@@ -76,7 +76,7 @@ def get_emg_recommendations(emg_subject_metrics_df: pd.DataFrame, oh_profile: Di
     """
 
     # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['emg']['rule'][language]]}
+    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['emg']['rule'][language]}
 
     # init list for holding the dates and counter for tracking risk instances
     risk_dates = set()

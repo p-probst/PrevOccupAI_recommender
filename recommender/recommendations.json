@@ -71,16 +71,14 @@
         "heart_rate": {
             "rule": {
                 "pt": [
-                    "Se a frequência cardíaca máxima exceder 100 bpm pelo menos duas vezes num dia.",
-                    "Se o rácio da frequência cardíaca for classificado como 'ligeiramente elevado' durante pelo menos 25% do tempo, em pelo menos duas ocasiões num dia.",
-                    "Se o rácio da frequência cardíaca for classificado como 'elevado' durante pelo menos 12,5% do tempo, em pelo menos duas ocasiões num dia.",
-                    "Para confirmar a interpretação dos dados dos sensores, foram também consideradas as respostas ao questionário de carga de trabalho que foi realizado ao fim de trabalho. Se concordou ou concordou totalmente com afirmações relacionadas com dificuldade de concentração, esforço mental, pressão para terminar as tarefas ou uma carga de trabalho elevada ao longo do dia."
+                    "Se a frequência cardíaca máxima exceder 100 bpm pelo menos duas vezes num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
+                    "Se o rácio da frequência cardíaca for classificado como 'ligeiramente elevado' durante pelo menos 25% do tempo, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
+                    "Se o rácio da frequência cardíaca for classificado como 'elevado' durante pelo menos 12,5% do tempo, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
                 ],
                 "en": [
-                    "If the maximum heart rate exceeds 100 beats per minute at least twice in a day.",
-                    "If the heart rate ratio is classified as 'slightly elevated' for at least 25% of the time on at least two occasions in a day.",
-                    "If the heart rate ratio is classified as 'elevated' for at least 12.5% of the time on at least two occasions in a day.",
-                    "To support the interpretation of the sensor data, answers from the workload questionnaire were also considered. If you agreed or strongly agreed with statements related to difficulty concentrating, mental strain, feeling rushed or under pressure, and having a heavy workload during the day."
+                    "If the maximum heart rate exceeds 100 beats per minute at least twice in a day and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_.",
+                    "If the heart rate ratio is classified as 'slightly elevated' for at least 25% of the time on at least two occasions in a day and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_.",
+                    "If the heart rate ratio is classified as 'elevated' for at least 12.5% of the time on at least two occasions in a day and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_."
                 ]
             },
             "recommendation": {
@@ -123,7 +121,7 @@
         "posture": {
             "rule": {
                 "pt": [
-                    "por determinar"
+                    ""
                 ],
                 "en": [
                     "to be determined"
@@ -141,10 +139,10 @@
         "emg": {
             "rule": {
                 "pt": [
-                    "emg regra"
+                    "Se o músculo esteve em nível de contração **Alto para si** durante mais de 30% do tempo, em pelo menos duas aquisições no mesmo dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
                 ],
                 "en": [
-                    "if 'high_for_you_pct' > 30 % for at least two sessions of the day and focus_and_mental_strain > 3 or focus_and_mental_strain > 3 or heavy_workload > 3."
+                    "If the muscle was in activity level High for you for more than 30% of the time, in at least two acquisitions on the same day, and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_."
                 ]
             },
             "recommendation": {

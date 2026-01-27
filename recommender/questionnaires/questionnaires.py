@@ -164,7 +164,7 @@ def get_rosa_recommendations(rosa_subject_metrics_df: pd.DataFrame, subject_id: 
             risk_dimensions.append(ROSA_MAPPING[risk_key][language])
 
             # get the corresponding recommendation
-            recommendations.append(full_recommender_dict['questionnaires']['biomechanical']['ROSA'][risk_key]['recommendation'][language])
+            recommendations.extend(full_recommender_dict['questionnaires']['biomechanical']['ROSA'][risk_key]['recommendation'][language])
 
 
     if len(risk_dimensions) > 0:
@@ -217,7 +217,7 @@ def get_environment_recommendations(environmental_subject_metrics_df: pd.DataFra
             risk_dimensions.append(risk_key)
 
             # get the corresponding recommendation
-            recommendations.append(full_recommender_dict['questionnaires']['environmental'][risk_key]['recommendation'][language])
+            recommendations.extend(full_recommender_dict['questionnaires']['environmental'][risk_key]['recommendation'][language])
 
 
     if len(risk_dimensions) > 0:

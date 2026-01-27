@@ -116,7 +116,7 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
         # generate dict
         recommendations_dict[RISK_DATES_KEY] = risk_dates
         recommendations_dict[NUM_INSTANCES_KEY] = total_num_instances
-        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors']['noise']['recommendation'][language][1]
+        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors']['noise']['recommendation'][language]
 
     else:
 
