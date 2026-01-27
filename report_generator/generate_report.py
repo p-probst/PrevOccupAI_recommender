@@ -18,6 +18,7 @@ from report_generator.report_sections.sensors.cml_sensors import CML_SENSORS_DIC
 from report_generator.report_sections.general.common import SENSORS_INTRODUCTION
 from report_generator.report_sections.sensors.sensor_timeline import SENSOR_TIMELINE_DICT
 from report_generator.report_sections.sensors.noise import NOISE_DICT
+from report_generator.report_sections.questionnaires.pain import PAIN_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 import recommender as recommender
 
@@ -173,7 +174,8 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
     mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][4])
     mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][5])
     mdFile.write("\n")
-    # describe plot
+
+    # describe plot - timeline
     mdFile.new_paragraph(noise_dict[PLOT_EXPLAIN_KEY][0])
 
     _add_centered_image(mdFile,
@@ -182,15 +184,25 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
 
     mdFile.write("\n")
     mdFile.new_paragraph(noise_dict[RISK_RULE_KEY][0])
+    _add_rules_and_risk_occurrences(mdFile, noise_continuous_recommendations)
 
-    for i, rule in enumerate(noise_continuous_recommendations['rule']):
+    # describe plot - distributions
+    mdFile.new_paragraph(noise_dict[PLOT_EXPLAIN_KEY][1])
 
-        mdFile.new_paragraph(f"- Regra {i+1}. {noise_continuous_recommendations['rule']}")
-        mdFile.write("\n")
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'noise_plots', f'{subject_id}_noise_distribution.png'),
+                        caption=None, max_width=1, max_height=0.5)
 
-    if 'num_instances' in noise_continuous_recommendations.keys():
-        mdFile.new_paragraph(f"Foram detetadas {noise_continuous_recommendations['num_instances']} nos dias: {noise_continuous_recommendations['risk_dates']}")
-        mdFile.write("\n")
+    mdFile.write("\n")
+    mdFile.new_paragraph(noise_dict[RISK_RULE_KEY][1])
+    _add_rules_and_risk_occurrences(mdFile, noise_exposure_recommendations)
+
+    mdFile.write("\n")
+    mdFile.new_paragraph("De acordo com os seus resultados, são-lhe sugeridas as seguintes sugestões: ")
+    # add recommendations
+    _add_recommendation_section(mdFile, noise_exposure_recommendations)
+
+
 
 
 
@@ -261,7 +273,7 @@ def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_
 
 
 def _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type, intro_dict=QUEST_INTRO_DICT[PT], rosa_dict=ROSA_DICT[PT],
-                                     env_dict=ENVIRONMENT_DICT[PT], psycho_dict=COPSOQ_DICT[PT]):
+                                     env_dict=ENVIRONMENT_DICT[PT], psycho_dict=COPSOQ_DICT[PT], pain_dict=PAIN_DICT[PT]):
 
     # get work type full string
     if work_type == 'FO':
@@ -379,6 +391,19 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type, 
                         caption=f'Resultados do questionário MUEQ: média de trabalhadores de {work_type_full}')
 
     mdFile.write("\n")
+    # --------------------------------------- PAIN --------------------------------------------#
+    mdFile.new_header(level=2, title=pain_dict[INTRODUCTION_KEY][0])
+    mdFile.new_paragraph(pain_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(pain_dict[INTRODUCTION_KEY][2])
+    mdFile.write("\n")
+    mdFile.new_paragraph(pain_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+    mdFile.new_paragraph(pain_dict[INTRODUCTION_KEY][4])
+    mdFile.write("\n")
+
+    _add_centered_image(mdFile, os.path.join(plots_path, str(subject_id),f"{subject_id}_pain_plot.png"), max_width=1, max_height=0.5)
+    mdFile.write("\n")
 
 
 def _tex_escape_path(p: str) -> str:
@@ -472,3 +497,42 @@ def _add_three_panel_figure(mdFile, img_paths, caption=None, subcaptions=None, h
     mdFile.write("\n")
 
 
+def _add_recommendation_section(mdFile, recommendations_dict):
+
+    if len(recommendations_dict['recommendations']) == 1:
+        mdFile.new_paragraph(f"- **Recomendação**: {recommendations_dict['recommendations'][0]}")
+
+    else:
+        # recommendations
+        for i, recommendation in enumerate(recommendations_dict['recommendations']):
+            mdFile.new_paragraph(f"- **Recomendação {i+1}**: {recommendation}")
+
+
+def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
+
+    if len(recommendations_dict['rule']) == 1:
+
+        mdFile.new_paragraph(f"- **Regra**: {recommendations_dict['rule'][0]}")
+        mdFile.write("\n")
+
+    else:
+
+        for i, rule in enumerate(recommendations_dict['rule']):
+
+            mdFile.new_paragraph(f"- **Regra {i+1}**: {recommendations_dict['rule'][i]}")
+            mdFile.write("\n")
+
+    # only show risk cases if they exist
+    if 'num_instances' in recommendations_dict.keys():
+
+        # get dates where there was risk
+        dates = recommendations_dict['risk_dates']
+
+        if len(dates) == 1:
+            mdFile.new_paragraph(
+                f"Foi detetada **1 ocorrência** no dia: **"f"{', '.join(dates)}**")
+            mdFile.write("\n")
+        else:
+            mdFile.new_paragraph(
+                f"Foram detetadas **{recommendations_dict['num_instances']} ocorrências** nos dias: **"f"{', '.join(dates)}**")
+            mdFile.write("\n")
