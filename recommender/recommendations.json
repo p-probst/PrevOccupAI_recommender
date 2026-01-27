@@ -121,10 +121,10 @@
         "posture": {
             "rule": {
                 "pt": [
-                    ""
+                    "Se a área percorrida pelo tronco for inferior a 0,6 metros quadrados."
                 ],
                 "en": [
-                    "to be determined"
+                    "If the area covered by the torso is less than 0.6 square meters."
                 ]
             },
             "recommendation": {
