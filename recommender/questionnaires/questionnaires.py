@@ -4,12 +4,10 @@
 import sys
 from pathlib import Path
 import pandas as pd
-from typing import Dict, List
+from typing import Dict
 
 # internal imports
-from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER, \
-    RISK_DIMENSIONS_KEY
-from recommender.utils import dates_to_weekdays, get_mean_workload_score
+from constants import RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
 
 # external imports
 project_path = Path(f"C:/{USER}/phill/PycharmProjects/OH_Toolkit")
@@ -147,10 +145,8 @@ def get_rosa_recommendations(rosa_subject_metrics_df: pd.DataFrame, subject_id: 
     # get the keys from the recommender
     risk_keys = full_recommender_dict['questionnaires']['biomechanical']['ROSA'].keys()
 
-    # list for holding the risk dimensions and the corresponding recommendation
-    risk_dimensions = []
-    recommendations = []
-
+    # sub-dictionary to hold the risk dimensions and the corresponding recommendations
+    risk_dimensions = {}
 
     # cycle over the keys
     for risk_key in risk_keys:
@@ -158,24 +154,22 @@ def get_rosa_recommendations(rosa_subject_metrics_df: pd.DataFrame, subject_id: 
         # filter the DataFrame according to the rul
         risk_subjects_df = rosa_subject_metrics_df[rosa_subject_metrics_df[risk_key] >= MEDIUM_RISK_LEVEL]
 
+        # check whether the subject falls into the risk
         if subject_id in risk_subjects_df['subject_id'].tolist():
 
             # add the mapped risk key to the risk dimensions
-            risk_dimensions.append(ROSA_MAPPING[risk_key][language])
+            risk_dimension_mapped = ROSA_MAPPING[risk_key][language]
 
             # get the corresponding recommendation
-            recommendations.extend(full_recommender_dict['questionnaires']['biomechanical']['ROSA'][risk_key]['recommendation'][language])
+            risk_dimensions[risk_dimension_mapped] = full_recommender_dict['questionnaires']['biomechanical']['ROSA'][risk_key]['recommendation'][language]
 
-
+    # check if any risks were detected
     if len(risk_dimensions) > 0:
-
         # generate the dict
-        recommendations_dict[RISK_DIMENSIONS_KEY] = risk_dimensions
-        recommendations_dict[RECOMMENDATIONS_KEY] = recommendations
+        recommendations_dict[RECOMMENDATIONS_KEY] = risk_dimensions
 
     else:
 
-        # add that there are no recommendations needed
         recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
 
     return recommendations_dict
@@ -199,10 +193,8 @@ def get_environment_recommendations(environmental_subject_metrics_df: pd.DataFra
     # get the keys from the recommender
     risk_keys = full_recommender_dict['questionnaires']['environmental'].keys()
 
-    # list for holding the risk dimensions and the corresponding recommendation
-    risk_dimensions = []
-    recommendations = []
-
+    # sub-dictionary to hold the risk dimensions and the corresponding recommendations
+    risk_dimensions = {}
 
     # cycle over the keys
     for risk_key in risk_keys:
@@ -210,21 +202,19 @@ def get_environment_recommendations(environmental_subject_metrics_df: pd.DataFra
         # filter the DataFrame according to the rul
         risk_subjects_df = environmental_subject_metrics_df[environmental_subject_metrics_df[risk_key] >= MEDIUM_RISK_LEVEL]
 
+        # check whether the subject falls into the risk
         if subject_id in risk_subjects_df['subject_id'].tolist():
 
-            # add the mapped risk key to the risk dimensions
             #TODO fix for english
-            risk_dimensions.append(risk_key)
 
             # get the corresponding recommendation
-            recommendations.extend(full_recommender_dict['questionnaires']['environmental'][risk_key]['recommendation'][language])
+            risk_dimensions[risk_key] = full_recommender_dict['questionnaires']['environmental'][risk_key]['recommendation'][language]
 
 
     if len(risk_dimensions) > 0:
 
         # generate the dict
-        recommendations_dict[RISK_DIMENSIONS_KEY] = risk_dimensions
-        recommendations_dict[RECOMMENDATIONS_KEY] = recommendations
+        recommendations_dict[RECOMMENDATIONS_KEY] = risk_dimensions
 
     else:
 
