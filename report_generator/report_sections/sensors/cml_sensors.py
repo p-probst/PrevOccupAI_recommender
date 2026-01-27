@@ -39,7 +39,8 @@ PLOT_EXPLAIN_PT = (
     "e em literatura científica. "
     "Sempre que existam valores de referência mínimos, estes são representados por uma linha azul tracejada. "
     "Os valores de referência máximos, ou o valor de referência único, "
-    "são representados por uma linha vermelha tracejada."
+    "são representados por uma linha vermelha tracejada. As condições ambientais são alheias ao trabalhador, logo não"
+    " existem recomendações individuais mas apenas organizacionais."
 )
 # ------------------------------------------------------------------------------------------------------------------- #
 # english

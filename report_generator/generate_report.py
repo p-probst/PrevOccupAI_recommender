@@ -603,6 +603,8 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # describe plots
     mdFile.new_paragraph(rosa_dict[PLOT_EXPLAIN_KEY][0])
     mdFile.write("\n")
+    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
 
     # add table
     items_rosa = [s for s in rosa_dict[PLOT_EXPLAIN_KEY] if re.match(r"^\d+\.\s", s)]

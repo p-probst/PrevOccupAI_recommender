@@ -7,7 +7,7 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_1_PT = "Sensores fisiológicos - medições diárias"
+INTRO_1_PT = "Sensores fisiológicos: medições diárias"
 INTRO_2_PT = (
     "Com o objetivo de estudar a saúde ocupacional, foram recolhidos dados diariamente ao longo de uma semana de trabalho. "
     "Foram utilizados três dispositivos diferentes: "
