@@ -6,7 +6,7 @@ import os
 import json
 import os, shutil
 import re
-from typing import List, Dict
+from typing import List, Dict, Union
 from datetime import datetime
 from pathlib import Path
 from mdutils import Html
@@ -67,7 +67,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
         recommendation_system = json.load(file)
 
     # questionnaires
-    _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type)
+    _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles_path, recommendation_system, work_type)
     mdFile.new_line(' \pagebreak ')
     mdFile.write("\n")
 
@@ -568,7 +568,8 @@ def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_
 
 
 
-def _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type, intro_dict=QUEST_INTRO_DICT[PT], rosa_dict=ROSA_DICT[PT],
+def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles_path, recommendation_system,
+                                     work_type, intro_dict=QUEST_INTRO_DICT[PT], rosa_dict=ROSA_DICT[PT],
                                      env_dict=ENVIRONMENT_DICT[PT], psycho_dict=COPSOQ_DICT[PT], pain_dict=PAIN_DICT[PT]):
 
     # get work type full string
@@ -610,7 +611,18 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type, 
     mdFile.new_paragraph(rosa_dict[RISK_RULE_KEY][0])
     mdFile.write("\n")
 
-    # TODO - RECOMMENDATIONS - MAKE SET OUT OF RECOMMENDATIONS LIST
+    # get the subjects df
+    rosa_subjects_data_df = recommender.generate_rosa_csv(Path.cwd(), oh_profiles_path)
+
+    # generate recommendations
+    rosa_recommendations = recommender.get_rosa_recommendations(rosa_subjects_data_df, subject_id,
+                                                                recommendation_system)
+    # add rules
+    mdFile.write("\n")
+    _add_rules(mdFile, rosa_recommendations)
+
+    # add recommendations
+    _add_questionnaire_recommendations(mdFile, rosa_recommendations[RECOMMENDATIONS_KEY])
     # --------------------------------------- environmental questionnaire --------------------------------------#
     # intro
     mdFile.new_header(level=2, title=env_dict[INTRODUCTION_KEY][0])
@@ -634,6 +646,18 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, work_type, 
     mdFile.write("\n")
 
     # TODO RECOMMENDATIONS
+    # get the subjects df
+    environment_data_df = recommender.generate_environment_csv(Path.cwd(), oh_profiles_path)
+
+    # generate recommendations
+    environment_recommendations = recommender.get_environment_recommendations(environment_data_df, subject_id,
+                                                                              recommendation_system)
+    # add rules
+    mdFile.write("\n")
+    _add_rules(mdFile, environment_recommendations)
+
+    # add recommendations
+    _add_questionnaire_recommendations(mdFile, environment_recommendations[RECOMMENDATIONS_KEY])
     # --------------------------------------- PSYCHOSOCIAL (COPSOQ AND MUEQ) --------------------------------------#
     # intro
     mdFile.new_header(level=2, title=psycho_dict[INTRODUCTION_KEY][0])
@@ -792,12 +816,46 @@ def _add_three_panel_figure(mdFile, img_paths, caption=None, subcaptions=None, h
     mdFile.write(r"\end{figure}" + "\n")
     mdFile.write("\n")
 
+def _add_questionnaire_recommendations(mdFile, recommendations: Union[Dict, List[str]]):
+    """
+
+    :param mdFile:
+    :param recommendations:
+    :return:
+    """
+
+    mdFile.write("\n")
+    mdFile.new_paragraph("De acordo com os seus resultados, são-lhe sugeridas a seguinte recomendações:")
+    mdFile.write("\n")
+
+    # check if the recommendations are of type dictionary --> there are recommendations per dimension
+    if isinstance(recommendations, dict):
+
+        # cycle over the key value pairs
+        for dimension, recommendations_list in recommendations.items():
+
+            mdFile.write("\n")
+            mdFile.new_paragraph(f"**{dimension}**:")
+            mdFile.write("\n")
+
+            if len(recommendations_list) == 1:
+                mdFile.new_paragraph(f"- **Recomendação**: {recommendations_list[0]}")
+
+            else:
+                # write the recommendations
+                for i, recommendation in enumerate(recommendations_list):
+                    mdFile.new_paragraph(f"- **Recomendação {i + 1}**: {recommendation}")
+
+    # no recommendations (in this case it is a list(
+    else:
+        mdFile.new_paragraph(f"- **Recomendação**: {recommendations[0]}")
+
 
 def _add_recommendation_section(mdFile, recommendations_list):
 
     if len(recommendations_list) == 1:
         mdFile.write("\n")
-        mdFile.new_paragraph("De acordo com os seus resultados, é-lhe sugeridas a seguinte recomendação: ")
+        mdFile.new_paragraph("De acordo com os seus resultados, é-lhe sugerida a seguinte recomendação: ")
         mdFile.new_paragraph(f"- **Recomendação**: {recommendations_list[0]}")
 
     else:
@@ -807,6 +865,24 @@ def _add_recommendation_section(mdFile, recommendations_list):
         for i, recommendation in enumerate(recommendations_list):
             mdFile.new_paragraph(f"- **Recomendação {i+1}**: {recommendation}")
 
+def _add_rules(mdFile, recommendations_dict: Dict) -> None:
+    """
+
+    :param mdFile:
+    :param recommendations_dict:
+    :return:
+    """
+
+    if len(recommendations_dict['rule']) == 1:
+
+        mdFile.new_paragraph(f"\n**Risco**: {recommendations_dict['rule'][0]}")
+        mdFile.write("\n")
+
+    else:
+
+        for i, rule in enumerate(recommendations_dict['rule']):
+            mdFile.new_paragraph(f"\n**Risco {i + 1}**: {recommendations_dict['rule'][i]}")
+            mdFile.write("\n")
 
 def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
 

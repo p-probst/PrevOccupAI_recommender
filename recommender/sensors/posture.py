@@ -148,7 +148,7 @@ def get_postural_displacement_recommendation(posture_subject_metrics_df: pd.Data
 
     # init the recommendations dict with the rule
     recommendations_dict = {
-        RULE_KEY: [full_recommender_dict['sensors']['posture']['rule'][language]]}
+        RULE_KEY: full_recommender_dict['sensors']['posture']['rule'][language]}
 
     # filter the DataFrame according to the rule
     posture_risk_subject_df = posture_subject_metrics_df[posture_subject_metrics_df['posture_95_confidence_ellipse_area'] < POSTURE_MIN_ELLIPSE_AREA_THRESHOLD]
