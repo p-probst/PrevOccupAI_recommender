@@ -12,8 +12,8 @@ INTRO_1_PT = "Avaliação Psicossocial"
 INTRO_2_PT = (
     "Os fatores psicossociais permitem avaliar as interações entre o ambiente de trabalho, o conteúdo das tarefas, "
     "as condições organizacionais e as características pessoais extralaborais dos trabalhadores, que podem "
-    "influenciar a saúde, a produtividade e a satisfação profissional. Para isto, foram utilizados dois questionários validados: COPSOQ e MUEQ."
-    "COPSOQ (*Copenhagen Psychosocial Questionnaire*) é um instrumento científico internacionalmente reconhecido para avaliar e "
+    "influenciar a saúde, a produtividade e a satisfação profissional. Para este efeito, foram utilizados dois questionários validados: COPSOQ e MUEQ."
+    " COPSOQ (*Copenhagen Psychosocial Questionnaire*) é um instrumento científico internacionalmente reconhecido para avaliar e "
     "melhorar os fatores psicossociais no local de trabalho. MUEQ (*Maastricht Upper Extremity Questionnaire*) é um questionário utilizado "
     "para avaliar lesões musculoesqueléticas. No contexto deste estudo, MUEQ foi utilizado para avaliar a qualidade das pausas.  "
 )
@@ -29,10 +29,11 @@ RISK_PT = (
     "e a cor vermelha corresponde a um risco elevado. "
 )
 PLOT_EXPLAIN_1_PT = (
-    "Os dois primeiros gráficos mostram os resultados do questionário COPSOQ para toda a população e para os "
-    "trabalhadores com o mesmo tipo de função, nomeadamente ‘front office’ e ‘back office’. "
+    "Os dois primeiros gráficos mostram os resultados do questionário COPSOQ para toda a população do estudo e para os "
+    "trabalhadores que desempenham a mesma função, ou seja, ‘front office’ ou ‘back office’. "
     "A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados. "
 )
+
 PLOT_EXPLAIN_1_1_PT  = "1. Exigências cognitivas"
 PLOT_EXPLAIN_1_2_PT  = "2. Ritmo de trabalho"
 PLOT_EXPLAIN_1_3_PT  = "3. Exigências quantitativas"
@@ -62,9 +63,10 @@ PLOT_EXPLAIN_1_26_PT = "26. Burnout"
 PLOT_EXPLAIN_1_27_PT = "27. Stress"
 PLOT_EXPLAIN_1_28_PT = "28. Sintomas depressivos"
 PLOT_EXPLAIN_1_29_PT = "29. Autoeficácia"
-PLOT_EXPLAIN_2_PT = ("Os restantes dois gráficos mostram os resultados do questionário MUEQ para toda a população do estudo "
-                     "e para os trabalhadores do mesmo tipo de função, nomeadamente 'front office' e 'back office'. "
-                     "A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados."
+PLOT_EXPLAIN_2_PT = (
+    "Os dois primeiros gráficos mostram os resultados do questionário MUEQ para toda a população do estudo e para os "
+    "trabalhadores que desempenham a mesma função, ou seja, ‘front office’ ou ‘back office’. "
+    "A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados. "
 )
 PLOT_EXPLAIN_2_1_PT = "1. Autonomia"
 PLOT_EXPLAIN_2_2_PT = "2. Qualidade das pausas"

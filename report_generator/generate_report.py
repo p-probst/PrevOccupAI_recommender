@@ -84,6 +84,8 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     # generate environmental sensors
     _generate_environmental_sensors_section(mdFile, subject_id, plots_path)
 
+    mdFile.new_line(' \pagebreak ')
+
     # sensor timeline
     _generate_sensor_timeline_section(mdFile, subject_id, plots_path)
 
@@ -506,6 +508,7 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
 
 def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_dict = SENSOR_TIMELINE_DICT[PT]):
 
+
     mdFile.write("\n")
     # introduction title
     mdFile.new_header(level=2, title=timeline_dict[INTRODUCTION_KEY][0])
@@ -603,7 +606,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
 
     # add table
     items_rosa = [s for s in rosa_dict[PLOT_EXPLAIN_KEY] if re.match(r"^\d+\.\s", s)]
-    _add_two_column_table(mdFile, items_rosa, header_left="Dimensão", header_right="Dimensão", text_align="left")
+    _add_two_column_table(mdFile, items_rosa, header_left="Equipamento", header_right="Equipamento", text_align="left")
 
     mdFile.write("\n")
 
@@ -692,7 +695,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # add plot -------------------COPSOQ work type -------------------------
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'questionnaire_plots', f'copsoq_{work_type}.png'),
-                        caption=f'Resultados do questionário COPSOQ: média de trabalhadores de {work_type_full}')
+                        caption=f'Resultados do questionário COPSOQ: média de trabalhadores de **{work_type_full}**')
     mdFile.write("\n")
     mdFile.new_line(' \pagebreak ')
 
@@ -714,7 +717,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # show  ----------------------------- MUEQ worktype
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'questionnaire_plots', f'mueq_{work_type}.png'),
-                        caption=f'Resultados do questionário MUEQ: média de trabalhadores de {work_type_full}')
+                        caption=f'Resultados do questionário MUEQ: média de trabalhadores de **{work_type_full}**')
 
     mdFile.write("\n")
 
@@ -727,14 +730,10 @@ def _generate_daily_questionnaire(mdFile, subject_id, plots_path, pain_dict=PAIN
     mdFile.write("\n")
     mdFile.new_paragraph(workload_dict[INTRODUCTION_KEY][2])
     mdFile.write("\n")
-    mdFile.new_paragraph(workload_dict[INTRODUCTION_KEY][3])
-    mdFile.write("\n")
 
     # add plot explanation
     # explain pain plot
     mdFile.new_paragraph(workload_dict[PLOT_EXPLAIN_KEY][0])
-    mdFile.write("\n")
-    mdFile.new_paragraph(workload_dict[PLOT_EXPLAIN_KEY][1])
     mdFile.write("\n")
     _add_centered_image(mdFile, os.path.join(plots_path, str(subject_id), 'questionnaire_plots' ,f"{subject_id}_carga_de_trabalho.png"), max_width=1,
                         max_height=0.9)

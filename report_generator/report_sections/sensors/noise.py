@@ -7,7 +7,7 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_1_PT = "Sensores de Ruído"
+INTRO_1_PT = "Sensores de ruído"
 INTRO_2_PT = (
     "A exposição prolongada ou excessiva a níveis elevados de ruído pode causar problemas de saúde, como stress, "
     "dificuldade de concentração e diminuição da produtividade no trabalho. De acordo com orientações de "

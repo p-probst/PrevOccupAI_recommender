@@ -10,9 +10,9 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 
 INTRO_1_PT = "Sensores ambientais: medição única"
 INTRO_2_PT = (
-    "As aquisições de dados dos sensores ambientais foram realizadas por profissionais da Câmara Municipal de Lisboa. "
-    "Estes dados foram recolhidos apenas uma vez no local de trabalho de cada participante. Uma vez sendo fatores alheios "
-    "ao trabalhador, não existem recomendações relativas a estes dados."
+    "As aquisições de dados dos sensores ambientais foram realizadas por profissionais da CML. "
+    "Estes dados foram recolhidos apenas uma vez no local de trabalho de cada participante. "
+
     "Os sensores permitiram medir: "
 )
 INTRO_3_PT = "- **temperatura** (em graus Celsius, $^\\circ$C);"
@@ -25,7 +25,7 @@ INTRO_5_PT = (
 )
 
 INTRO_6_PT = (
-    "- concentração de **partículas em suspensão** com diâmetro de 2,5 $\\mu$m e 10 $\\mu$m "
+    "- concentração de **partículas em suspensão** com diâmetro de 2,5 $\\mu$m e 10 $\\mu$m (micrómetros) "
     "(PM2.5 e PM10), expressa em microgramas por metro cúbico ($\\mu$g/m$^3$);"
 )
 
@@ -34,8 +34,12 @@ INTRO_7_PT = (
     "tendo sido calculada a média dessas medições para obtenção do valor final."
 )
 PLOT_EXPLAIN_PT = (
-    "Os gráficos que se seguem apresentam os valores medidos pelos sensores ambientais, bem como os respetivos "
-    "valores de referência, os quais se baseiam em publicações de organizações internacionais e em literatura científica."
+    "Os gráficos que se seguem apresentam os valores medidos pelos sensores ambientais, representados por linhas verdes, "
+    "bem como os respetivos valores de referência, definidos com base em publicações de organizações internacionais "
+    "e em literatura científica. "
+    "Sempre que existam valores de referência mínimos, estes são representados por uma linha azul tracejada. "
+    "Os valores de referência máximos, ou o valor de referência único, "
+    "são representados por uma linha vermelha tracejada."
 )
 # ------------------------------------------------------------------------------------------------------------------- #
 # english

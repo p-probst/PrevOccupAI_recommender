@@ -17,19 +17,16 @@ INTRO_2_PT = (
 
 INTRO_3_PT = (
     "De forma a avaliar a presença e evolução da dor ao longo da semana de trabalho, "
-    "os trabalhadores preencheram um questionário de autoavaliação da dor no início e no final de cada turno. "
+    "preencheu um questionário de autoavaliação da dor no início e no final de cada turno. "
     "Este questionário consistiu na identificação das zonas do corpo onde existia dor, "
     "bem como na indicação da sua intensidade."
 )
 
 INTRO_4_PT = (
     "A intensidade da dor foi avaliada através da escala numérica de dor (NPRS), "
-    "que varia de 0 a 10. Nesta escala, o valor 0 corresponde à ausência total de dor, "
+    "que varia de zero a dez. Nesta escala, o valor 0 corresponde à ausência total de dor, "
     "valores baixos indicam dor ligeira, valores intermédios indicam dor moderada "
     "e valores elevados correspondem a dor intensa. "
-    "Esta escala é amplamente utilizada em contextos clínicos e ocupacionais, "
-    "por ser de fácil compreensão e permitir que cada pessoa quantifique a dor "
-    "de forma simples e intuitiva."
 )
 
 INTRO_5_PT = (
@@ -40,12 +37,11 @@ INTRO_5_PT = (
 
 
 PLOT_EXPLAIN_1_PT = (
-    "O gráfico apresenta a evolução semanal da dor reportada por um trabalhador, "
-    "mostrando, para cada dia de trabalho, a avaliação realizada no início e no final do turno."
-"Cada par de figuras corresponde a um dia de aquisição, permitindo comparar visualmente "
+    "O gráfico apresenta a evolução semanal da dor reportada por si."
+" Cada par de figuras corresponde a um dia de aquisição, permitindo comparar visualmente "
     "as zonas do corpo onde foi reportada dor e a respetiva intensidade antes e depois do trabalho."
-"As cores utilizadas representam a intensidade da dor, de acordo com a escala numérica apresentada no topo do gráfico, "
-    "onde tons mais claros indicam dor ligeira e tons mais escuros indicam dor mais intensa. "
+" As cores utilizadas representam a intensidade da dor, de acordo com a escala numérica apresentada no topo do gráfico. A ausência de "
+    "dor corresponde a uma intensidade zero, ou seja, sem dor."
     "Sempre que não é reportada dor, as figuras correspondentes surgem sem marcação de áreas coloridas."
 )
 

@@ -11,16 +11,16 @@ INTRO_1_PT = "Avaliação Ambiental"
 INTRO_2_PT = (
     "Ambientes de trabalho com condições inadequadas aumentam o risco de lesões músculo-esqueléticas e "
     "influenciam negativamente a produtividade e o bem-estar geral do trabalhador. Neste contexto, foram "
-    "avaliados fatores ambientais, tais como a organização do posto de trabalho, o nível de ruído e a iluminação. "
+    "avaliados fatores ambientais, tais como a o nível de iluminação, ar, ruído e organização do posto de trabalho. "
     "A entidade patronal desempenha um papel fundamental na redução destes riscos. "
     "Nesse sentido, foram também identificadas e transmitidas as medidas coletivas a implementar."
 )
 RISK_PT = (
-    "A cada tópico está associado uma cor que representa o nível de risco identificado. "
-    "A cor verde indica baixo risco, a cor amarela sinaliza a existência de algum risco, "
-    "e a cor vermelha corresponde a um risco elevado, para o qual devem ser adotadas medidas com vista "
-    "à sua redução. As secções que se encontrem a amarelo ou vermelho são consideradas de risco, logo, recomendações"
-    "para essas secções são apresentadas"
+    "A cada equipamento está associada uma cor que representa o nível de risco identificado. "
+    "A **cor verde** indica **baixo risco**, a **cor amarela** sinaliza a existência de um **risco de nível médio**, "
+    "e a **cor vermelha** corresponde a um **risco elevado**. "
+    "As dimensões assinalados a amarelo ou a vermelho são considerados de risco e, por esse motivo, "
+    "são apresentadas recomendações específicas. Considerando isto, foi delineado o seguinte risco: "
 )
 PLOT_EXPLAIN_1_PT = (
     "O gráfico abaixo apresenta os resultados calculados com base nas respostas dadas ao questionário de "
