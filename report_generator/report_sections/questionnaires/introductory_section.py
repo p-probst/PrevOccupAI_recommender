@@ -9,7 +9,7 @@ SECTION_2 = 'section_2'
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-SECTION_0_PT = "O resultado dos seus questionários"
+SECTION_0_PT = "Resultados dos seus questionários"
 SECTION_1_PT = (
     "O planeamento da prevenção de riscos ocupacionais para trabalhadores de escritório deve considerar múltiplas "
     "influências, incluindo fatores relacionados com o local de trabalho e fatores individuais do trabalhador. "

@@ -14,6 +14,14 @@ INTRO_2_PT = (
     "podem aumentar o risco biomecânico. A entidade patronal desempenha um papel fundamental na redução destes riscos. "
     "Nesse sentido, foram também identificadas e transmitidas as medidas coletivas a implementar."
 )
+INTRO_3_PT = (
+    "O instrumento de avaliação biomecânica utilizado foi o questionário ROSA (Rapid Office Strain Assessment). "
+    "Este questionário foi desenvolvido para avaliar o risco ergonómico associado ao trabalho de escritório, "
+    "tendo em consideração a postura adotada e a forma como são utilizados equipamentos como a cadeira, o monitor, "
+    "o teclado, o rato e o telefone. Com base nas respostas fornecidas, o questionário permite identificar situações "
+    "de maior risco biomecânico e apoiar a definição de recomendações para a melhoria das condições ergonómicas "
+    "no posto de trabalho."
+)
 
 RISK_1_PT = (
     "A cada equipamento está associada uma cor que representa o nível de risco identificado. "
@@ -49,7 +57,7 @@ PLOT_ENG = ""
 # ------------------------------------------------------------------------------------------------------------------- #
 ROSA_DICT = {
     PT: {
-        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
+        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT],
         RISK_RULE_KEY: [RISK_1_PT],
         PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_0_PT, PLOT_EXPLAIN_1_1_PT, PLOT_EXPLAIN_1_2_PT, PLOT_EXPLAIN_1_3_PT, PLOT_EXPLAIN_1_4_PT, PLOT_EXPLAIN_1_5_PT, PLOT_EXPLAIN_1_6_PT]
     },

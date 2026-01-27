@@ -25,6 +25,7 @@ from report_generator.report_sections.sensors.wrist_movements import WRIST_MOVEM
 from report_generator.report_sections.sensors.heart_rate import HEART_RATE_DICT
 from report_generator.report_sections.sensors.emg import EMG_DICT
 from report_generator.report_sections.questionnaires.pain import PAIN_DICT
+from report_generator.report_sections.questionnaires.workload import WORKLOAD_DICT
 from report_generator.report_sections.sensors.posture import POSTURE_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
     USER
@@ -68,12 +69,14 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     # questionnaires
     _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles_path, recommendation_system, work_type)
+
+    mdFile.write("\n")
+    _generate_daily_questionnaire(mdFile, subject_id, plots_path)
     mdFile.new_line(' \pagebreak ')
     mdFile.write("\n")
-
     # introduction title
     mdFile.new_header(level=1, title="Resultados das suas aquisições")
-
+    mdFile.write("\n")
     # write paragraphs
     mdFile.new_paragraph(SENSORS_INTRODUCTION)
     mdFile.write("\n")
@@ -99,8 +102,8 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     # heart rate
     _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
 
-    # emg
-    _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
+    # # emg
+    # _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
 
     # generate pdf
     template_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
@@ -168,8 +171,6 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.new_paragraph(introduction_dict[SECTION_12])
     mdFile.write("\n")
     mdFile.new_paragraph(introduction_dict[SECTION_13])
-    mdFile.write("\n")
-    mdFile.new_line(' \pagebreak ')
     mdFile.write("\n")
 
 
@@ -446,7 +447,7 @@ def _generate_wrist_section(mdFile, subject_id, plots_path, wrist_dict=WRIST_MOV
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'wrist_movements',
                                      f'wrist_acceleration_{subject_id}.png'),
-                        caption=None, max_width=1, max_height=0.5)
+                        caption=None, max_width=1, max_height=0.4)
 
 
 
@@ -566,11 +567,9 @@ def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_
 
 
 
-
-
 def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles_path, recommendation_system,
                                      work_type, intro_dict=QUEST_INTRO_DICT[PT], rosa_dict=ROSA_DICT[PT],
-                                     env_dict=ENVIRONMENT_DICT[PT], psycho_dict=COPSOQ_DICT[PT], pain_dict=PAIN_DICT[PT]):
+                                     env_dict=ENVIRONMENT_DICT[PT], psycho_dict=COPSOQ_DICT[PT]):
 
     # get work type full string
     if work_type == 'FO':
@@ -592,6 +591,8 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # intro
     mdFile.new_header(level=2, title=rosa_dict[INTRODUCTION_KEY][0])
     mdFile.new_paragraph(rosa_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(rosa_dict[INTRODUCTION_KEY][2])
     mdFile.write("\n")
 
     # describe plots
@@ -625,6 +626,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     _add_questionnaire_recommendations(mdFile, rosa_recommendations[RECOMMENDATIONS_KEY])
     # --------------------------------------- environmental questionnaire --------------------------------------#
     # intro
+    mdFile.write("\n")
     mdFile.new_header(level=2, title=env_dict[INTRODUCTION_KEY][0])
     mdFile.new_paragraph(env_dict[INTRODUCTION_KEY][1])
     mdFile.write("\n")
@@ -645,7 +647,6 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     mdFile.new_paragraph(env_dict[RISK_RULE_KEY][0])
     mdFile.write("\n")
 
-    # TODO RECOMMENDATIONS
     # get the subjects df
     environment_data_df = recommender.generate_environment_csv(Path.cwd(), oh_profiles_path)
 
@@ -659,9 +660,12 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # add recommendations
     _add_questionnaire_recommendations(mdFile, environment_recommendations[RECOMMENDATIONS_KEY])
     # --------------------------------------- PSYCHOSOCIAL (COPSOQ AND MUEQ) --------------------------------------#
+    mdFile.write("\n")
     # intro
     mdFile.new_header(level=2, title=psycho_dict[INTRODUCTION_KEY][0])
     mdFile.new_paragraph(psycho_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(psycho_dict[INTRODUCTION_KEY][2])
     mdFile.write("\n")
 
     # describe plots
@@ -711,8 +715,32 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
                         caption=f'Resultados do questionário MUEQ: média de trabalhadores de {work_type_full}')
 
     mdFile.write("\n")
+
+
+def _generate_daily_questionnaire(mdFile, subject_id, plots_path, pain_dict=PAIN_DICT[PT], workload_dict=WORKLOAD_DICT[PT]):
+    # --------------------------------------- workload --------------------------------------------#
+    mdFile.new_header(level=2, title=workload_dict[INTRODUCTION_KEY][0])
+
+    mdFile.new_paragraph(workload_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(workload_dict[INTRODUCTION_KEY][2])
+    mdFile.write("\n")
+    mdFile.new_paragraph(workload_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+
+    # add plot explanation
+    # explain pain plot
+    mdFile.new_paragraph(workload_dict[PLOT_EXPLAIN_KEY][0])
+    mdFile.write("\n")
+    mdFile.new_paragraph(workload_dict[PLOT_EXPLAIN_KEY][1])
+    mdFile.write("\n")
+    _add_centered_image(mdFile, os.path.join(plots_path, str(subject_id), 'questionnaire_plots' ,f"{subject_id}_carga_de_trabalho.png"), max_width=1,
+                        max_height=0.9)
+    mdFile.write("\n")
+
     # --------------------------------------- PAIN --------------------------------------------#
     mdFile.new_header(level=2, title=pain_dict[INTRODUCTION_KEY][0])
+
     mdFile.new_paragraph(pain_dict[INTRODUCTION_KEY][1])
     mdFile.write("\n")
     mdFile.new_paragraph(pain_dict[INTRODUCTION_KEY][2])
@@ -722,7 +750,12 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     mdFile.new_paragraph(pain_dict[INTRODUCTION_KEY][4])
     mdFile.write("\n")
 
-    _add_centered_image(mdFile, os.path.join(plots_path, str(subject_id),f"{subject_id}_pain_plot.png"), max_width=1, max_height=0.5)
+    # explain pain plot
+    mdFile.new_paragraph(pain_dict[PLOT_EXPLAIN_KEY][0])
+    mdFile.write("\n")
+
+    _add_centered_image(mdFile, os.path.join(plots_path, str(subject_id), f"{subject_id}_pain_plot.png"), max_width=1,
+                        max_height=0.5)
     mdFile.write("\n")
 
 

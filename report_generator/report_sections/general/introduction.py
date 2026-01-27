@@ -68,11 +68,13 @@ SECTION_11_PT = (
         "anonimizados**. Tendo em conta o papel significativo que a entidade patronal representa "
         "na redução de riscos ergonómicos, ser-lhes-ão também apresentadas medidas de prevenção a "
         "implementar.")
-SECTION_12_PT = ("**Importante**: A informação neste documento foi apresentada para consulta pessoal. "
-                         "O/A participante é o/a **único proprietário/a** da informação compilada neste documento e, "
-                         "como tal, **não pode ser coagido/a**, em qualquer circunstâncias, a partilhar o documento "
-                         "com ninguém, incluindo a entidade patronal. Recomendamos que **não partilhe o documento"
-                         " com ninguém CHANGE.**")
+SECTION_12_PT = (
+    "**Importante**: A informação apresentada neste documento destina-se exclusivamente à consulta pessoal do trabalhador. "
+    "A **decisão de partilhar este documento é inteiramente sua**, não podendo, em circunstância "
+    "alguma, ser exigida por terceiros, incluindo a entidade empregadora. "
+    "Caso assim o entenda, encorajamos a utilização deste documento como suporte para reflexão pessoal ou para a discussão "
+    "com colegas de trabalho e/ou profissionais de saúde, nomeadamente médicos ou outros técnicos especializados."
+)
 SECTION_13_PT = ("Caso tenha alguma(s) questão(ões) relativamente ao documento e/ou à informação nele contida, "
                          "é possível contactar-nos em: **biosignals.libphys@gmail.com**.")
 # ------------------------------------------------------------------------------------------------------------------- #

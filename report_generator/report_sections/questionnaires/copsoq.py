@@ -13,12 +13,16 @@ INTRO_2_PT = (
     "Os fatores psicossociais permitem avaliar as interações entre o ambiente de trabalho, o conteúdo das tarefas, "
     "as condições organizacionais e as características pessoais extralaborais dos trabalhadores, que podem "
     "influenciar a saúde, a produtividade e a satisfação profissional. Para isto, foram utilizados dois questionários validados: COPSOQ e MUEQ."
-    "PARAGRAPHA avaliação psicossocial é realizada ao nível do grupo, o que significa que os resultados apresentados neste "
+    "COPSOQ (*Copenhagen Psychosocial Questionnaire*) é um instrumento científico internacionalmente reconhecido para avaliar e "
+    "melhorar os fatores psicossociais no local de trabalho. MUEQ (*Maastricht Upper Extremity Questionnaire*) é um questionário utilizado "
+    "para avaliar lesões musculoesqueléticas. No contexto deste estudo, MUEQ foi utilizado para avaliar a qualidade das pausas.  "
+)
+INTRO_3_PT = (
+"A avaliação psicossocial é realizada ao nível do grupo, o que significa que os resultados apresentados neste "
     "relatório correspondem a valores médios de toda a população que participou no estudo, e não a valores individuais. "
     "Deste modo, não serão apresentadas recomendações individuais, mas apenas recomendações de natureza organizacional "
     "dirigidas à CML. Nesta secção são apresentadas quatro visualizações com os resultados da avaliação psicossocial da população do estudo."
 )
-
 RISK_PT = (
     "A cada tópico está associado uma cor que representa o nível de risco identificado. "
     "A cor verde indica baixo risco, a cor amarela sinaliza a existência de algum risco, "
@@ -77,10 +81,12 @@ PLOT_ENG = ""
 # ------------------------------------------------------------------------------------------------------------------- #
 COPSOQ_DICT = {
     PT: {
-        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
+        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT],
         RISK_RULE_KEY: [RISK_PT],
         COPSOQ_EXPLAIN_KEY: [
             PLOT_EXPLAIN_1_PT,
+            PLOT_EXPLAIN_1_1_PT,
+            PLOT_EXPLAIN_1_2_PT,
             PLOT_EXPLAIN_1_3_PT,
             PLOT_EXPLAIN_1_4_PT,
             PLOT_EXPLAIN_1_5_PT,
