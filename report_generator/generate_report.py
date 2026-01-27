@@ -25,9 +25,11 @@ from report_generator.report_sections.sensors.wrist_movements import WRIST_MOVEM
 from report_generator.report_sections.sensors.heart_rate import HEART_RATE_DICT
 from report_generator.report_sections.sensors.emg import EMG_DICT
 from report_generator.report_sections.questionnaires.pain import PAIN_DICT
+from report_generator.report_sections.sensors.posture import POSTURE_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
     USER
 import recommender as recommender
+from recommender import assess_low_postural_variability
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -89,6 +91,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system)
 
     # posture
+    _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system)
 
     # wrist
     _generate_wrist_section(mdFile, subject_id, plots_path)
@@ -167,6 +170,69 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.new_paragraph(introduction_dict[SECTION_13])
     mdFile.write("\n")
     mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
+
+
+def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system, posture_dict=POSTURE_DICT[PT]):
+
+    # load posture data
+    posture_subject_data_df = recommender.generate_posture_csv(Path.cwd(), oh_profiles_path)
+
+    # ------- get posture recommendations --------- #
+    posture_recommendations = recommender.get_postural_displacement_recommendation(posture_subject_data_df, subject_id,
+                                                                                   recommendation_system)
+
+    mdFile.write("\n")
+    # introduction title
+    mdFile.new_header(level=2, title=posture_dict[INTRODUCTION_KEY][0])
+
+    # write intro
+    mdFile.new_paragraph(posture_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[INTRODUCTION_KEY][2])
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[INTRODUCTION_KEY][4])
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[INTRODUCTION_KEY][5])
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[INTRODUCTION_KEY][6])
+    mdFile.write("\n")
+
+    # explain plot
+    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][0])
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][1])
+
+    # show plot - vista de costas
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista de Costas.png'),
+                        caption=None, max_width=1, max_height=0.9)
+
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][2])
+
+    # vista de lado
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Lateral.png'),
+                        caption=None, max_width=1, max_height=0.9)
+
+    mdFile.write("\n")
+    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][3])
+
+    # vista superior
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Superior.png'),
+                        caption=None, max_width=1, max_height=0.9)
+
+    # risk section
+    mdFile.new_paragraph(posture_dict[RISK_RULE_KEY][0])
+    _add_rules_and_risk_occurrences(mdFile, posture_recommendations)
+    mdFile.write("\n")
+
+    # show recommendations
+    _add_recommendation_section(mdFile, posture_recommendations[RECOMMENDATIONS_KEY])
     mdFile.write("\n")
 
 
