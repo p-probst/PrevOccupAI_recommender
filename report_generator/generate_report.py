@@ -45,7 +45,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     # introduction
     _generate_introduction_section(mdFile)
-
+    mdFile.new_line(' \pagebreak ')
     work_type = 'CML'
 
     # get work type from OH profile
@@ -147,6 +147,8 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     # write paragraphs
     mdFile.new_paragraph(introduction_dict[SECTION_1])
     mdFile.write("\n")
+
+    mdFile.new_header(level=2, title="Contexto")
     mdFile.new_paragraph(introduction_dict[SECTION_2])
     mdFile.write("\n")
     mdFile.new_paragraph(introduction_dict[SECTION_3])
@@ -858,7 +860,7 @@ def _add_questionnaire_recommendations(mdFile, recommendations: Union[Dict, List
     """
 
     mdFile.write("\n")
-    mdFile.new_paragraph("De acordo com os seus resultados, são-lhe sugeridas a seguinte recomendações:")
+    mdFile.new_paragraph("De acordo com os seus resultados, são-lhe sugeridas as seguintes recomendações:")
     mdFile.write("\n")
 
     # check if the recommendations are of type dictionary --> there are recommendations per dimension

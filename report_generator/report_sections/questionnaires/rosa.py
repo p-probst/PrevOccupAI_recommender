@@ -25,10 +25,10 @@ INTRO_3_PT = (
 
 RISK_1_PT = (
     "A cada equipamento está associada uma cor que representa o nível de risco identificado. "
-    "A cor verde indica baixo risco, a cor amarela sinaliza a existência de algum risco ergonómico, "
-    "e a cor vermelha corresponde a um risco elevado, para o qual devem ser adotadas medidas com vista "
-    "à sua redução. As secções que se encontrem a amarelo ou vermelho são consideradas de risco, logo, recomendações"
-    "para essas secções são apresentadas"
+    "A **cor verde** indica **baixo risco**, a **cor amarela** sinaliza a existência de um **risco de nível médio**, "
+    "e a **cor vermelha** corresponde a um **risco elevado**. "
+    "Os equipamentos assinalados a amarelo ou a vermelho são considerados de risco e, por esse motivo, "
+    "são apresentadas recomendações específicas. Considerando isto, foi delineado o seguinte risco: "
 )
 
 PLOT_EXPLAIN_0_PT = (
@@ -42,7 +42,7 @@ PLOT_EXPLAIN_1_2_PT = "2. Monitor"
 PLOT_EXPLAIN_1_3_PT = "3. Telefone"
 PLOT_EXPLAIN_1_4_PT = "4. Rato"
 PLOT_EXPLAIN_1_5_PT = "5. Teclado"
-PLOT_EXPLAIN_1_6_PT = "6. Resultado geral final"
+PLOT_EXPLAIN_1_6_PT = "6. Resultado geral final (*ROSA score*)"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
