@@ -47,12 +47,10 @@ PLOT_EXPLAIN_1_PT = (
     "cinzento no local correspondente."
 )
 PLOT_EXPLAIN_2_PT = (
-    "Os gráficos que se seguem apresentam a distribuição do rácio de frequência cardíaca em cada aquisição, "
+    "O gráfico seguinte apresenta a distribuição do rácio de frequência cardíaca em cada aquisição, "
     "ao longo dos diferentes dias. A cor verde representa a percentagem de tempo em que a frequência cardíaca "
     "se encontrou dentro do intervalo normal, a cor amarela indica valores ligeiramente elevados e a cor vermelha "
     "corresponde a valores elevados. "
-    "Ambos os gráficos apresentam a mesma informação, mas de formas diferentes: um através de um gráfico de barras "
-    "e o outro através de um gráfico circular. "
     "À direita são indicadas as horas a que ocorreram as aquisições em cada dia, permitindo identificar o momento "
     "em que cada registo do smartwatch foi realizado. Caso necessário, pode consultar novamente a secção do "
     "cronograma das aquisições diárias para verificar os horários correspondentes. "

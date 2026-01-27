@@ -69,7 +69,7 @@ PLOT_ENG = ""
 # ------------------------------------------------------------------------------------------------------------------- #
 HAR_DICT = {
     PT: {
-        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
+        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT, INTRO_4_PT],
         RISK_RULE_KEY: [RISK_1_PT, RISK_2_PT, RISK_3_PT],
         PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_PT, PLOT_EXPLAIN_3_PT],
     },

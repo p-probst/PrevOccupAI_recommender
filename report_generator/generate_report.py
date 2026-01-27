@@ -6,6 +6,8 @@ import os
 import json
 import os, shutil
 import re
+from typing import List, Dict
+from datetime import datetime
 from pathlib import Path
 from mdutils import Html
 from mdutils.mdutils import MdUtils
@@ -18,8 +20,12 @@ from report_generator.report_sections.sensors.cml_sensors import CML_SENSORS_DIC
 from report_generator.report_sections.general.common import SENSORS_INTRODUCTION
 from report_generator.report_sections.sensors.sensor_timeline import SENSOR_TIMELINE_DICT
 from report_generator.report_sections.sensors.noise import NOISE_DICT
+from report_generator.report_sections.sensors.human_activities import HAR_DICT
+from report_generator.report_sections.sensors.wrist_movements import WRIST_MOVEMENT_DICT
+from report_generator.report_sections.sensors.heart_rate import HEART_RATE_DICT
+from report_generator.report_sections.sensors.emg import EMG_DICT
 from report_generator.report_sections.questionnaires.pain import PAIN_DICT
-from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
+from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS
 import recommender as recommender
 
 
@@ -77,6 +83,17 @@ def generate_report(report_folder_path, subject_id, plots_path, oh_profiles_path
 
     # noise
     _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system)
+
+    # human actvitieis
+    _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system)
+
+    # posture
+
+    # wrist
+    _generate_wrist_section(mdFile, subject_id, plots_path)
+
+    # heart rate
+    _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
 
     # generate pdf
 
@@ -151,6 +168,198 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.write("\n")
 
 
+def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system, emg_dict=EMG_DICT[PT]):
+
+    # load EMG data
+    emg_subject_data_df = recommender.generate_emg_csv(Path.cwd(), oh_profiles_path)
+
+    # ------- get emg recommendations --------- #
+    emg_recommendations = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id, recommendation_system)
+
+    mdFile.write("\n")
+    # introduction title
+    mdFile.new_header(level=2, title=emg_dict[INTRODUCTION_KEY][0])
+
+    # write intro
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][2])
+    mdFile.write("\n")
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][4])
+    mdFile.write("\n")
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][5])
+    mdFile.write("\n")
+
+    # bullet points
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][6])
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][7])
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][8])
+    mdFile.new_paragraph(emg_dict[INTRODUCTION_KEY][9])
+
+    # explain plot
+    # hr ranges plot
+    mdFile.new_paragraph(emg_dict[PLOT_EXPLAIN_KEY][0])
+
+
+def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system, hr_dict=HEART_RATE_DICT[PT]):
+
+    # load HR subject data
+    hr_subject_data_df = recommender.generate_hr_csv(Path.cwd(), oh_profiles_path)
+
+    # ------- get heart rate recommendations --------- #
+    max_hr_recommendations = recommender.get_max_frequency_recommendation(hr_subject_data_df, oh_profile, subject_id, recommendation_system)
+    slightly_elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id,'Ligeiramente elevado',recommendation_system)
+    elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id, 'Elevado',recommendation_system)
+
+    mdFile.write("\n")
+    # introduction title
+    mdFile.new_header(level=2, title=hr_dict[INTRODUCTION_KEY][0])
+
+    # write intro
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][2])
+    mdFile.write("\n")
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+
+    # bullet points
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][4])
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][5])
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][6])
+
+    # hr ranges plot
+    mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][0])
+    _add_centered_image(mdFile,os.path.join(plots_path, str(subject_id), 'HR_ranges',f'{subject_id}_HR_ranges.png'),
+                        caption=None, max_width=1, max_height=0.5)
+
+    _add_rules_and_risk_occurrences(mdFile, max_hr_recommendations)
+    mdFile.write("\n")
+
+    # describe plot - circular
+    mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][1])
+
+    # circular plot
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'HR_distributions',
+                                     f'HR_plot_circular_{subject_id}.png'),
+                        caption=None, max_width=1, max_height=0.9)
+
+    _add_rules_and_risk_occurrences(mdFile, slightly_elevated_hr_recommendations)
+    mdFile.write("\n")
+    _add_rules_and_risk_occurrences(mdFile, elevated_hr_recommendations)
+    mdFile.write("\n")
+
+    # generate recommendations
+    # check recommendations
+    recommendations = _get_recommendation_set([slightly_elevated_hr_recommendations, elevated_hr_recommendations, max_hr_recommendations])
+    _add_recommendation_section(mdFile, recommendations)
+    mdFile.write("\n")
+
+
+def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system, har_dict=HAR_DICT[PT]):
+    # load HAR subject data
+    har_subject_data_df = recommender.generate_har_csv(Path.cwd(), oh_profiles_path)
+
+    # load recommendations
+    sitting_proportions_recommendations = recommender.get_sitting_proportions_recommendations(har_subject_data_df,subject_id,recommendation_system)
+    sitting_total_recommendations = recommender.get_total_sitting_duration_recommendation(har_subject_data_df,subject_id,recommendation_system)
+    sitting_continuous_recommendations_2h = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system,activity_class_label=['Sentado'],exposure_limit_minutes=120.0)
+    sitting_continuous_recommendations_1h = recommender.get_continuous_sitting_recommendations(oh_profile,recommendation_system,activity_class_label=['Sentado'],exposure_limit_minutes=60.0)
+    standing_proportions_recommendations = recommender.get_standing_proportions_recommendations(har_subject_data_df,subject_id,recommendation_system)
+    steps_recommendations = recommender.get_steps_recommendations(har_subject_data_df, subject_id,recommendation_system)
+
+    mdFile.write("\n")
+    # introduction title
+    mdFile.new_header(level=2, title=har_dict[INTRODUCTION_KEY][0])
+
+    # write intro
+    mdFile.new_paragraph(har_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(har_dict[INTRODUCTION_KEY][2])
+    mdFile.write("\n")
+    mdFile.new_paragraph(har_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+
+    # describe plot - timeline
+    mdFile.new_paragraph(har_dict[PLOT_EXPLAIN_KEY][0])
+
+    activity_folder = os.path.join(
+        plots_path, str(subject_id), "human_activities"
+    )
+
+    timeline_images = _get_sorted_timeline_images(activity_folder)
+
+    for img_path in timeline_images:
+
+        _add_centered_image(
+            mdFile,
+            img_path,
+            caption=None,
+            max_width=1,
+            max_height=0.6
+        )
+    _add_rules_and_risk_occurrences(mdFile, sitting_continuous_recommendations_1h)
+    mdFile.write("\n")
+    _add_rules_and_risk_occurrences(mdFile, sitting_continuous_recommendations_2h)
+
+    # describe plot - distributions
+    mdFile.new_paragraph(har_dict[PLOT_EXPLAIN_KEY][1])
+
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'human_activities', f'{subject_id}_ospaq_vs_real_activity_distribution.png'),
+                        caption=None, max_width=1, max_height=0.5)
+
+    _add_rules_and_risk_occurrences(mdFile, sitting_proportions_recommendations)
+    mdFile.write("\n")
+    _add_rules_and_risk_occurrences(mdFile, sitting_total_recommendations)
+    mdFile.write("\n")
+    _add_rules_and_risk_occurrences(mdFile, standing_proportions_recommendations)
+    mdFile.write("\n")
+
+    # check recommendations
+    recommendations = _get_recommendation_set([sitting_proportions_recommendations, sitting_total_recommendations, sitting_continuous_recommendations_1h, sitting_continuous_recommendations_2h, standing_proportions_recommendations])
+    _add_recommendation_section(mdFile, recommendations)
+    mdFile.write("\n")
+
+    # describe plot - timeline
+    mdFile.new_paragraph(har_dict[PLOT_EXPLAIN_KEY][2])
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'human_activities',
+                                     f'{subject_id}_daily_steps_distance.png'),
+                        caption=None, max_width=1, max_height=0.5)
+    _add_rules_and_risk_occurrences(mdFile, steps_recommendations)
+    mdFile.write("\n")
+
+    # add recommendations
+    _add_recommendation_section(mdFile, steps_recommendations[RECOMMENDATIONS_KEY])
+
+
+def _generate_wrist_section(mdFile, subject_id, plots_path, wrist_dict=WRIST_MOVEMENT_DICT[PT]):
+    mdFile.write("\n")
+    # introduction title
+    mdFile.new_header(level=2, title=wrist_dict[INTRODUCTION_KEY][0])
+
+    # write intro
+    mdFile.new_paragraph(wrist_dict[INTRODUCTION_KEY][1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(wrist_dict[INTRODUCTION_KEY][2])
+    mdFile.write("\n")
+    mdFile.new_paragraph(wrist_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+    mdFile.new_paragraph(wrist_dict[INTRODUCTION_KEY][4])
+    mdFile.write("\n")
+    mdFile.new_paragraph(wrist_dict[PLOT_EXPLAIN_KEY][0])
+
+    _add_centered_image(mdFile,
+                        os.path.join(plots_path, str(subject_id), 'wrist_movements',
+                                     f'wrist_acceleration_{subject_id}.png'),
+                        caption=None, max_width=1, max_height=0.5)
+
+
+
 def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system, noise_dict=NOISE_DICT[PT]):
 
     # get noise recommender
@@ -164,7 +373,7 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
 
     mdFile.write("\n")
     # introduction title
-    mdFile.new_header(level=1, title=noise_dict[INTRODUCTION_KEY][0])
+    mdFile.new_header(level=2, title=noise_dict[INTRODUCTION_KEY][0])
 
     # write intro
     mdFile.new_paragraph(noise_dict[INTRODUCTION_KEY][1])
@@ -197,21 +406,16 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
     mdFile.new_paragraph(noise_dict[RISK_RULE_KEY][1])
     _add_rules_and_risk_occurrences(mdFile, noise_exposure_recommendations)
 
-    mdFile.write("\n")
-    mdFile.new_paragraph("De acordo com os seus resultados, são-lhe sugeridas as seguintes sugestões: ")
+
     # add recommendations
-    _add_recommendation_section(mdFile, noise_exposure_recommendations)
-
-
-
-
+    _add_recommendation_section(mdFile, noise_exposure_recommendations[RECOMMENDATIONS_KEY])
 
 
 def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_dict = SENSOR_TIMELINE_DICT[PT]):
 
     mdFile.write("\n")
     # introduction title
-    mdFile.new_header(level=1, title=timeline_dict[INTRODUCTION_KEY][0])
+    mdFile.new_header(level=2, title=timeline_dict[INTRODUCTION_KEY][0])
 
     # write intro
     mdFile.new_paragraph(timeline_dict[INTRODUCTION_KEY][1])
@@ -232,7 +436,7 @@ def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_d
 def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_dict = CML_SENSORS_DICT[PT]):
     mdFile.write("\n")
     # introduction title
-    mdFile.new_header(level=1, title=cml_dict[INTRODUCTION_KEY][0])
+    mdFile.new_header(level=2, title=cml_dict[INTRODUCTION_KEY][0])
 
     # write intro
     mdFile.new_paragraph(cml_dict[INTRODUCTION_KEY][1])
@@ -269,6 +473,8 @@ def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_
     _add_centered_image(mdFile,
                         os.path.join(env_plots_path, f'{subject_id}_PM10_PM025_plot.png'),
                         caption=None, max_width=1, max_height=0.2)
+
+
 
 
 
@@ -497,14 +703,18 @@ def _add_three_panel_figure(mdFile, img_paths, caption=None, subcaptions=None, h
     mdFile.write("\n")
 
 
-def _add_recommendation_section(mdFile, recommendations_dict):
+def _add_recommendation_section(mdFile, recommendations_list):
 
-    if len(recommendations_dict['recommendations']) == 1:
-        mdFile.new_paragraph(f"- **Recomendação**: {recommendations_dict['recommendations'][0]}")
+    if len(recommendations_list) == 1:
+        mdFile.write("\n")
+        mdFile.new_paragraph("De acordo com os seus resultados, é-lhe sugeridas a seguinte recomendação: ")
+        mdFile.new_paragraph(f"- **Recomendação**: {recommendations_list[0]}")
 
     else:
+        mdFile.write("\n")
+        mdFile.new_paragraph("De acordo com os seus resultados, são-lhe sugeridas as seguintes recomendações: ")
         # recommendations
-        for i, recommendation in enumerate(recommendations_dict['recommendations']):
+        for i, recommendation in enumerate(recommendations_list):
             mdFile.new_paragraph(f"- **Recomendação {i+1}**: {recommendation}")
 
 
@@ -512,14 +722,14 @@ def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
 
     if len(recommendations_dict['rule']) == 1:
 
-        mdFile.new_paragraph(f"- **Regra**: {recommendations_dict['rule'][0]}")
+        mdFile.new_paragraph(f"\n**Regra**: {recommendations_dict['rule'][0]}")
         mdFile.write("\n")
 
     else:
 
         for i, rule in enumerate(recommendations_dict['rule']):
 
-            mdFile.new_paragraph(f"- **Regra {i+1}**: {recommendations_dict['rule'][i]}")
+            mdFile.new_paragraph(f"\n**Regra {i+1}**: {recommendations_dict['rule'][i]}")
             mdFile.write("\n")
 
     # only show risk cases if they exist
@@ -530,9 +740,83 @@ def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
 
         if len(dates) == 1:
             mdFile.new_paragraph(
-                f"Foi detetada **1 ocorrência** no dia: **"f"{', '.join(dates)}**")
+                fr"$\rightarrow$ Foi detetada **1 ocorrência** no dia: **"f"{', '.join(dates)}**")
             mdFile.write("\n")
         else:
             mdFile.new_paragraph(
-                f"Foram detetadas **{recommendations_dict['num_instances']} ocorrências** nos dias: **"f"{', '.join(dates)}**")
+                fr"$\rightarrow$ Foram detetadas **{recommendations_dict['num_instances']} ocorrências** nos dias: **"f"{', '.join(dates)}**")
             mdFile.write("\n")
+
+    else:
+        mdFile.new_paragraph(
+            r"$\rightarrow$ Não foram detetados fatores de risco.")
+        mdFile.write("\n")
+
+
+def _get_sorted_timeline_images(folder_path, keyword="timeline", ext=".png"):
+    """
+    Returns a list of image paths sorted by date extracted from filename.
+
+    Expected filename format:
+        <subject>_DD-MM-YYYY_<anything>_timeline.png
+
+    Parameters
+    ----------
+    folder_path : str or Path
+        Path to the folder containing the images
+    keyword : str
+        Keyword that must be present in filename (default: "timeline")
+    ext : str
+        File extension to consider (default: ".png")
+
+    Returns
+    -------
+    list[str]
+        Full paths to images, sorted by date
+    """
+
+    folder_path = Path(folder_path)
+
+    def _extract_date(fname):
+        # Example: 80_23-09-2025_activity_timeline.png
+        date_str = fname.split("_")[1]
+        return datetime.strptime(date_str, "%d-%m-%Y").date()
+
+    files = [
+        f for f in folder_path.iterdir()
+        if f.is_file()
+        and keyword in f.name
+        and f.suffix.lower() == ext
+    ]
+
+    files_sorted = sorted(files, key=lambda f: _extract_date(f.name))
+
+    return [str(f) for f in files_sorted]
+
+
+def _get_recommendation_set(recommender_dict_list: List[Dict], language='pt'):
+    """
+
+    :param recommender_dict_list:
+    :return:
+    """
+
+    # init the set
+    recommendation_set = set()
+
+    # cycle over the list and get the recommendation
+    for recommendation_dict in recommender_dict_list:
+
+        if recommendation_dict[RECOMMENDATIONS_KEY][0] != NO_RECOMMENDATIONS[language]:
+
+            # get the recommendations and add them to the set
+            recommendation_set.update(recommendation_dict[RECOMMENDATIONS_KEY])
+
+
+    if recommendation_set:
+
+        return list(recommendation_set)
+
+    else:
+
+        return [NO_RECOMMENDATIONS[language]]
