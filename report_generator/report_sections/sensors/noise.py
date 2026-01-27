@@ -56,6 +56,7 @@ PLOT_EXPLAIN_2_PT = (
 )
 
 RISK_1_PT = "Em relação ao cronograma de exposição ao ruído ao longo do dia, foi delineado o seguinte risco:  "
+RISK_2_PT = "Em relação à distribuição do nível de ruído ao longo do dia, foi delineado o seguinte risco:  "
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
@@ -71,7 +72,7 @@ PLOT_ENG = ""
 NOISE_DICT = {
     PT: {
         INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT, INTRO_4_PT, INTRO_5_PT, INTRO_6_PT],
-        RISK_RULE_KEY: [RISK_1_PT],
+        RISK_RULE_KEY: [RISK_1_PT, RISK_2_PT],
         PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_PT]
     },
 

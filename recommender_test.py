@@ -6,7 +6,7 @@ import recommender as recommender
 from recommender import assess_low_postural_variability
 
 # set path to OH profiles
-OH_PROFILES_PATH = "D:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
+OH_PROFILES_PATH = "E:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 
 
 # define working directory
