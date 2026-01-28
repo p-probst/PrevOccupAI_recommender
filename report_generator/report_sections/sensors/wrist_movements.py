@@ -9,8 +9,8 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 INTRO_1_PT = "Sensores de movimento: movimentos significativos do pulso"
 INTRO_2_PT =(
-    "Os movimentos do punho analisados nesta secção referem-se ao punho da mão que utiliza o rato "
-    "e foram avaliados apenas durante os períodos em que o trabalhador se encontrava sentado. "
+    "Os movimentos do punho analisados nesta secção referem-se ao **punho da mão que utiliza o rato** "
+    "e foram **avaliados** apenas durante os **períodos** em que se encontrava **sentado**. "
     "A análise considera exclusivamente as acelerações do punho, não sendo avaliados movimentos de rotação."
 )
 INTRO_3_PT = (
@@ -26,7 +26,7 @@ INTRO_4_PT = (
     "pode contribuir para posturas desfavoráveis e desconforto músculo-esquelético."
 )
 INTRO_5_PT = (
-    "*A percentagem de movimentos significativos* do punho indica quantos dos movimentos realizados "
+    "**A percentagem de movimentos significativos** do punho indica quantos dos movimentos realizados "
     "foram mais rápidos ou abruptos, *em relação ao total de movimentos registados* "
     "durante o trabalho sentado. "
     "Esta métrica permite identificar tanto situações de elevada atividade do punho "
@@ -34,7 +34,7 @@ INTRO_5_PT = (
 )
 
 PLOT_EXPLAIN_1_PT = (
-    "O gráfico apresenta a percentagem de movimentos significativos do punho "
+    "O gráfico apresenta a **percentagem de movimentos significativos do punho** "
     "ao longo da semana. "
     "Cada linha corresponde a um dia de trabalho e cada coluna a uma aquisição. "
     "Valores mais elevados indicam maior frequência de movimentos rápidos do punho, "
@@ -42,12 +42,12 @@ PLOT_EXPLAIN_1_PT = (
 )
 RISK_PT = (
     "Não existem, atualmente, indicadores científicos que definam uma percentagem ideal de movimentos "
-    "significativos do punho. No entanto, um número reduzido destes movimentos pode indicar um comportamento "
-    "mais estático do punho que, em conjunto com a utilização prolongada de um rato não ergonómico ou a ausência "
-    "de apoio para o punho, pode conduzir a uma flexão do punho superior a 20 graus, valor considerado de risco "
-    "para o desenvolvimento de lesões músculo-esqueléticas. "
-    "Assim, mesmo não sendo possível definir recomendações personalizadas, a realização regular de exercícios "
-    "de mobilização do punho pode constituir uma prática saudável para ajudar a reduzir este risco."
+    "significativos do punho. No entanto, um *número reduzido** destes movimentos pode indicar um **comportamento "
+    "mais estático do punho** que, em conjunto com a utilização prolongada de um rato não ergonómico ou a ausência "
+    "de apoio para o punho, pode conduzir a uma **flexão do punho superior a 20 graus**, valor considerado de **risco "
+    "para o desenvolvimento de lesões músculo-esqueléticas**. "
+    "Assim, mesmo não sendo possível definir recomendações personalizadas, a **realização regular de exercícios "
+    "de mobilização do punho** pode constituir uma prática saudável para ajudar a reduzir este risco."
 )
 
 # ------------------------------------------------------------------------------------------------------------------- #

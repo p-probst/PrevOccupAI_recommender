@@ -23,10 +23,10 @@ INTRO_3_PT = (
 )
 
 INTRO_4_PT = (
-    "De modo a permitir a comparação dos resultados entre diferentes trabalhadores, foi calculado um *rácio de frequência cardíaca*."
-    " Este rácio tem em consideração a frequência cardíaca máxima, que depende da idade, e a "
-    "frequência cardíaca em repouso de cada trabalhador. Com base neste rácio, foram definidos diferentes níveis "
-    "para classificar a frequência cardíaca. Uma vez que valores entre 30% e 39% são considerados normais durante "
+    "De modo a permitir a comparação dos resultados entre diferentes trabalhadores, foi calculado um **rácio de frequência cardíaca**."
+    " Este rácio tem em consideração a **frequência cardíaca máxima, que depende da idade**, e a "
+    "**frequência cardíaca em repouso** de cada trabalhador. Com base neste rácio, foram definidos diferentes níveis "
+    "para classificar a frequência cardíaca. Uma vez que **valores entre 30% e 39% são considerados normais** durante "
     "atividade física ligeira, a presença destes valores, ou superiores, enquanto o trabalhador se encontra sentado "
     "pode ser interpretada como um possível indicador de stress. Assim, foram definidas as seguintes classes:"
 )
@@ -47,10 +47,10 @@ PLOT_EXPLAIN_1_PT = (
     "cinzento no local correspondente."
 )
 PLOT_EXPLAIN_2_PT = (
-    "O gráfico seguinte apresenta a distribuição do rácio de frequência cardíaca em cada aquisição, "
-    "ao longo dos diferentes dias. A cor verde representa a percentagem de tempo em que a frequência cardíaca "
-    "se encontrou dentro do intervalo normal, a cor amarela indica valores ligeiramente elevados e a cor vermelha "
-    "corresponde a valores elevados. "
+    "O gráfico seguinte apresenta a **distribuição do rácio de frequência cardíaca em cada aquisição**, "
+    "ao longo dos diferentes dias. A cor **verde** representa a percentagem de tempo em que a frequência cardíaca "
+    "se encontrou dentro do **intervalo normal**, a cor **amarela** indica valores **ligeiramente elevados** e a cor **vermelha** "
+    "corresponde a **valores elevados**. "
     "À direita são indicadas as horas a que ocorreram as aquisições em cada dia, permitindo identificar o momento "
     "em que cada registo do smartwatch foi realizado. Caso necessário, pode consultar novamente a secção do "
     "cronograma das aquisições diárias para verificar os horários correspondentes. "

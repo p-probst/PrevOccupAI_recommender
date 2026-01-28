@@ -16,8 +16,8 @@ INTRO_2_EMG_PT = (
 )
 INTRO_3_EMG_PT = (
     "Para que os valores possam ser comparados entre diferentes trabalhadores, a atividade muscular "
-    "é expressa em percentagem de uma contração máxima voluntária, tendo esta sido adquirida todos os dias no início do turno. "
-    "Isto significa que a atividade muscular de cada pessoa é avaliada em relação à sua própria força máxima, "
+    "é expressa em **percentagem de uma contração máxima voluntária**, tendo esta sido adquirida todos os dias no início do turno. "
+    "Isto significa que a **atividade muscular de cada pessoa é avaliada em relação à sua própria força máxima**, "
     "permitindo uma interpretação mais justa e personalizada."
 )
 INTRO_4_EMG_PT = (
@@ -48,10 +48,11 @@ INTRO_10_EMG_PT = (
 RISK_PT = "Em relação aos figuras da atividade muscular alongo dos dias, foi delineado o seguinte risco:"
 
 PLOT_EXPLAIN_1_PT = ("O gráfico que se segue apresenta uma visão geral semanal da intensidade relativa da atividade "
-                     "muscular nos ombros (trapézios) esquerdo e direito. Cada linha corresponde a uma sessão de trabalho, "
-                     "identificada pelo horário, e mostra a percentagem do tempo em que o músculo esteve ativo, distribuída por diferentes níveis de esforço. "
-                    "As cores representam quanto intenso foi o esforço em relação ao padrão habitual da própria pessoa."
-                     "De um modo geral, estão previstas quatro sessões de aquisição por dia; no entanto, em alguns casos, "
+                     "muscular nos ombros (trapézios) esquerdo e direito. **Cada linha corresponde a uma sessão de trabalho**, "
+                     "identificada pelo horário, e mostra a **percentagem do tempo em que o músculo esteve ativo**, "
+                     "distribuída por os diferentes níveis de esforço. "
+                     "As cores representam quanto intenso foi o esforço em relação ao padrão habitual da própria pessoa."
+                     "De um modo geral, estão previstas quatro sessões de aquisição por dia, no entanto, em alguns casos, "
                      "podem ocorrer falhas nos dispositivos, resultando em dados em falta. "
                      "Sempre que a informação de um dos lados (esquerdo ou direito) não esteja disponível numa determinada sessão, "
                      "essa ausência é assinalada através de uma barra a cinzento. Caso os dados de um dos lados estejam em falta "

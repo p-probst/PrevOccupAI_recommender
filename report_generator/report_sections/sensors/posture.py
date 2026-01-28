@@ -11,7 +11,7 @@ INTRO_1_PT = "Sensores de movimento: estabilidade e variabilidade da postura sen
 
 INTRO_2_PT = (
     "O trabalho de escritório implica, na maioria dos casos, permanecer sentado durante longos períodos de tempo. "
-    "Tradicionalmente, o trabalho em postura sentada é considerado prejudicial quando realizado de forma muito estática, "
+    "Tradicionalmente, o **trabalho em postura sentada é considerado prejudicial** quando realizado de **forma muito estática**, "
     "ou seja, quando a pessoa permanece muito tempo na mesma posição. Este tipo de trabalho está associado a sobrecarga "
     "da coluna vertebral, sobretudo quando realizado em posturas não fisiológicas ou sem um bom apoio lombar, o que pode "
     "condicionar toda a postura até à cabeça."
@@ -19,21 +19,21 @@ INTRO_2_PT = (
 
 INTRO_3_PT = (
     "Estudos científicos recentes mostram que o corpo humano não foi concebido para permanecer imóvel durante longos "
-    "períodos. Pelo contrário, pequenas variações naturais da postura — mesmo quando estamos sentados — são consideradas "
-    "saudáveis e fazem parte de um bom controlo postural. Estas pequenas mudanças ajudam a distribuir melhor as cargas "
+    "períodos. Pelo contrário, **pequenas variações naturais da postura** — mesmo quando estamos sentados — são **consideradas saudáveis** "
+    "e fazem parte de um bom controlo postural. Estas pequenas mudanças ajudam a distribuir melhor as cargas "
     "sobre a coluna e os músculos, reduzindo a fadiga e o desconforto."
 )
 
 INTRO_4_PT = (
-    "Para avaliar este comportamento, foram utilizados dados de movimento recolhidos pelo smartphone colocado no tronco. "
-    "A partir destes dados, foi possível estimar o deslocamento do corpo enquanto se encontrava em posição sentada, "
+    "Para avaliar este comportamento, foram utilizados dados de **movimento recolhidos pelo smartphone colocado no tronco**. "
+    "A partir destes dados, foi possível **estimar o deslocamento do tronco** enquanto se encontrava em posição sentada, "
     "permitindo analisar a forma como a postura varia ao longo do tempo durante o trabalho."
 )
 
 INTRO_5_PT = (
-    "Um dos indicadores analisados foi a área da elipse de confiança a 95%. De forma simples, este valor representa a área "
-    "onde ocorrem a maioria (95%) dos pequenos movimentos do tronco durante o período analisado. Valores mais elevados "
-    "indicam maior variabilidade postural, enquanto valores muito baixos podem refletir uma postura excessivamente rígida "
+    "Um dos **indicadores analisados** foi a área da elipse de confiança a 95%. De forma simples, este valor representa a área onde ocorrem a maioria (95%) dos pequenos movimentos** "
+    "do tronco durante o período analisado. Valores mais elevados indicam maior variabilidade postural, enquanto valores "
+    "muito baixos podem refletir uma postura excessivamente rígida "
     "ou estática."
 )
 

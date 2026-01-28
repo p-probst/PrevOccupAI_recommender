@@ -1166,7 +1166,6 @@ def _generate_references(mdFile, refs_list=REFS_LIST, links_list=LINKS_LIST):
 def _generate_sensor_table(mdFile, list_rec):
     """
     Generate a Markdown table summarising sensor-based risk metrics.
-
     """
 
     metrics_list = [
@@ -1180,13 +1179,11 @@ def _generate_sensor_table(mdFile, list_rec):
     table_header = ['métrica', 'risco', 'incidência', 'dias', 'recomendação']
     num_cols = len(table_header)
 
-    # Create table with header
-    mdFile.new_table(columns=num_cols, rows=1, text=table_header)
+    table_rows = []
 
-    # Fill table rows
     for rec_dict, metric in zip(list_rec, metrics_list):
 
-        # Default values (no risk detected)
+        # Defaults: no risk
         num_instances = 0
         days = '-'
 
@@ -1194,21 +1191,27 @@ def _generate_sensor_table(mdFile, list_rec):
             num_instances = rec_dict[NUM_INSTANCES_KEY]
             days = rec_dict.get(RISK_DATES_KEY, '-')
 
-        # Convert days list to string if needed
         if isinstance(days, list):
             days = ', '.join(days)
 
-        # Extract rule and recommendation
         risk_rule = rec_dict.get(RULE_KEY, '-')
         recommendation = rec_dict.get(RECOMMENDATIONS_KEY, '-')
 
-        # Add row
-        mdFile.add_row([
+        table_rows.extend([
             metric,
             risk_rule,
             str(num_instances),
             str(days),
             recommendation
         ])
+
+    # Final table content: header + rows
+    table_content = table_header + table_rows
+
+    mdFile.new_table(
+        columns=num_cols,
+        rows=1 + len(list_rec),
+        text=table_content
+    )
 
 
