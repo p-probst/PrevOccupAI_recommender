@@ -30,7 +30,7 @@ from report_generator.report_sections.questionnaires.pain import PAIN_DICT
 from report_generator.report_sections.questionnaires.workload import WORKLOAD_DICT
 from report_generator.report_sections.sensors.posture import POSTURE_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
-    USER
+    USER, NUM_INSTANCES_KEY, RULE_KEY, RISK_DATES_KEY
 import recommender as recommender
 
 
@@ -38,6 +38,9 @@ import recommender as recommender
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
 def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, oh_profiles_path):
+
+    # list for holding the recommendations
+    list_recs = []
 
     # generate file with cover
     mdFile = _generate_file_and_cover(report_folder_path, subject_id)
@@ -99,15 +102,22 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     _generate_sensor_timeline_section(mdFile, subject_id, plots_path)
 
     # ------------------------ Sub-Section: Noise Sensor (daily recording) ------------------------ #
-    _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system)
+    noise_exposure_rec, noise_continuous_rec = _generate_noise_section(mdFile, subject_id, plots_path, oh_profile,
+                                                                       oh_profiles_path, recommendation_system)
+
+    # add recs to list
+    list_recs.extend([noise_exposure_rec, noise_continuous_rec])
     mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Sub-Section: Movement Sensors: Human Activities (daily recording) ------------------------ #
-    _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system)
+    (sit_proportions_rec, sit_total_rec, sit_continuous_rec_1h, sit_continuous_rec_2h, stand_proportions_rec,
+     steps_rec) = _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system)
+    list_recs.extend([sit_proportions_rec, sit_total_rec, sit_continuous_rec_1h, sit_continuous_rec_2h, stand_proportions_rec, steps_rec])
     mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Sub-Section: Movement Sensors: Posture (daily recording) ------------------------ #
-    _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system)
+    posture_rec = _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system)
+    list_recs.append(posture_rec)
     mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Sub-Section: Movement Sensors: Wrist (daily recording) ------------------------ #
@@ -115,14 +125,17 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Sub-Section: Hear Rate Sensor (daily recording) ------------------------ #
-    _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
+    max_hr_rec, slightly_elevated_hr_rec, elevated_hr_rec = _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
+    list_recs.extend([max_hr_rec, slightly_elevated_hr_rec, elevated_hr_rec])
     mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Sub-Section: EMG Sensor (daily recording) ------------------------ #
-    _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
+    emg_rec_high, emg_rec_above_high = _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
+    list_recs.extend([emg_rec_high, emg_rec_above_high])
 
     # ------------------------ Section: Summary ------------------------ #
     # TODO: generate table with all the measured metrics, the risk rules, the instances of occurrences, the days, and the recommendations
+    _generate_sensor_table(mdFile, list_recs)
 
     # ------------------------ Section: Conclusion ------------------------ #
     _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
@@ -283,6 +296,8 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
     _add_recommendation_section(mdFile, posture_recommendations[RECOMMENDATIONS_KEY])
     mdFile.write("\n")
 
+    return posture_recommendations
+
 
 def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system, emg_dict=EMG_DICT[PT]):
 
@@ -343,6 +358,8 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
     recommendations = _get_recommendation_set([emg_recommendations_above_high, emg_recommendations_high])
     _add_recommendation_section(mdFile, recommendations)
     mdFile.write("\n")
+
+    return emg_recommendations_high, emg_recommendations_above_high
 
 
 def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system, hr_dict=HEART_RATE_DICT[PT]):
@@ -407,6 +424,8 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     recommendations = _get_recommendation_set([slightly_elevated_hr_recommendations, elevated_hr_recommendations, max_hr_recommendations])
     _add_recommendation_section(mdFile, recommendations)
     mdFile.write("\n")
+
+    return max_hr_recommendations, slightly_elevated_hr_recommendations, elevated_hr_recommendations
 
 
 def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system, har_dict=HAR_DICT[PT]):
@@ -479,7 +498,9 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
     mdFile.write("\n")
     mdFile.new_line(' \pagebreak ')
     # check recommendations
-    recommendations = _get_recommendation_set([sitting_proportions_recommendations, sitting_total_recommendations, sitting_continuous_recommendations_1h, sitting_continuous_recommendations_2h, standing_proportions_recommendations])
+    recommendations = _get_recommendation_set(
+        [sitting_proportions_recommendations, sitting_total_recommendations, sitting_continuous_recommendations_1h,
+         sitting_continuous_recommendations_2h, standing_proportions_recommendations])
     _add_recommendation_section(mdFile, recommendations)
     mdFile.write("\n\\vspace{0.9em}\n")
     mdFile.write("\n")
@@ -498,6 +519,9 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
 
     # add recommendations
     _add_recommendation_section(mdFile, steps_recommendations[RECOMMENDATIONS_KEY])
+
+    return (sitting_proportions_recommendations, sitting_total_recommendations, sitting_continuous_recommendations_1h,
+            sitting_continuous_recommendations_2h, standing_proportions_recommendations, steps_recommendations)
 
 
 def _generate_wrist_section(mdFile, subject_id, plots_path, wrist_dict=WRIST_MOVEMENT_DICT[PT]):
@@ -577,6 +601,8 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
 
     # add recommendations
     _add_recommendation_section(mdFile, noise_exposure_recommendations[RECOMMENDATIONS_KEY])
+
+    return noise_exposure_recommendations, noise_continuous_recommendations
 
 
 def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_dict = SENSOR_TIMELINE_DICT[PT]):
@@ -1134,3 +1160,54 @@ def _generate_references(mdFile, refs_list=REFS_LIST, links_list=LINKS_LIST):
 
         #add link
         mdFile.write(mdFile.new_reference_link(link=link,text=link,reference_tag=f'{i+1}'))
+
+
+def _generate_sensor_table(mdFile, list_rec):
+    """
+    Generate a Markdown table summarising sensor-based risk metrics.
+
+    """
+
+    metrics_list = [
+        'ruído', 'ruído',
+        'atividades', 'atividades', 'atividades', 'atividades', 'atividades', 'atividades',
+        'posture',
+        'frequência cardíaca', 'frequência cardíaca', 'frequência cardíaca',
+        'EMG', 'EMG'
+    ]
+
+    table_header = ['métrica', 'risco', 'incidência', 'dias', 'recomendação']
+    num_cols = len(table_header)
+
+    # Create table with header
+    mdFile.new_table(columns=num_cols, rows=1, text=table_header)
+
+    # Fill table rows
+    for rec_dict, metric in zip(list_rec, metrics_list):
+
+        # Default values (no risk detected)
+        num_instances = 0
+        days = '-'
+
+        if NUM_INSTANCES_KEY in rec_dict:
+            num_instances = rec_dict[NUM_INSTANCES_KEY]
+            days = rec_dict.get(RISK_DATES_KEY, '-')
+
+        # Convert days list to string if needed
+        if isinstance(days, list):
+            days = ', '.join(days)
+
+        # Extract rule and recommendation
+        risk_rule = rec_dict.get(RULE_KEY, '-')
+        recommendation = rec_dict.get(RECOMMENDATIONS_KEY, '-')
+
+        # Add row
+        mdFile.add_row([
+            metric,
+            risk_rule,
+            str(num_instances),
+            str(days),
+            recommendation
+        ])
+
+
