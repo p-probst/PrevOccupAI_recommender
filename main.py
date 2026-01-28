@@ -7,7 +7,7 @@ PLOTS_OUTPUT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_plots"
 EMG_PLOT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\results\\emg_pipeline\\plots"
 REPORT_OUTPUT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_reports"
 
-subject_id = 80
+subject_id = 81
 
 
 generate_report(REPORT_OUTPUT_PATH, subject_id, PLOTS_OUTPUT_PATH, EMG_PLOT_PATH, OH_PROFILE_PATH)

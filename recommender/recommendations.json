@@ -4,10 +4,10 @@
             "sitting": {
                 "rule": {
                     "pt": [
-                        "Se existirem pelo menos **dois períodos contínuos de 1 hora** em postura sentada num dia.",
-                        "Se existir pelo menos **um período contínuo** de postura sentada com **duração de 2 horas** num dia.",
-                        "Se o **tempo total** passado em postura sentada exceder **5 horas** num dia.",
-                        "Se mais de **50% do tempo** monitorizado for passado em postura sentada."
+                        "Se existirem pelo menos **dois períodos contínuos de 1 hora** em **postura sentada num dia**.",
+                        "Se existir pelo menos **um período contínuo** de **postura sentada** com **duração de 2 horas num dia**.",
+                        "Se o **tempo total** passado em **postura sentada** exceder **5 horas num dia**.",
+                        "Se mais de **50% do tempo** monitorizado for passado em **postura sentada num dia**."
                     ],
                     "en": [
                         "If there are at least two continuous 1-hour sitting segments in a day.",

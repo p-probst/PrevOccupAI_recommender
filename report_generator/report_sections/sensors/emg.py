@@ -9,8 +9,8 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 INTRO_1_EMG_PT = "Sensor de atividade muscular (EMG)"
 INTRO_2_EMG_PT = (
-    "Os sinais de atividade muscular (EMG) foram recolhidos ao longo do turno de trabalho, "
-    "com o objetivo de avaliar o esforço realizado pelos músculos trapézios. "
+    "Os sinais de **atividade muscular (EMG)** foram recolhidos ao longo do turno de trabalho, "
+    "com o objetivo de **avaliar o esforço realizado pelos músculos trapézios**. "
     "Este tipo de medição permite perceber quando o músculo está em repouso, em atividade ligeira "
     "ou sujeito a esforço mais intenso e prolongado."
 )
@@ -50,12 +50,16 @@ RISK_PT = "Em relação aos figuras da atividade muscular alongo dos dias, foi d
 PLOT_EXPLAIN_1_PT = ("O gráfico que se segue apresenta uma visão geral semanal da intensidade relativa da atividade "
                      "muscular nos ombros (trapézios) esquerdo e direito. Cada linha corresponde a uma sessão de trabalho, "
                      "identificada pelo horário, e mostra a percentagem do tempo em que o músculo esteve ativo, distribuída por diferentes níveis de esforço. "
-                    "As cores representam quanto intenso foi o esforço em relação ao padrão habitual da própria pessoa:")
-PLOT_EXPLAIN_2_PT = "- **Abaixo do habitual (verde claro)**: esforço mais leve do que o normal para a pessoa."
-PLOT_EXPLAIN_3_PT = "- **Típico-baixo (verde)**: esforço dentro do padrão normal, em níveis mais baixos."
-PLOT_EXPLAIN_4_PT = "- **Típico-alto (laranja)**: esforço ainda considerado normal, mas mais elevado."
-PLOT_EXPLAIN_5_PT = ("- **Alto para si (vermelho)**: esforço acima do habitual para a pessoa, "
-    "podendo indicar maior exigência muscular.")
+                    "As cores representam quanto intenso foi o esforço em relação ao padrão habitual da própria pessoa."
+                     "De um modo geral, estão previstas quatro sessões de aquisição por dia; no entanto, em alguns casos, "
+                     "podem ocorrer falhas nos dispositivos, resultando em dados em falta. "
+                     "Sempre que a informação de um dos lados (esquerdo ou direito) não esteja disponível numa determinada sessão, "
+                     "essa ausência é assinalada através de uma barra a cinzento. Caso os dados de um dos lados estejam em falta "
+                     "ao longo de todo o dia, não é apresentada qualquer informação para esse lado nesse dia. "
+                     "Quando não existem dados disponíveis para ambos os lados numa sessão de trabalho, essa sessão não é "
+                     "representada no gráfico."
+                     )
+
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -74,7 +78,7 @@ EMG_DICT = {
         INTRODUCTION_KEY: [INTRO_1_EMG_PT, INTRO_2_EMG_PT, INTRO_3_EMG_PT, INTRO_4_EMG_PT, INTRO_5_EMG_PT, INTRO_6_EMG_PT,
                            INTRO_7_EMG_PT, INTRO_8_EMG_PT, INTRO_9_EMG_PT, INTRO_10_EMG_PT],
         RISK_RULE_KEY: [RISK_PT],
-        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_PT, PLOT_EXPLAIN_3_PT, PLOT_EXPLAIN_4_PT, PLOT_EXPLAIN_5_PT]
+        PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT]
     },
 
     ENG: {

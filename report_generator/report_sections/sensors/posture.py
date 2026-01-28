@@ -54,30 +54,32 @@ INTRO_7_PT = (
 RISK_PT = "Em relação aos figuras do movimento do tronco ao longo do dia, foi delineado o seguinte risco:"
 
 PLOT_EXPLAIN_1_PT = (
-    "Os gráficos apresentados mostram os pequenos movimentos do tronco enquanto esteve sentada/o ao longo de cada dia de trabalho. "
-    "Cada ponto representa uma posição do tronco registada pelos sensores. As zonas mais escuras indicam as posições "
-    "onde permaneceu durante mais tempo, enquanto as zonas mais claras correspondem a posições ocupadas de forma mais breve. "
-    "Assim, a intensidade da cor permite perceber não só o movimento, mas também quanto tempo passou em cada posição."
-    " De um modo geral, a dispersão dos pontos e a variação das cores refletem a variabilidade da postura ao longo do dia. "
-    "Uma concentração muito intensa de pontos numa área reduzida pode indicar uma postura excessivamente fixa, "
-    "enquanto uma distribuição mais alargada sugere a presença de pequenos ajustes posturais regulares, considerados "
-    "um comportamento natural e saudável."
+    "A figura apresenta, numa única visualização, os pequenos movimentos do tronco enquanto esteve sentada/o "
+    "ao longo dos diferentes dias de trabalho. Cada linha da figura corresponde a um dia da semana, e cada "
+    "coluna representa uma perspetiva diferente do tronco: vista superior, vista lateral e vista das costas. "
+    "Os pontos representam posições do tronco registadas pelos sensores, sendo que as zonas mais escuras indicam "
+    "as posições onde permaneceu durante mais tempo, enquanto as zonas mais claras correspondem a posições "
+    "ocupadas de forma mais breve. Desta forma, a intensidade da cor permite compreender não só o movimento, "
+    "mas também o tempo passado em cada posição. De um modo geral, a dispersão dos pontos e a variação das cores "
+    "refletem a variabilidade da postura ao longo do dia."
 )
 
 PLOT_EXPLAIN_2_PT = (
-    "Na vista de costas, é possível observar os movimentos do tronco para a esquerda e para a direita, ou seja, os ajustes laterais "
-    "da postura enquanto trabalha sentada/o, permitindo identificar possíveis assimetrias na postura ao longo do dia."
+    "- **Na vista superior**, é possível observar em conjunto os movimentos para a frente/trás e para os lados, oferecendo uma visão global "
+    "da forma como a postura variou ao longo do tempo."
 )
 
+
 PLOT_EXPLAIN_3_PT = (
-    "Na vista lateral, são representados os movimentos do tronco para a frente e para trás. Estas variações refletem ajustes naturais "
+    "- **Na vista lateral**, são representados os movimentos do tronco para a frente e para trás. Estas variações refletem ajustes naturais "
     "da postura durante o trabalho, como inclinar-se ligeiramente para a frente ou endireitar o tronco."
 )
 
 PLOT_EXPLAIN_4_PT = (
-    "Na vista superior, é possível observar em conjunto os movimentos para a frente/trás e para os lados, oferecendo uma visão global "
-    "da forma como a postura variou ao longo do tempo."
+    "- **Na vista de costas**, é possível observar os movimentos do tronco para a esquerda e para a direita, ou seja, os ajustes laterais "
+    "da postura enquanto trabalha sentada/o, permitindo identificar possíveis assimetrias na postura ao longo do dia."
 )
+
 
 
 # ------------------------------------------------------------------------------------------------------------------- #

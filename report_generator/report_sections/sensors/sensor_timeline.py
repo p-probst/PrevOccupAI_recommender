@@ -20,8 +20,8 @@ INTRO_5_PT = ("- **dois** dispositivos de medição de **atividade elétrica mus
               "programados para adquirir **quatro vezes por dia durante 20 minutos**.")
 PLOT_EXPLAIN_PT = (
     "A figura abaixo apresenta o cronograma de aquisição dos sensores. Existe um gráfico por cada dia de aquisição, e cada gráfico "
-    "contém barras horizontais que representam os períodos em que os quatro dispositivos (smartphone - verde, smartwatch - azul, "
-    "mBAN direito - laranja escuro, mBAN esquerdo - laranja claro) recolheram dados. "
+    "contém barras horizontais que representam os períodos em que os quatro dispositivos (**smartphone - verde, smartwatch - azul, "
+    "mBAN direito - laranja escuro, mBAN esquerdo - laranja claro**) recolheram dados. "
     "Caso existam aquisições em falta, é apresentada uma barra a cinzento no local onde a aquisição deveria ter ocorrido."
 )
 

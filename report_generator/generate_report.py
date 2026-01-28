@@ -246,28 +246,33 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
     # explain plot
     mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][0])
     mdFile.write("\n")
+
+    # bullet points
     mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][1])
+    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][2])
+    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][3])
+    mdFile.write("\n")
+
 
     # show plot - vista de costas
     _add_centered_image(mdFile,
-                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista de Costas.png'),
+                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_posture_views_grid.png'),
                         caption=None, max_width=1, max_height=0.99)
 
-    mdFile.write("\n")
-    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][2])
 
-    # vista de lado
-    _add_centered_image(mdFile,
-                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Lateral.png'),
-                        caption=None, max_width=1, max_height=0.99)
 
-    mdFile.write("\n")
-    mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][3])
-
-    # vista superior
-    _add_centered_image(mdFile,
-                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Superior.png'),
-                        caption=None, max_width=1, max_height=0.99)
+    # # vista de lado
+    # _add_centered_image(mdFile,
+    #                     os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Lateral.png'),
+    #                     caption=None, max_width=1, max_height=0.99)
+    #
+    #
+    #
+    #
+    # # vista superior
+    # _add_centered_image(mdFile,
+    #                     os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Superior.png'),
+    #                     caption=None, max_width=1, max_height=0.99)
 
     # risk section
     mdFile.new_paragraph(posture_dict[RISK_RULE_KEY][0])
