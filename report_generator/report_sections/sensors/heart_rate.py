@@ -23,8 +23,8 @@ INTRO_3_PT = (
 )
 
 INTRO_4_PT = (
-    "De modo a permitir a comparação dos resultados entre diferentes trabalhadores, foi calculado um rácio de "
-    "frequência cardíaca. Este rácio tem em consideração a frequência cardíaca máxima, que depende da idade, e a "
+    "De modo a permitir a comparação dos resultados entre diferentes trabalhadores, foi calculado um *rácio de frequência cardíaca*."
+    " Este rácio tem em consideração a frequência cardíaca máxima, que depende da idade, e a "
     "frequência cardíaca em repouso de cada trabalhador. Com base neste rácio, foram definidos diferentes níveis "
     "para classificar a frequência cardíaca. Uma vez que valores entre 30% e 39% são considerados normais durante "
     "atividade física ligeira, a presença destes valores, ou superiores, enquanto o trabalhador se encontra sentado "

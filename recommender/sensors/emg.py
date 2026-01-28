@@ -47,6 +47,8 @@ def generate_emg_csv(har_data_csv_path: str | Path, oh_profile_path: str) -> pd.
             base_path="sensor_metrics.emg",
             level_names=["date", "session"],
             value_paths=[
+                "left.EMG_relative_bins.typical_high_pct",
+                "right.EMG_relative_bins.typical_high_pct",
                 "left.EMG_relative_bins.high_for_you_pct",
                 "right.EMG_relative_bins.high_for_you_pct",
             ],
@@ -63,20 +65,29 @@ def generate_emg_csv(har_data_csv_path: str | Path, oh_profile_path: str) -> pd.
 
 
 def get_emg_recommendations(emg_subject_metrics_df: pd.DataFrame, oh_profile: Dict, subject_id: int,
+                            emg_class: str, emg_threshold: float, max_instances: int,
                             full_recommender_dict: Dict, language: str = 'pt') -> Dict:
     """
 
     :param emg_subject_metrics_df:
     :param oh_profile:
     :param subject_id:
-    :param hr_class:
+    :param emg_class:
+    :param emg_threshold:
+    :param max_instances:
     :param full_recommender_dict:
     :param language:
     :return:
     """
 
-    # init the recommendations dict with the rule
-    recommendations_dict = {RULE_KEY: full_recommender_dict['sensors']['emg']['rule'][language]}
+    # check emg class and init the recommendations dict with corresponding rule
+    if emg_class == 'high_for_you_pct':
+        recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['emg']['rule'][language][0]]}
+    elif emg_class == 'typical_high_pct':
+        recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['emg']['rule'][language][1]]}
+
+    else:
+        raise ValueError("hr_class must be \'typical_high_pct\' or \'typical_high_pct\'")
 
     # init list for holding the dates and counter for tracking risk instances
     risk_dates = set()
@@ -86,7 +97,7 @@ def get_emg_recommendations(emg_subject_metrics_df: pd.DataFrame, oh_profile: Di
     for emg_side in ['left', 'right']:
 
         # filter the DataFrame according to the rule
-        hr_risk_subjects_df = emg_subject_metrics_df[emg_subject_metrics_df[f'{emg_side}.EMG_relative_bins.high_for_you_pct'] > EMG_MAX_THRESHOLD]
+        hr_risk_subjects_df = emg_subject_metrics_df[emg_subject_metrics_df[f'{emg_side}.EMG_relative_bins.{emg_class}'] > emg_threshold]
 
         # get the unique subjects
         risk_subjects = hr_risk_subjects_df['subject_id'].unique().tolist()
@@ -100,7 +111,7 @@ def get_emg_recommendations(emg_subject_metrics_df: pd.DataFrame, oh_profile: Di
             for acquisition_date, date_df in subject_data.groupby('date'):
 
                 # check if there are at least two instances
-                if len(date_df) >= NUM_INSTANCES_HIGH_EMG:
+                if len(date_df) >= max_instances:
 
                     # get workload dict for the day
                     day_workload_dict = oh_profile['daily_questionnaires']['workload'][acquisition_date]

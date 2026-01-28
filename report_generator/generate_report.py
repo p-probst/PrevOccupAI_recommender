@@ -112,9 +112,11 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     # ------------------------ Sub-Section: Movement Sensors: Wrist (daily recording) ------------------------ #
     _generate_wrist_section(mdFile, subject_id, plots_path)
+    mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Sub-Section: Hear Rate Sensor (daily recording) ------------------------ #
     _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
+    mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Sub-Section: EMG Sensor (daily recording) ------------------------ #
     _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
@@ -140,6 +142,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     os.system(
         f'pandoc --verbose '
+        f'--number-sections '
         f'--toc --toc-depth=2 '
         f'-V toc-title="Índice" '
         f'--template="{template_path}" '
@@ -282,7 +285,13 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
     emg_subject_data_df = recommender.generate_emg_csv(Path.cwd(), oh_profiles_path)
 
     # ------- get emg recommendations --------- #
-    emg_recommendations = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id, recommendation_system)
+    emg_recommendations_above_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+                                                          'high_for_you_pct', 30.0, 2,
+                                                          recommendation_system)
+
+    emg_recommendations_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+                                                                   'typical_high_pct', 25.0, 3,
+                                                                   recommendation_system)
 
     mdFile.write("\n")
     # introduction title
@@ -320,11 +329,14 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
     mdFile.write("\n")
     # add risk rules and detection
     mdFile.new_paragraph(emg_dict[RISK_RULE_KEY][0])
-    _add_rules_and_risk_occurrences(mdFile, emg_recommendations)
+    _add_rules_and_risk_occurrences(mdFile, emg_recommendations_above_high)
+    mdFile.write("\n")
+    _add_rules_and_risk_occurrences(mdFile, emg_recommendations_high)
     mdFile.write("\n")
 
     # show recommendations
-    _add_recommendation_section(mdFile, emg_recommendations[RECOMMENDATIONS_KEY])
+    recommendations = _get_recommendation_set([emg_recommendations_above_high, emg_recommendations_high])
+    _add_recommendation_section(mdFile, recommendations)
     mdFile.write("\n")
 
 
@@ -359,6 +371,7 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     _add_rules_and_risk_occurrences(mdFile, max_hr_recommendations)
     mdFile.write("\n")
     mdFile.write("\n\\vspace{0.9em}\n")
+    mdFile.new_line(' \pagebreak ')
 
 
     # ----- Paragraph: relative hear rate explanation ----- #
@@ -383,7 +396,6 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     mdFile.write("\n")
     _add_rules_and_risk_occurrences(mdFile, elevated_hr_recommendations)
     mdFile.write("\n")
-    mdFile.write("\n\\vspace{0.9em}\n")
 
     # ----- Paragraph: RECOMMENDATIONS: all hr recommendations ----- #
     # get unrepeated recommendation set
@@ -502,7 +514,7 @@ def _generate_wrist_section(mdFile, subject_id, plots_path, wrist_dict=WRIST_MOV
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'wrist_movements',
                                      f'wrist_acceleration_{subject_id}.png'),
-                        caption=None, max_width=1, max_height=0.4)
+                        caption=None, max_width=1, max_height=0.35)
 
     mdFile.write("\n")
     mdFile.new_paragraph(wrist_dict[RISK_RULE_KEY][0])

@@ -68,7 +68,13 @@ elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_sub
 
 
 # ------- get emg recommendations --------- #
-emg_recommendations = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id, recommendation_system)
+emg_recommendations_above_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+                                                          'high_for_you_pct', 30.0, 2,
+                                                          recommendation_system)
+
+emg_recommendations_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+                                                          'typical_high_pct', 25.0, 3,
+                                                          recommendation_system)
 
 # ------- get posture recommendations --------- #
 low_variability_subjects_df, low_variability_threshold = assess_low_postural_variability(posture_subject_data_df, subject_col='subject_id', ellipse_area_col='posture_95_confidence_ellipse_area')

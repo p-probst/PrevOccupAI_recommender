@@ -4,10 +4,10 @@
             "sitting": {
                 "rule": {
                     "pt": [
-                        "Se existirem pelo menos dois períodos contínuos de 1 hora em postura sentada num dia.",
-                        "Se existir pelo menos um período contínuo de postura sentada com duração de 2 horas num dia.",
-                        "Se o tempo total passado em postura sentada exceder 5 horas num dia.",
-                        "Se mais de 50% do tempo monitorizado for passado em postura sentada."
+                        "Se existirem pelo menos **dois períodos contínuos de 1 hora** em postura sentada num dia.",
+                        "Se existir pelo menos **um período contínuo** de postura sentada com **duração de 2 horas** num dia.",
+                        "Se o **tempo total** passado em postura sentada exceder **5 horas** num dia.",
+                        "Se mais de **50% do tempo** monitorizado for passado em postura sentada."
                     ],
                     "en": [
                         "If there are at least two continuous 1-hour sitting segments in a day.",
@@ -34,7 +34,7 @@
             "standing": {
                 "rule": {
                     "pt": [
-                        "Se mais de 50% do tempo monitorizado for passado em pé."
+                        "Se **mais de 50% do tempo** monitorizado for passado **em pé**."
                     ],
                     "en": [
                         "If more than 50% of the monitored time is spent standing."
@@ -52,7 +52,7 @@
             "walking": {
                 "rule": {
                     "pt": [
-                        "Se o número de passos por dia for inferior a 700 (10% de 7000)."
+                        "Se o **número de passos** por dia for **inferior a 700** (10% de 7000)."
                     ],
                     "en": [
                         "If the number of steps per day is less than 700 (10 % of 7000)"
@@ -71,9 +71,9 @@
         "heart_rate": {
             "rule": {
                 "pt": [
-                    "Se a frequência cardíaca máxima exceder 100 BPM pelo menos duas vezes num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
-                    "Se o rácio da frequência cardíaca for classificado como 'ligeiramente elevado' durante pelo menos 25% do tempo, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
-                    "Se o rácio da frequência cardíaca for classificado como 'elevado' durante pelo menos 12,5% do tempo, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
+                    "Se a frequência cardíaca máxima **exceder 100 BPM pelo menos duas vezes num dia** e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
+                    "Se o rácio da frequência cardíaca for classificado como **'ligeiramente elevado'** durante pelo menos **25% do tempo**, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
+                    "Se o rácio da frequência cardíaca for classificado como **'elevado'** durante pelo menos **12,5% do tempo**, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
                 ],
                 "en": [
                     "If the maximum heart rate exceeds 100 beats per minute at least twice in a day and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_.",
@@ -99,8 +99,8 @@
         "noise": {
             "rule": {
                 "pt": [
-                    "Se existir pelo menos um período contínuo de 1 hora de ruído incomodativo.",
-                    "Se a exposição combinada a ruído incomodativo e ruído elevado for igual ou superior a 50% do tempo monitorizado."
+                    "Se existir pelo menos um **período contínuo de 1 hora** de **ruído incomodativo**.",
+                    "Se a exposição **combinada** a **ruído incomodativo** e **ruído elevado** for igual ou **superior a 50% do tempo** monitorizado."
                 ],
                 "en": [
                     "If there is at least one continuous 1-hour segment of disturbing noise.",
@@ -121,7 +121,7 @@
         "posture": {
             "rule": {
                 "pt": [
-                    "Se a área percorrida pelo tronco for inferior a 0,6 metros quadrados."
+                    "Se a **área percorrida pelo tronco** for **inferior a 0,6 metros quadrados**."
                 ],
                 "en": [
                     "If the area covered by the torso is less than 0.6 square meters."
@@ -139,7 +139,8 @@
         "emg": {
             "rule": {
                 "pt": [
-                    "Se o músculo esteve em nível de contração **Alto para si** durante mais de 30% do tempo, em pelo menos duas aquisições no mesmo dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
+                    "Se o músculo (direto ou esquerdo) esteve em nível de contração **Alto para si** durante mais de **30% do tempo**, em pelo menos **duas aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
+                  "Se o músculo (direto ou esquerdo) esteve em nível de contração **Típico-alto** durante mais de **25% do tempo**, em pelo menos **três aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
                 ],
                 "en": [
                     "If the muscle was in activity level High for you for more than 30% of the time, in at least two acquisitions on the same day, and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_."
@@ -163,7 +164,7 @@
                 "score_a_adapted": {
                     "rule": {
                         "pt": [
-                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -185,7 +186,7 @@
                 "monitor_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -207,7 +208,7 @@
                 "phone_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -229,7 +230,7 @@
                 "mouse_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -249,7 +250,7 @@
                 "keyboard_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -272,7 +273,7 @@
             "Nível de Iluminação": {
                 "rule": {
                     "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -292,7 +293,7 @@
             "Ar": {
                 "rule": {
                     "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -310,7 +311,7 @@
             "Ruído": {
                 "rule": {
                     "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -328,7 +329,7 @@
             "Design do Escritório": {
                 "rule": {
                     "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -346,7 +347,7 @@
             "Organização do Escritório": {
                 "rule": {
                     "pt": [
-                        "Se a cor for amarela ou vermelha para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."

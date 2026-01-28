@@ -26,8 +26,8 @@ INTRO_4_PT = (
     "pode contribuir para posturas desfavoráveis e desconforto músculo-esquelético."
 )
 INTRO_5_PT = (
-    "A percentagem de movimentos significativos do punho indica quantos dos movimentos realizados "
-    "foram mais rápidos ou abruptos, em relação ao total de movimentos registados "
+    "*A percentagem de movimentos significativos* do punho indica quantos dos movimentos realizados "
+    "foram mais rápidos ou abruptos, *em relação ao total de movimentos registados* "
     "durante o trabalho sentado. "
     "Esta métrica permite identificar tanto situações de elevada atividade do punho "
     "como padrões de imobilidade prolongada, devendo ser interpretada no contexto ergonómico."
@@ -35,7 +35,7 @@ INTRO_5_PT = (
 
 PLOT_EXPLAIN_1_PT = (
     "O gráfico apresenta a percentagem de movimentos significativos do punho "
-    "em cada aquisição ao longo da semana. "
+    "ao longo da semana. "
     "Cada linha corresponde a um dia de trabalho e cada coluna a uma aquisição. "
     "Valores mais elevados indicam maior frequência de movimentos rápidos do punho, "
     "enquanto células a cinzento indicam ausência de dados."
