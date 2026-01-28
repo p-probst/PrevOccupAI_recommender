@@ -7,7 +7,7 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_1_PT = "Sensores de movimento - movimentos significativos do pulso"
+INTRO_1_PT = "Sensores de movimento: movimentos significativos do pulso"
 INTRO_2_PT =(
     "Os movimentos do punho analisados nesta secção referem-se ao punho da mão que utiliza o rato "
     "e foram avaliados apenas durante os períodos em que o trabalhador se encontrava sentado. "

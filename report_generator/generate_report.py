@@ -9,7 +9,6 @@ import re
 from typing import List, Dict, Union
 from datetime import datetime
 from pathlib import Path
-from mdutils import Html
 from mdutils.mdutils import MdUtils
 
 from report_generator.report_sections.general.references import REFS_LIST, LINKS_LIST
@@ -33,23 +32,25 @@ from report_generator.report_sections.sensors.posture import POSTURE_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
     USER
 import recommender as recommender
-from recommender import assess_low_postural_variability
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-
-
 def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, oh_profiles_path):
 
     # generate file with cover
     mdFile = _generate_file_and_cover(report_folder_path, subject_id)
 
+
+
     # init work type
     work_type = ''
 
-    # introduction
+    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
+
+    # ------------------------ Section: Introduction ------------------------ #
     _generate_introduction_section(mdFile)
     mdFile.new_line(' \pagebreak ')
     mdFile.write("\n")
@@ -73,52 +74,59 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
         recommendation_system = json.load(file)
 
-    # questionnaires
+
+    # ------------------------ Section: Questionnaires ------------------------ #
     _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles_path, recommendation_system, work_type)
 
     mdFile.write("\n")
     _generate_daily_questionnaire(mdFile, subject_id, plots_path)
     mdFile.new_line(' \pagebreak ')
     mdFile.write("\n")
-    # introduction title
+
+
+    # ------------------------ Section: Sensors ------------------------ #
     mdFile.new_header(level=1, title="Resultados das suas aquisições")
     mdFile.write("\n")
     # write paragraphs
     mdFile.new_paragraph(SENSORS_INTRODUCTION)
     mdFile.write("\n")
 
-    # generate environmental sensors
+    # ------------------------ Sub-Section: Environmental Sensors (single recording) ------------------------ #
     _generate_environmental_sensors_section(mdFile, subject_id, plots_path)
-
     mdFile.new_line(' \pagebreak ')
 
-    # sensor timeline
+    # ------------------------ Sub-Section: Sensor Timeline (daily recording) ------------------------ #
     _generate_sensor_timeline_section(mdFile, subject_id, plots_path)
 
-    # noise
+    # ------------------------ Sub-Section: Noise Sensor (daily recording) ------------------------ #
     _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system)
-
-    # human actvitieis
     mdFile.new_line(' \pagebreak ')
+
+    # ------------------------ Sub-Section: Movement Sensors: Human Activities (daily recording) ------------------------ #
     _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system)
     mdFile.new_line(' \pagebreak ')
-    # posture
+
+    # ------------------------ Sub-Section: Movement Sensors: Posture (daily recording) ------------------------ #
     _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system)
     mdFile.new_line(' \pagebreak ')
-    # wrist
+
+    # ------------------------ Sub-Section: Movement Sensors: Wrist (daily recording) ------------------------ #
     _generate_wrist_section(mdFile, subject_id, plots_path)
 
-    # heart rate
+    # ------------------------ Sub-Section: Hear Rate Sensor (daily recording) ------------------------ #
     _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
-    # # emg
+
+    # ------------------------ Sub-Section: EMG Sensor (daily recording) ------------------------ #
     _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
 
-    # conclusion
-    _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
+    # ------------------------ Section: Summary ------------------------ #
+    # TODO: generate table with all the measured metrics, the risk rules, the instances of occurrences, the days, and the recommendations
 
+    # ------------------------ Section: Conclusion ------------------------ #
+    _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
     mdFile.new_line(' \pagebreak ')
 
-    # references
+    # ------------------------ Section: References ------------------------ #
     _generate_references(mdFile)
 
     # generate pdf
@@ -130,7 +138,10 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     mdFile.create_md_file()
 
-    os.system(f'pandoc --verbose '
+    os.system(
+        f'pandoc --verbose '
+        f'--toc --toc-depth=2 '
+        f'-V toc-title="Índice" '
         f'--template="{template_path}" '
         f'-H "{header_path}" '
         f'-V geometry:left=0.8in,right=0.8in,top=1.0in,bottom=1.0in '
@@ -152,6 +163,15 @@ def _generate_file_and_cover(report_folder_path, subject_id):
     # create new file
     mdFile = MdUtils(file_name=os.path.join(report_folder_path, f'{subject_id}_report'))
 
+    # YAML metadata block — MUST be first
+    mdFile.write(
+        "---\n"
+        "titlepage: true\n"
+        "titlepage-background: \"report_cover_slide.pdf\"\n"
+        "titlepage-rule-height: 0\n"
+        "---\n\n"
+    )
+
     return mdFile
 
 
@@ -161,6 +181,7 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.new_header(level=1, title=introduction_dict[SECTION_0])
 
     # write paragraphs
+    mdFile.new_header(level=2, title="Agradecimentos")
     mdFile.new_paragraph(introduction_dict[SECTION_1])
     mdFile.write("\n")
 
@@ -227,7 +248,7 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
     # show plot - vista de costas
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista de Costas.png'),
-                        caption=None, max_width=1, max_height=0.9)
+                        caption=None, max_width=1, max_height=0.99)
 
     mdFile.write("\n")
     mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][2])
@@ -235,7 +256,7 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
     # vista de lado
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Lateral.png'),
-                        caption=None, max_width=1, max_height=0.9)
+                        caption=None, max_width=1, max_height=0.99)
 
     mdFile.write("\n")
     mdFile.new_paragraph(posture_dict[PLOT_EXPLAIN_KEY][3])
@@ -243,7 +264,7 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
     # vista superior
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Superior.png'),
-                        caption=None, max_width=1, max_height=0.9)
+                        caption=None, max_width=1, max_height=0.99)
 
     # risk section
     mdFile.new_paragraph(posture_dict[RISK_RULE_KEY][0])
