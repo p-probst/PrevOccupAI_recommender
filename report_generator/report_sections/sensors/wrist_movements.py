@@ -40,7 +40,16 @@ PLOT_EXPLAIN_1_PT = (
     "Valores mais elevados indicam maior frequência de movimentos rápidos do punho, "
     "enquanto células a cinzento indicam ausência de dados."
 )
-RISK_PT=''
+RISK_PT = (
+    "Não existem, atualmente, indicadores científicos que definam uma percentagem ideal de movimentos "
+    "significativos do punho. No entanto, um número reduzido destes movimentos pode indicar um comportamento "
+    "mais estático do punho que, em conjunto com a utilização prolongada de um rato não ergonómico ou a ausência "
+    "de apoio para o punho, pode conduzir a uma flexão do punho superior a 20 graus, valor considerado de risco "
+    "para o desenvolvimento de lesões músculo-esqueléticas. "
+    "Assim, mesmo não sendo possível definir recomendações personalizadas, a realização regular de exercícios "
+    "de mobilização do punho pode constituir uma prática saudável para ajudar a reduzir este risco."
+)
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
 # ------------------------------------------------------------------------------------------------------------------- #

@@ -51,7 +51,7 @@ PLOT_EXPLAIN_1_PT = (
 
 PLOT_EXPLAIN_2_PT = (
     "O gráfico seguinte mostra a distribuição dos níveis de ruído por dia, ajudando a compreender a proporção "
-    "do tempo, relativamente à duração total do seu turno de trabalho, durante a qual esteve exposta/o aos "
+    "do tempo, relativamente à duração total do seu turno de trabalho, durante o qual esteve exposta/o aos "
     "diferentes níveis de ruído. Cada barra vertical corresponde a um dia de aquisição."
 )
 

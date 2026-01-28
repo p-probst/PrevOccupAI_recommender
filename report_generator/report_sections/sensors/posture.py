@@ -25,8 +25,8 @@ INTRO_3_PT = (
 )
 
 INTRO_4_PT = (
-    "Para avaliar este comportamento, foram utilizados dados de movimento recolhidos por um smartphone colocado no tronco. "
-    "A partir destes dados, foi possível estimar o deslocamento do corpo enquanto a pessoa se encontrava sentada, "
+    "Para avaliar este comportamento, foram utilizados dados de movimento recolhidos pelo smartphone colocado no tronco. "
+    "A partir destes dados, foi possível estimar o deslocamento do corpo enquanto se encontrava em posição sentada, "
     "permitindo analisar a forma como a postura varia ao longo do tempo durante o trabalho."
 )
 
@@ -51,14 +51,14 @@ INTRO_7_PT = (
     "bem-estar geral ao longo do dia de trabalho."
 )
 
-RISK_PT = "Em relação aos figuras do movimento do tronco ao longo do dia, foram delineados o seguinte risco:"
+RISK_PT = "Em relação aos figuras do movimento do tronco ao longo do dia, foi delineado o seguinte risco:"
 
 PLOT_EXPLAIN_1_PT = (
     "Os gráficos apresentados mostram os pequenos movimentos do tronco enquanto esteve sentada/o ao longo de cada dia de trabalho. "
     "Cada ponto representa uma posição do tronco registada pelos sensores. As zonas mais escuras indicam as posições "
     "onde permaneceu durante mais tempo, enquanto as zonas mais claras correspondem a posições ocupadas de forma mais breve. "
     "Assim, a intensidade da cor permite perceber não só o movimento, mas também quanto tempo passou em cada posição."
-    "De um modo geral, a dispersão dos pontos e a variação das cores refletem a variabilidade da postura ao longo do dia. "
+    " De um modo geral, a dispersão dos pontos e a variação das cores refletem a variabilidade da postura ao longo do dia. "
     "Uma concentração muito intensa de pontos numa área reduzida pode indicar uma postura excessivamente fixa, "
     "enquanto uma distribuição mais alargada sugere a presença de pequenos ajustes posturais regulares, considerados "
     "um comportamento natural e saudável."

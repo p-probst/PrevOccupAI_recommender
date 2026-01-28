@@ -19,10 +19,9 @@ INTRO_4_PT = ("- Um **smartwatch**, agendado para adquirir **quatro vezes por di
 INTRO_5_PT = ("- **dois** dispositivos de medição de **atividade elétrica muscular** (mBAN), colocados no trapézio esquerdo (esq.) e direito (dir.),"
               "programados para adquirir **quatro vezes por dia durante 20 minutos**.")
 PLOT_EXPLAIN_PT = (
-    "A figura abaixo apresenta o cronograma de aquisição dos sensores, com o objetivo de o relembrar o "
-    "dos dias e horários em que decorreram as aquisições. Existe um gráfico por cada dia de aquisição, e cada gráfico "
-    "contém barras horizontais que representam os períodos em que os quatro dispositivos (smartphone - cor verde, smartwatch - cor azul, "
-    "mBAN direito - cor laranja escuro, mBAN esquerdo - cor laranja claro) recolheram dados. "
+    "A figura abaixo apresenta o cronograma de aquisição dos sensores. Existe um gráfico por cada dia de aquisição, e cada gráfico "
+    "contém barras horizontais que representam os períodos em que os quatro dispositivos (smartphone - verde, smartwatch - azul, "
+    "mBAN direito - laranja escuro, mBAN esquerdo - laranja claro) recolheram dados. "
     "Caso existam aquisições em falta, é apresentada uma barra a cinzento no local onde a aquisição deveria ter ocorrido."
 )
 

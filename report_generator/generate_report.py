@@ -93,20 +93,20 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system)
 
     # human actvitieis
+    mdFile.new_line(' \pagebreak ')
     _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system)
-
+    mdFile.new_line(' \pagebreak ')
     # posture
     _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system)
-
+    mdFile.new_line(' \pagebreak ')
     # wrist
     _generate_wrist_section(mdFile, subject_id, plots_path)
 
     # heart rate
     _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
-
     # # emg
     # _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
-
+    mdFile.new_line(' \pagebreak ')
     # generate pdf
     template_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
     header_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\header.tex"
@@ -322,8 +322,10 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     _add_centered_image(mdFile,os.path.join(plots_path, str(subject_id), 'HR_ranges',f'{subject_id}_HR_ranges.png'),
                         caption=None, max_width=1, max_height=0.5)
 
+    mdFile.new_paragraph(hr_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, max_hr_recommendations)
     mdFile.write("\n")
+    mdFile.write("\n\\vspace{0.9em}\n")
 
     # describe plot - circular
     mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][1])
@@ -334,6 +336,7 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
                                      f'HR_plot_circular_{subject_id}.png'),
                         caption=None, max_width=1, max_height=0.9)
 
+    mdFile.new_paragraph(hr_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, slightly_elevated_hr_recommendations)
     mdFile.write("\n")
     _add_rules_and_risk_occurrences(mdFile, elevated_hr_recommendations)
@@ -389,6 +392,8 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
             max_height=0.6
         )
 
+    mdFile.new_line(' \pagebreak ')
+
     # timeline risks
     mdFile.new_paragraph(har_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, sitting_continuous_recommendations_1h)
@@ -397,6 +402,8 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
     mdFile.write("\n")
     _add_rules_and_risk_occurrences(mdFile, sitting_total_recommendations)
     mdFile.write("\n")
+
+    mdFile.write("\n\\vspace{0.9em}\n")
 
     # describe plot - distributions
     mdFile.new_paragraph(har_dict[PLOT_EXPLAIN_KEY][1])
@@ -410,10 +417,11 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
     _add_rules_and_risk_occurrences(mdFile, sitting_proportions_recommendations)
     _add_rules_and_risk_occurrences(mdFile, standing_proportions_recommendations)
     mdFile.write("\n")
-
+    mdFile.new_line(' \pagebreak ')
     # check recommendations
     recommendations = _get_recommendation_set([sitting_proportions_recommendations, sitting_total_recommendations, sitting_continuous_recommendations_1h, sitting_continuous_recommendations_2h, standing_proportions_recommendations])
     _add_recommendation_section(mdFile, recommendations)
+    mdFile.write("\n\\vspace{0.9em}\n")
     mdFile.write("\n")
 
     # describe plot - steps
@@ -453,6 +461,9 @@ def _generate_wrist_section(mdFile, subject_id, plots_path, wrist_dict=WRIST_MOV
                                      f'wrist_acceleration_{subject_id}.png'),
                         caption=None, max_width=1, max_height=0.4)
 
+    mdFile.write("\n")
+    mdFile.new_paragraph(wrist_dict[RISK_RULE_KEY][0])
+
 
 
 def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profiles_path, recommendation_system, noise_dict=NOISE_DICT[PT]):
@@ -489,7 +500,8 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
     mdFile.write("\n")
     mdFile.new_paragraph(noise_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, noise_continuous_recommendations)
-
+    mdFile.write("\n\\vspace{0.9em}\n")
+    mdFile.write("\n")
     # describe plot - distributions
     mdFile.new_paragraph(noise_dict[PLOT_EXPLAIN_KEY][1])
 
@@ -499,6 +511,7 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
 
     mdFile.write("\n")
     mdFile.new_paragraph(noise_dict[RISK_RULE_KEY][1])
+    mdFile.write("\n")
     _add_rules_and_risk_occurrences(mdFile, noise_exposure_recommendations)
 
 
@@ -526,7 +539,7 @@ def _generate_sensor_timeline_section(mdFile, subject_id, plots_path, timeline_d
 
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id) , f'{subject_id}_sensor_timeline_plot.png'),
-                        caption=None, max_width=1, max_height=0.5)
+                        caption=None, max_width=1, max_height=0.6)
 
 
 def _generate_environmental_sensors_section(mdFile, subject_id, plots_path, cml_dict = CML_SENSORS_DICT[PT]):
@@ -583,6 +596,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     else:
         work_type_full = "back office"
 
+    mdFile.write("\n")
     # write introduction
     mdFile.new_header(level=1, title=intro_dict[SECTION_0])
 
@@ -632,6 +646,8 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # add recommendations
     _add_questionnaire_recommendations(mdFile, rosa_recommendations[RECOMMENDATIONS_KEY])
     # --------------------------------------- environmental questionnaire --------------------------------------#
+
+
     # intro
     mdFile.write("\n")
     mdFile.new_header(level=2, title=env_dict[INTRODUCTION_KEY][0])
@@ -668,6 +684,9 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     _add_questionnaire_recommendations(mdFile, environment_recommendations[RECOMMENDATIONS_KEY])
     # --------------------------------------- PSYCHOSOCIAL (COPSOQ AND MUEQ) --------------------------------------#
     mdFile.write("\n")
+    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
+
     # intro
     mdFile.new_header(level=2, title=psycho_dict[INTRODUCTION_KEY][0])
     mdFile.new_paragraph(psycho_dict[INTRODUCTION_KEY][1])
@@ -697,7 +716,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # add plot -------------------COPSOQ work type -------------------------
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'questionnaire_plots', f'copsoq_{work_type}.png'),
-                        caption=f'Resultados do questionário COPSOQ: média de trabalhadores de **{work_type_full}**')
+                        caption=f'Resultados do questionário COPSOQ: média de trabalhadores de {work_type_full}')
     mdFile.write("\n")
     mdFile.new_line(' \pagebreak ')
 
@@ -719,7 +738,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # show  ----------------------------- MUEQ worktype
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'questionnaire_plots', f'mueq_{work_type}.png'),
-                        caption=f'Resultados do questionário MUEQ: média de trabalhadores de **{work_type_full}**')
+                        caption=f'Resultados do questionário MUEQ: média de trabalhadores de {work_type_full}')
 
     mdFile.write("\n")
 
@@ -951,7 +970,7 @@ def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
 
     else:
         mdFile.new_paragraph(
-            r"$\rightarrow$ Não foram detetados fatores de risco.")
+            r"$\hookrightarrow$ Não foram detetados fatores de risco.")
         mdFile.write("\n")
 
 
