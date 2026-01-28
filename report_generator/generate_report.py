@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from mdutils.mdutils import MdUtils
 
+from report_generator.report_sections.general.Summary import SUMMARY_DICT, TITLE_KEY, SUB_TITLE_S_KEY, SUB_TITLE_Q_KEY
 from report_generator.report_sections.general.references import REFS_LIST, LINKS_LIST
 from report_generator.report_sections.general.conclusion import CONCLUSION_DICT
 from report_generator.report_sections.general.introduction import *
@@ -132,18 +133,12 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     # ------------------------ Sub-Section: EMG Sensor (daily recording) ------------------------ #
     emg_rec_high, emg_rec_above_high = _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
     list_recs.extend([emg_rec_high, emg_rec_above_high])
+    mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Section: Summary ------------------------ #
-    # TODO: generate table with all the measured metrics, the risk rules, the instances of occurrences, the days, and the recommendations
-    # Force everything so the table cannot “escape” the environment
-    mdFile.new_paragraph(r"\clearpage")
-    mdFile.new_paragraph(r"\begin{landscape}")
-    mdFile.new_paragraph(r"\thispagestyle{plain}")
-    _generate_sensor_table(mdFile, list_recs)
+    _generate_summary_section(mdFile, list_recs)
+    mdFile.new_line(' \pagebreak ')
 
-
-    mdFile.new_paragraph(r"\end{landscape}")
-    mdFile.new_paragraph(r"\clearpage")
     # ------------------------ Section: Conclusion ------------------------ #
     _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
     mdFile.new_line(' \pagebreak ')
@@ -874,6 +869,34 @@ def _generate_daily_questionnaire(mdFile, subject_id, plots_path, pain_dict=PAIN
     mdFile.write("\n")
 
 
+def _generate_summary_section(mdFile, list_recs, summary_dict=SUMMARY_DICT[PT]):
+
+    # add title
+    mdFile.write("\n")
+    mdFile.new_header(level=1, title=summary_dict[TITLE_KEY])
+    mdFile.write("\n")
+
+    # add text
+    mdFile.new_paragraph(summary_dict[SECTION_1])
+    mdFile.write("\n")
+    mdFile.new_paragraph(summary_dict[SECTION_2])
+    mdFile.write("\n")
+
+    # add subtitle for questionnaire tables
+    mdFile.new_header(level=2, title=summary_dict[SUB_TITLE_Q_KEY])
+    mdFile.write("\n")
+    # TODO: add table with questionnaire recommendation summary
+
+    # add subtitle for sensor tables
+    mdFile.new_header(level=2, title=summary_dict[SUB_TITLE_S_KEY])
+    _generate_sensor_summary_blocks(mdFile, list_recs)
+    mdFile.write("\n")
+
+
+
+
+
+
 def _generate_conclusion_section(mdFile, conclusion_dict=INTRO_DICT[PT]):
     """
 
@@ -882,7 +905,8 @@ def _generate_conclusion_section(mdFile, conclusion_dict=INTRO_DICT[PT]):
     :param introduction_dict:
     :return:
     """
-    # introduction title
+    # title
+    mdFile.write("\n")
     mdFile.new_header(level=1, title=conclusion_dict[SECTION_0])
 
     # write paragraphs
@@ -1169,54 +1193,112 @@ def _generate_references(mdFile, refs_list=REFS_LIST, links_list=LINKS_LIST):
         mdFile.write(mdFile.new_reference_link(link=link,text=link,reference_tag=f'{i+1}'))
 
 
-def _generate_sensor_table(mdFile, list_rec):
-    """
-    Generate a Markdown table summarising sensor-based risk metrics.
-    """
 
+
+def _md_emphasis_to_latex(s: str) -> str:
+    s = str(s)
+
+    # Bold first
+    s = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", s)
+
+    # Italic (single asterisk, not part of ** **)
+    s = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"\\emph{\1}", s)
+
+    return s
+
+
+def _latex_escape_with_md(s: str) -> str:
+    """
+    Convert markdown emphasis to LaTeX and escape unsafe characters,
+    while preserving LaTeX commands we intentionally inserted.
+    """
+    s = _md_emphasis_to_latex(s)
+
+    # Escape LaTeX special chars (do NOT escape backslashes or braces)
+    s = s.replace("&", r"\&")
+    s = s.replace("%", r"\%")
+    s = s.replace("#", r"\#")
+    s = s.replace("_", r"\_")
+    s = s.replace("~", r"\textasciitilde{}")
+    s = s.replace("^", r"\textasciicircum{}")
+
+    return s
+
+
+def _as_multiline(items, vspace: str = "5pt", vspace_end: str = "1pt") -> str:
+    """
+    Convert a list of sentences into a top-aligned multiline LaTeX cell
+    with:
+      - small vertical space between lines
+      - an extra vertical space after the last item
+    """
+    if items is None:
+        return "-"
+
+    if isinstance(items, list):
+        sep = rf" \\[{vspace}] "
+        txt = sep.join(_latex_escape_with_md(x) for x in items)
+
+        # extra space after the last line
+        txt = txt + rf" \\[{vspace_end}]"
+
+        return rf"\parbox[t]{{\linewidth}}{{{txt}}}"
+
+    return _latex_escape_with_md(items)
+
+def _generate_sensor_summary_blocks(mdFile, list_rec):
     metrics_list = [
         'ruído', 'ruído',
         'atividades', 'atividades', 'atividades', 'atividades', 'atividades', 'atividades',
-        'posture',
+        'postura',
         'frequência cardíaca', 'frequência cardíaca', 'frequência cardíaca',
         'EMG', 'EMG'
     ]
 
-    table_header = ['métrica', 'risco', 'incidência', 'dias', 'recomendação']
-    num_cols = len(table_header)
-
-    table_rows = []
+    mdFile.write("\\clearpage\n\n")
+    mdFile.write("\\small\n")
+    mdFile.write("\\setlength{\\tabcolsep}{6pt}\n")
+    mdFile.write("\\renewcommand{\\arraystretch}{1.15}\n\n")
 
     for rec_dict, metric in zip(list_rec, metrics_list):
+        num_instances = rec_dict.get(NUM_INSTANCES_KEY, 0)
 
-        # Defaults: no risk
-        num_instances = 0
-        days = '-'
-
-        if NUM_INSTANCES_KEY in rec_dict:
-            num_instances = rec_dict[NUM_INSTANCES_KEY]
-            days = rec_dict.get(RISK_DATES_KEY, '-')
-
+        days = rec_dict.get(RISK_DATES_KEY, "-")
         if isinstance(days, list):
-            days = ', '.join(days)
+            days = ", ".join(days)
 
-        risk_rule = rec_dict.get(RULE_KEY, '-')
-        recommendation = rec_dict.get(RECOMMENDATIONS_KEY, '-')
+        risk_rule = rec_dict.get(RULE_KEY, "-")
+        recommendation = rec_dict.get(RECOMMENDATIONS_KEY, "-")
 
-        table_rows.extend([
-            metric,
-            risk_rule,
-            str(num_instances),
-            str(days),
-            recommendation
-        ])
+        metric_tex = _latex_escape_with_md(metric)
+        incid_tex = _latex_escape_with_md(num_instances)
+        days_tex = _latex_escape_with_md(days)
 
-    # Final table content: header + rows
-    table_content = table_header + table_rows
+        # risk_rule might be a list; show as bullets too
+        risk_tex = _as_multiline(risk_rule)
+        rec_tex = _as_multiline(recommendation)
 
-    mdFile.new_table(
-        columns=num_cols,
-        rows=1 + len(list_rec),
-        text=table_content
-    )
+        # A “block” with controlled wrapping using tabularx
+        mdFile.write(r"\noindent")
+        mdFile.write(r"\begin{tabularx}{\textwidth}{@{}p{3.0cm} >{\raggedright\arraybackslash}X@{}}")
+        mdFile.write("\n")
+        mdFile.write(rf"\textbf{{Métrica}} & {metric_tex} \\")
+        mdFile.write("\n")
+        mdFile.write(rf"\textbf{{Incidência}} & {incid_tex} \\")
+        mdFile.write("\n")
+        mdFile.write(rf"\textbf{{Dias}} & {days_tex} \\")
+        mdFile.write("\n")
+        mdFile.write(rf"\textbf{{Risco}} & {risk_tex} \\")
+        mdFile.write("\n")
+        mdFile.write(rf"\textbf{{Recomendação}} & {rec_tex} \\")
+        mdFile.write("\n")
+        mdFile.write(r"\end{tabularx}")
+        mdFile.write("\n")
+        mdFile.write(r"\vspace{0.6em}")
+        mdFile.write("\n")
+        mdFile.write(r"\hrule")
+        mdFile.write("\n")
+        mdFile.write(r"\vspace{0.8em}")
+        mdFile.write("\n\n")
 
+    mdFile.write("\\normalsize\n")

@@ -71,14 +71,14 @@
         "heart_rate": {
             "rule": {
                 "pt": [
-                    "Se a frequência cardíaca máxima **exceder 100 BPM pelo menos duas vezes num dia** e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
-                    "Se o rácio da frequência cardíaca for classificado como **'ligeiramente elevado'** durante pelo menos **25% do tempo**, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
-                    "Se o rácio da frequência cardíaca for classificado como **'elevado'** durante pelo menos **12,5% do tempo**, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
+                    "Se a frequência cardíaca máxima **exceder 100 BPM pelo menos duas vezes num dia** e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*.",
+                    "Se o rácio da frequência cardíaca for classificado como **'ligeiramente elevado'** durante pelo menos **25% do tempo**, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*.",
+                    "Se o rácio da frequência cardíaca for classificado como **'elevado'** durante pelo menos **12,5% do tempo**, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*."
                 ],
                 "en": [
-                    "If the maximum heart rate exceeds 100 beats per minute at least twice in a day and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_.",
-                    "If the heart rate ratio is classified as 'slightly elevated' for at least 25% of the time on at least two occasions in a day and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_.",
-                    "If the heart rate ratio is classified as 'elevated' for at least 12.5% of the time on at least two occasions in a day and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_."
+                    "If the maximum heart rate exceeds 100 beats per minute at least twice in a day and the mean score of the workload questionnaire items *focus and mental strain*, *rushed and under pressure*, and *heavy workload* was at least *agree*.",
+                    "If the heart rate ratio is classified as 'slightly elevated' for at least 25% of the time on at least two occasions in a day and the mean score of the workload questionnaire items *focus and mental strain*, *rushed and under pressure*, and *heavy workload* was at least *agree*.",
+                    "If the heart rate ratio is classified as 'elevated' for at least 12.5% of the time on at least two occasions in a day and the mean score of the workload questionnaire items *focus and mental strain*, *rushed and under pressure*, and *heavy workload* was at least *agree*."
                 ]
             },
             "recommendation": {
@@ -139,11 +139,11 @@
         "emg": {
             "rule": {
                 "pt": [
-                    "Se o músculo (direto ou esquerdo) esteve em nível de contração **Alto para si** durante mais de **30% do tempo**, em pelo menos **duas aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
-                  "Se o músculo (direto ou esquerdo) esteve em nível de contração **Típico-alto** durante mais de **25% do tempo**, em pelo menos **três aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
+                    "Se o músculo (direto ou esquerdo) esteve em nível de contração **Alto para si** durante mais de **30% do tempo**, em pelo menos **duas aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*.",
+                  "Se o músculo (direto ou esquerdo) esteve em nível de contração **Típico-alto** durante mais de **25% do tempo**, em pelo menos **três aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*."
                 ],
                 "en": [
-                    "If the muscle was in activity level High for you for more than 30% of the time, in at least two acquisitions on the same day, and the mean score of the workload questionnaire items _focus and mental strain_, _rushed and under pressure_, and _heavy workload_ was at least _agree_."
+                    "If the muscle was in activity level High for you for more than 30% of the time, in at least two acquisitions on the same day, and the mean score of the workload questionnaire items *focus and mental strain*, *rushed and under pressure*, and *heavy workload* was at least *agree*."
                 ]
             },
             "recommendation": {
