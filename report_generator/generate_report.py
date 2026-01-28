@@ -135,9 +135,15 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     # ------------------------ Section: Summary ------------------------ #
     # TODO: generate table with all the measured metrics, the risk rules, the instances of occurrences, the days, and the recommendations
+    # Force everything so the table cannot “escape” the environment
+    mdFile.new_paragraph(r"\clearpage")
     mdFile.new_paragraph(r"\begin{landscape}")
+    mdFile.new_paragraph(r"\thispagestyle{plain}")
     _generate_sensor_table(mdFile, list_recs)
+
+
     mdFile.new_paragraph(r"\end{landscape}")
+    mdFile.new_paragraph(r"\clearpage")
     # ------------------------ Section: Conclusion ------------------------ #
     _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
     mdFile.new_line(' \pagebreak ')
@@ -268,11 +274,11 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
     mdFile.write("\n")
 
 
-    # show plot - vista de costas
-    _add_centered_image(mdFile,
-                        os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_posture_views_grid.png'),
-                        caption=None, max_width=1, max_height=0.99)
-
+    # # show plot - vista de costas
+    # _add_centered_image(mdFile,
+    #                     os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_posture_views_grid.png'),
+    #                     caption=None, max_width=1, max_height=0.99)
+    #
 
 
     # # vista de lado
@@ -1166,7 +1172,6 @@ def _generate_references(mdFile, refs_list=REFS_LIST, links_list=LINKS_LIST):
 def _generate_sensor_table(mdFile, list_rec):
     """
     Generate a Markdown table summarising sensor-based risk metrics.
-
     """
 
     metrics_list = [
@@ -1180,13 +1185,11 @@ def _generate_sensor_table(mdFile, list_rec):
     table_header = ['métrica', 'risco', 'incidência', 'dias', 'recomendação']
     num_cols = len(table_header)
 
-    # Create table with header
-    mdFile.new_table(columns=num_cols, rows=1, text=table_header)
+    table_rows = []
 
-    # Fill table rows
     for rec_dict, metric in zip(list_rec, metrics_list):
 
-        # Default values (no risk detected)
+        # Defaults: no risk
         num_instances = 0
         days = '-'
 
@@ -1194,16 +1197,13 @@ def _generate_sensor_table(mdFile, list_rec):
             num_instances = rec_dict[NUM_INSTANCES_KEY]
             days = rec_dict.get(RISK_DATES_KEY, '-')
 
-        # Convert days list to string if needed
         if isinstance(days, list):
             days = ', '.join(days)
 
-        # Extract rule and recommendation
         risk_rule = rec_dict.get(RULE_KEY, '-')
         recommendation = rec_dict.get(RECOMMENDATIONS_KEY, '-')
 
-        # Add row
-        mdFile.add_row([
+        table_rows.extend([
             metric,
             risk_rule,
             str(num_instances),
@@ -1211,4 +1211,12 @@ def _generate_sensor_table(mdFile, list_rec):
             recommendation
         ])
 
+    # Final table content: header + rows
+    table_content = table_header + table_rows
+
+    mdFile.new_table(
+        columns=num_cols,
+        rows=1 + len(list_rec),
+        text=table_content
+    )
 
