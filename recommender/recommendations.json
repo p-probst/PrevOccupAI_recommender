@@ -71,7 +71,7 @@
         "heart_rate": {
             "rule": {
                 "pt": [
-                    "Se a frequência cardíaca máxima exceder 100 bpm pelo menos duas vezes num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
+                    "Se a frequência cardíaca máxima exceder 100 BPM pelo menos duas vezes num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
                     "Se o rácio da frequência cardíaca for classificado como 'ligeiramente elevado' durante pelo menos 25% do tempo, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_.",
                     "Se o rácio da frequência cardíaca for classificado como 'elevado' durante pelo menos 12,5% do tempo, em pelo menos duas ocasiões num dia e a média dos itens do questionário de carga de trabalho _concentração e esforço mental_, _apressado e sobre pressão_ e _exigência da carga do trabalho_ for pelo menos _concordo_."
                 ],

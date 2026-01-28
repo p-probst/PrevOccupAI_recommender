@@ -338,50 +338,55 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     slightly_elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id,'Ligeiramente elevado',recommendation_system)
     elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id, 'Elevado',recommendation_system)
 
+    # ----- Paragraph: Introduction and Context ----- #
     mdFile.write("\n")
     # introduction title
     mdFile.new_header(level=2, title=hr_dict[INTRODUCTION_KEY][0])
 
-    # write intro
+    # ----- Paragraph: heart rate BPM explanation ----- #
     mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][1])
     mdFile.write("\n")
     mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][2])
     mdFile.write("\n")
-    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][3])
-    mdFile.write("\n")
 
-    # bullet points
-    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][4])
-    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][5])
-    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][6])
-
-    # hr ranges plot
+    # ----- Paragraph: heart rate BPM plot explanation + Plot: hr range plot ----- #
     mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][0])
-    _add_centered_image(mdFile,os.path.join(plots_path, str(subject_id), 'HR_ranges',f'{subject_id}_HR_ranges.png'),
+    _add_centered_image(mdFile, os.path.join(plots_path, str(subject_id), 'HR_ranges', f'{subject_id}_HR_ranges.png'),
                         caption=None, max_width=1, max_height=0.5)
 
+    # ----- Paragraph: RISK RULE : hr range + RISK OCCURRENCE: hr range ----- #
     mdFile.new_paragraph(hr_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, max_hr_recommendations)
     mdFile.write("\n")
     mdFile.write("\n\\vspace{0.9em}\n")
 
-    # describe plot - circular
-    mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][1])
 
-    # circular plot
+    # ----- Paragraph: relative hear rate explanation ----- #
+    mdFile.write("\n")
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][3])
+    mdFile.write("\n")
+    # bullet points: explaining the HR ratio classes
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][4])
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][5])
+    mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][6])
+
+    # ----- Paragraph: circular relative heart rate plot explanation + Plot: circular heart rate plot ----- #
+    mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][1])
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'HR_distributions',
                                      f'HR_plot_circular_{subject_id}.png'),
                         caption=None, max_width=1, max_height=0.9)
 
+    # ----- Paragraph: RISK RULES: hr ratio + RISK OCCURRENCES: hr ratio ----- #
     mdFile.new_paragraph(hr_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, slightly_elevated_hr_recommendations)
     mdFile.write("\n")
     _add_rules_and_risk_occurrences(mdFile, elevated_hr_recommendations)
     mdFile.write("\n")
+    mdFile.write("\n\\vspace{0.9em}\n")
 
-    # generate recommendations
-    # check recommendations
+    # ----- Paragraph: RECOMMENDATIONS: all hr recommendations ----- #
+    # get unrepeated recommendation set
     recommendations = _get_recommendation_set([slightly_elevated_hr_recommendations, elevated_hr_recommendations, max_hr_recommendations])
     _add_recommendation_section(mdFile, recommendations)
     mdFile.write("\n")

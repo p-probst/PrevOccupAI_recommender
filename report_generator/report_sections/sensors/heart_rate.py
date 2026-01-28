@@ -9,7 +9,7 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 INTRO_1_PT = "Sensor de medição de frequência cardíaca"
 INTRO_2_PT = (
-    "Os sinais de frequência cardíaca foram recolhidos quatro vezes por dia, durante períodos de 20 minutos, "
+    "Os sinais de **frequência cardíaca** foram recolhidos **quatro vezes por dia**, durante períodos de **20 minutos**, "
     "com o principal objetivo de identificar possíveis situações de stress. Uma frequência cardíaca elevada, "
     "quando não associada à realização de atividade física, pode indicar — embora não de forma conclusiva — "
     "situações de stress. Por esse motivo, foram considerados apenas os dados de frequência cardíaca recolhidos "
@@ -17,7 +17,7 @@ INTRO_2_PT = (
 )
 
 INTRO_3_PT = (
-    "Em adultos, a frequência cardíaca em repouso situa-se normalmente entre 60 e 100 batimentos por minuto (bpm). "
+    "Em adultos, a frequência cardíaca em repouso situa-se **normalmente entre 60 e 100 batimentos por minuto (BPM)**. "
     "Estes valores podem variar consoante a idade e o nível de atividade física de cada pessoa, devendo por isso "
     "ser interpretados apenas como valores de referência."
 )
