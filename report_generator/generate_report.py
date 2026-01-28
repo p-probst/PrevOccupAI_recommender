@@ -135,8 +135,9 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     # ------------------------ Section: Summary ------------------------ #
     # TODO: generate table with all the measured metrics, the risk rules, the instances of occurrences, the days, and the recommendations
+    mdFile.new_paragraph(r"\begin{landscape}")
     _generate_sensor_table(mdFile, list_recs)
-
+    mdFile.new_paragraph(r"\end{landscape}")
     # ------------------------ Section: Conclusion ------------------------ #
     _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
     mdFile.new_line(' \pagebreak ')
