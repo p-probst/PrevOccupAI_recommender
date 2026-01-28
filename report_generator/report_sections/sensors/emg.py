@@ -38,17 +38,18 @@ INTRO_6_EMG_PT = (
     "Foram definidas as seguintes classes:"
 )
 INTRO_7_EMG_PT = "- **Abaixo do habitual**: esforço muscular inferior ao normalmente observado para essa pessoa. Corresponde a trabalho leve."
-INTRO_8_EMG_PT = "- **Habitual – baixo**: esforço dentro do padrão normal da pessoa, mas no intervalo mais baixo de intensidade."
-INTRO_9_EMG_PT = "- **Habitual – elevado**: esforço ainda considerado normal para a pessoa, mas mais próximo do seu limite habitual."
+INTRO_8_EMG_PT = "- **Habitual – Típico baixo**: esforço dentro do padrão normal de si, mas no intervalo mais baixo de intensidade."
+INTRO_9_EMG_PT = "- **Habitual – Típico alto**: esforço ainda considerado normal para si, mas mais próximo do seu limite habitual."
 INTRO_10_EMG_PT = (
-    "- **Elevado para a pessoa**: esforço muscular acima do que é habitual para esse trabalhador. "
+    "- **Alto para si**: esforço muscular acima do que é habitual para si. "
     "A permanência prolongada neste nível pode indicar sobrecarga muscular e maior risco de fadiga ou desconforto."
 )
 
-RISK_PT = "this is the risk"
+RISK_PT = "Em relação aos figuras da atividade muscular alongo dos dias, foi delineado o seguinte risco:"
+
 PLOT_EXPLAIN_1_PT = ("O gráfico que se segue apresenta uma visão geral semanal da intensidade relativa da atividade "
                      "muscular nos ombros (trapézios) esquerdo e direito. Cada linha corresponde a uma sessão de trabalho, "
-                     "identificada pelo horário, e mostra a percentagem do tempo em que o músculo esteve ativo, distribuída por diferentes níveis de esforço."
+                     "identificada pelo horário, e mostra a percentagem do tempo em que o músculo esteve ativo, distribuída por diferentes níveis de esforço. "
                     "As cores representam quanto intenso foi o esforço em relação ao padrão habitual da própria pessoa:")
 PLOT_EXPLAIN_2_PT = "- **Abaixo do habitual (verde claro)**: esforço mais leve do que o normal para a pessoa."
 PLOT_EXPLAIN_3_PT = "- **Típico-baixo (verde)**: esforço dentro do padrão normal, em níveis mais baixos."

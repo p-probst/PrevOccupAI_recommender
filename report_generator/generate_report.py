@@ -11,6 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from mdutils import Html
 from mdutils.mdutils import MdUtils
+
+from report_generator.report_sections.general.conclusion import CONCLUSION_DICT
 from report_generator.report_sections.general.introduction import *
 from report_generator.report_sections.questionnaires.introductory_section import *
 from report_generator.report_sections.questionnaires.rosa import ROSA_DICT
@@ -43,10 +45,13 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     # generate file with cover
     mdFile = _generate_file_and_cover(report_folder_path, subject_id)
 
+    # init work type
+    work_type = ''
+
     # introduction
     _generate_introduction_section(mdFile)
     mdFile.new_line(' \pagebreak ')
-    work_type = 'CML'
+    mdFile.write("\n")
 
     # get work type from OH profile
     for oh_profile_path in os.listdir(oh_profiles_path):
@@ -105,8 +110,16 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     # heart rate
     _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
     # # emg
-    # _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
+    _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
+
+    # conclusion
+    _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
+
     mdFile.new_line(' \pagebreak ')
+
+    # references
+
+
     # generate pdf
     template_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
     header_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\header.tex"
@@ -279,9 +292,12 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'week',
                                      f'relative_bins_sessions_week.png'),
-                        caption=None, max_width=1, max_height=0.9)
+                        caption=None, max_width=1, max_height=0.95)
 
+    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
     # add risk rules and detection
+    mdFile.new_paragraph(emg_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, emg_recommendations)
     mdFile.write("\n")
 
@@ -781,6 +797,22 @@ def _generate_daily_questionnaire(mdFile, subject_id, plots_path, pain_dict=PAIN
     mdFile.write("\n")
 
 
+def _generate_conclusion_section(mdFile, conclusion_dict=INTRO_DICT[PT]):
+    """
+
+    :param mdFile:
+    :param subject_id:
+    :param introduction_dict:
+    :return:
+    """
+    # introduction title
+    mdFile.new_header(level=1, title=conclusion_dict[SECTION_0])
+
+    # write paragraphs
+    mdFile.new_paragraph(conclusion_dict[SECTION_1])
+    mdFile.write("\n")
+
+
 def _tex_escape_path(p: str) -> str:
     p = p.replace("\\", "/")
     return p
@@ -938,6 +970,7 @@ def _add_rules(mdFile, recommendations_dict: Dict) -> None:
         for i, rule in enumerate(recommendations_dict['rule']):
             mdFile.new_paragraph(f"\n**Risco {i + 1}**: {recommendations_dict['rule'][i]}")
             mdFile.write("\n")
+
 
 def _add_rules_and_risk_occurrences(mdFile, recommendations_dict):
 
