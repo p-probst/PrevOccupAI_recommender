@@ -12,6 +12,7 @@ from pathlib import Path
 from mdutils import Html
 from mdutils.mdutils import MdUtils
 
+from report_generator.report_sections.general.references import REFS_LIST, LINKS_LIST
 from report_generator.report_sections.general.conclusion import CONCLUSION_DICT
 from report_generator.report_sections.general.introduction import *
 from report_generator.report_sections.questionnaires.introductory_section import *
@@ -118,7 +119,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     mdFile.new_line(' \pagebreak ')
 
     # references
-
+    _generate_references(mdFile)
 
     # generate pdf
     template_path = fr"C:\Users\{USER}\PycharmProjects\PrevOccupAI_recommender\report_generator\eisvogel.latex"
@@ -1074,3 +1075,19 @@ def _get_recommendation_set(recommender_dict_list: List[Dict], language='pt'):
     else:
 
         return [NO_RECOMMENDATIONS[language]]
+
+
+def _generate_references(mdFile, refs_list=REFS_LIST, links_list=LINKS_LIST):
+
+    mdFile.write("\n")
+    # generate header
+    mdFile.new_header(level=1, title='Bibliografia')
+
+    # cycle over the references and links
+    for i, (ref, link) in enumerate(zip(refs_list, links_list)):
+
+        # add ref
+        mdFile.new_paragraph(ref)
+
+        #add link
+        mdFile.write(mdFile.new_reference_link(link=link,text=link,reference_tag=f'{i+1}'))
