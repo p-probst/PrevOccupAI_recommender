@@ -17,7 +17,7 @@ SUMMARY_TITLE = "Resumo"
 
 SUMMARY_QUESTIONNAIRES = "Resultados dos seus questionários"
 
-SUMMARY_SENSORS = "Resultados das suas acquisições"
+SUMMARY_SENSORS = "Resultados das suas aquisições"
 
 SUMMARY_1_PT = ("As tabelas seguintes apresentam um resumo dos principais indicadores de saúde ocupacional avaliados ao "
                 "longo do período de monitorização. Para cada métrica, são sintetizadas as regras de risco consideradas, "

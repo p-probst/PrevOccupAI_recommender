@@ -6,7 +6,7 @@ import os
 import json
 import os, shutil
 import re
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 from datetime import datetime
 from pathlib import Path
 from mdutils.mdutils import MdUtils
@@ -80,7 +80,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
 
     # ------------------------ Section: Questionnaires ------------------------ #
-    _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles_path, recommendation_system, work_type)
+    rosa_rec, env_rec = _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles_path, recommendation_system, work_type)
 
     mdFile.write("\n")
     _generate_daily_questionnaire(mdFile, subject_id, plots_path)
@@ -136,7 +136,8 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Section: Summary ------------------------ #
-    _generate_summary_section(mdFile, list_recs)
+
+    _generate_summary_section(mdFile, list_recs, rosa_rec, env_rec)
     mdFile.new_line(' \pagebreak ')
 
     # ------------------------ Section: Conclusion ------------------------ #
@@ -830,6 +831,8 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
 
     mdFile.write("\n")
 
+    return rosa_recommendations, environment_recommendations
+
 
 def _generate_daily_questionnaire(mdFile, subject_id, plots_path, pain_dict=PAIN_DICT[PT], workload_dict=WORKLOAD_DICT[PT]):
     # --------------------------------------- workload --------------------------------------------#
@@ -869,7 +872,7 @@ def _generate_daily_questionnaire(mdFile, subject_id, plots_path, pain_dict=PAIN
     mdFile.write("\n")
 
 
-def _generate_summary_section(mdFile, list_recs, summary_dict=SUMMARY_DICT[PT]):
+def _generate_summary_section(mdFile, list_recs, rosa_rec, env_rec, summary_dict=SUMMARY_DICT[PT]):
 
     # add title
     mdFile.write("\n")
@@ -884,8 +887,8 @@ def _generate_summary_section(mdFile, list_recs, summary_dict=SUMMARY_DICT[PT]):
 
     # add subtitle for questionnaire tables
     mdFile.new_header(level=2, title=summary_dict[SUB_TITLE_Q_KEY])
+    _generate_questionnaire_summary_blocks(mdFile, rosa_rec, env_rec)
     mdFile.write("\n")
-    # TODO: add table with questionnaire recommendation summary
 
     # add subtitle for sensor tables
     mdFile.new_header(level=2, title=summary_dict[SUB_TITLE_S_KEY])
@@ -1193,8 +1196,6 @@ def _generate_references(mdFile, refs_list=REFS_LIST, links_list=LINKS_LIST):
         mdFile.write(mdFile.new_reference_link(link=link,text=link,reference_tag=f'{i+1}'))
 
 
-
-
 def _md_emphasis_to_latex(s: str) -> str:
     s = str(s)
 
@@ -1246,16 +1247,16 @@ def _as_multiline(items, vspace: str = "5pt", vspace_end: str = "1pt") -> str:
 
     return _latex_escape_with_md(items)
 
+
 def _generate_sensor_summary_blocks(mdFile, list_rec):
     metrics_list = [
-        'ruído', 'ruído',
-        'atividades', 'atividades', 'atividades', 'atividades', 'atividades', 'atividades',
-        'postura',
-        'frequência cardíaca', 'frequência cardíaca', 'frequência cardíaca',
+        'Ruído', 'Ruído',
+        'Atividades', 'Atividades', 'Atividades', 'Atividades', 'Atividades', 'Atividades',
+        'Postura',
+        'Frequência cardíaca', 'Frequência cardíaca', 'Frequência cardíaca',
         'EMG', 'EMG'
     ]
 
-    mdFile.write("\\clearpage\n\n")
     mdFile.write("\\small\n")
     mdFile.write("\\setlength{\\tabcolsep}{6pt}\n")
     mdFile.write("\\renewcommand{\\arraystretch}{1.15}\n\n")
@@ -1302,3 +1303,133 @@ def _generate_sensor_summary_blocks(mdFile, list_rec):
         mdFile.write("\n\n")
 
     mdFile.write("\\normalsize\n")
+
+
+def _generate_questionnaire_summary_blocks(mdFile, rosa_dict, env_dict):
+    rosa_domains = ['Cadeira', 'Monitor', 'Telefone', 'Rato', 'Teclado']
+    env_domains = ['Iluminação', 'Ar', 'Ruído', 'Design do escritório', 'Organização do escritório']
+
+    mdFile.write("\\small\n")
+    mdFile.write("\\setlength{\\tabcolsep}{6pt}\n")
+    mdFile.write("\\renewcommand{\\arraystretch}{1.15}\n\n")
+
+    for d, expected_domains in [(rosa_dict, rosa_domains), (env_dict, env_domains)]:
+        rule = _norm_rule(d.get(RULE_KEY, "-"))
+        rec_map = _recs_to_mapping(d)
+
+        for display_domain, has_risk, rec_val in _ordered_domain_items(expected_domains, rec_map):
+            if has_risk:
+                _write_questionnaire_block(mdFile, display_domain, rule, "Sim", rec_val)
+            else:
+                _write_questionnaire_block(
+                    mdFile,
+                    display_domain,
+                    rule,
+                    "Não",
+                    "Boas notícias: Não se detetaram situações de risco."
+                )
+
+    mdFile.write("\\normalsize\n")
+
+
+def _norm_rule(rule_val) -> Union[str, List[str]]:
+    """
+    Normalise rule field:
+      - if list with one element -> that element (str)
+      - if list with many -> keep list (so it can be rendered multiline)
+      - if missing/None -> "-"
+    """
+    if rule_val is None:
+        return "-"
+    if isinstance(rule_val, list):
+        if len(rule_val) == 0:
+            return "-"
+        return rule_val[0] if len(rule_val) == 1 else rule_val
+    return str(rule_val)
+
+
+def _recs_to_mapping(d):
+    """
+    Normalise recommendations field to a mapping: domain -> recs.
+    Accepts:
+      - dict(domain -> recs)
+      - iterable of pairs: [(domain, recs), ...]
+    """
+    recs = d.get(RECOMMENDATIONS_KEY, {})
+
+    if isinstance(recs, dict):
+        return recs
+
+    mapping = {}
+    try:
+        for domain, val in recs:  # type: ignore
+            mapping[str(domain)] = val
+    except Exception:
+        return {}
+    return mapping
+
+
+def _norm_domain_key(s: str) -> str:
+    # minimal normalization: trim + collapse spaces + lowercase
+    s = str(s).strip()
+    s = " ".join(s.split())
+    return s.lower()
+
+
+def _ordered_domain_items(expected_domains: list, rec_map: dict):
+    """
+    Returns a list of (display_domain, has_risk, rec_value) in correct order,
+    without duplicates, using normalized key matching.
+    """
+    # map normalized_key -> (original_key, value)
+    rec_norm = {}
+    for k, v in rec_map.items():
+        rec_norm[_norm_domain_key(k)] = (k, v)
+
+    items = []
+
+    # 1) expected domains in the given order
+    for d in expected_domains:
+        nd = _norm_domain_key(d)
+        if nd in rec_norm:
+            orig_key, val = rec_norm[nd]
+            items.append((d, True, val))          # display uses expected name
+        else:
+            items.append((d, False, None))
+
+    # 2) extras (only those not matched to expected)
+    expected_norm = {_norm_domain_key(d) for d in expected_domains}
+    for nd, (orig_key, val) in rec_norm.items():
+        if nd not in expected_norm:
+            items.append((orig_key, True, val))   # display uses original key
+
+    return items
+
+
+def _write_questionnaire_block(mdFile, dimensao: str, risk_rule: Union[str, List[str]], incidence: str, recommendation: Any,
+                               ) -> None:
+    dim_tex = _latex_escape_with_md(dimensao)
+    risk_rule_tex = _as_multiline(risk_rule)
+    incidence_tex = _latex_escape_with_md(incidence)
+    rec_tex = _as_multiline(recommendation)
+
+    mdFile.write(r"\noindent")
+    mdFile.write(r"\begin{tabularx}{\textwidth}{@{}p{3.2cm} >{\raggedright\arraybackslash}X@{}}")
+    mdFile.write("\n")
+    mdFile.write(rf"\textbf{{Dimensão}} & {dim_tex} \\")
+    mdFile.write("\n")
+    mdFile.write(rf"\textbf{{Incidência}} & {incidence_tex} \\")
+    mdFile.write("\n")
+    mdFile.write(rf"\textbf{{Risco}} & {risk_rule_tex} \\[0.8em]")
+    mdFile.write("\n")
+    mdFile.write(rf"\textbf{{Recomendação}} & {rec_tex} \\")
+    mdFile.write("\n")
+    mdFile.write(r"\end{tabularx}")
+    mdFile.write("\n")
+    mdFile.write(r"\vspace{0.6em}")
+    mdFile.write("\n")
+    mdFile.write(r"\hrule")
+    mdFile.write("\n")
+    mdFile.write(r"\vspace{0.8em}")
+    mdFile.write("\n\n")
+
