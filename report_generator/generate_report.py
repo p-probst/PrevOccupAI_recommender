@@ -408,6 +408,9 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][5])
     mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][6])
 
+    mdFile.write("\n")
+    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
     # ----- Paragraph: circular relative heart rate plot explanation + Plot: circular heart rate plot ----- #
     mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][1])
     _add_centered_image(mdFile,
@@ -694,6 +697,8 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     mdFile.write("\n")
     mdFile.new_paragraph(intro_dict[SECTION_2])
     mdFile.write("\n")
+    mdFile.new_paragraph(intro_dict[SECTION_3])
+    mdFile.write("\n")
 
     # --------------------------------------- biomechanical questionnaire - ROSA --------------------------------------#
     # intro
@@ -719,7 +724,6 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     _add_centered_image(mdFile, os.path.join(plots_path, str(subject_id), 'questionnaire_plots', f'Rosa_plot_{subject_id}.png'),
                         caption='Resultados pessoais da avaliação Biomecânica .')
     # describe risk
-    mdFile.new_paragraph(rosa_dict[RISK_RULE_KEY][0])
     mdFile.write("\n")
 
     # get the subjects df
@@ -755,8 +759,6 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
         caption="Resultados pessoais da avaliação ambiental."
     )
 
-    # describe risk
-    mdFile.new_paragraph(env_dict[RISK_RULE_KEY][0])
     mdFile.write("\n")
 
     # get the subjects df
@@ -786,7 +788,8 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # describe plots
     mdFile.new_paragraph(psycho_dict[COPSOQ_EXPLAIN_KEY][0])
     mdFile.write("\n")
-
+    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n")
     # describe plots: only PLOT_EXPLAIN_1_1_PT ... PLOT_EXPLAIN_1_29_PT
     # --- COPSOQ (only 1_1 to 1_29) in a 2-column table ---
     items_copsoq = [s for s in psycho_dict[COPSOQ_EXPLAIN_KEY] if re.match(r"^\d+\.\s", s)]
@@ -1046,12 +1049,12 @@ def _add_recommendation_section(mdFile, recommendations_list):
 
     if len(recommendations_list) == 1:
         mdFile.write("\n")
-        mdFile.new_paragraph("De acordo com os seus resultados, é-lhe sugerida a seguinte recomendação: ")
+        mdFile.new_paragraph("Considerando a totalidade dos riscos detetatos, é-lhe sugerida a seguinte recomendação: ")
         mdFile.new_paragraph(f"- **Recomendação**: {recommendations_list[0]}")
 
     else:
         mdFile.write("\n")
-        mdFile.new_paragraph("De acordo com os seus resultados, são-lhe sugeridas as seguintes recomendações: ")
+        mdFile.new_paragraph("Considerando a totalidade dos riscos detetados, são-lhe sugeridas as seguintes recomendações: ")
         # recommendations
         for i, recommendation in enumerate(recommendations_list):
             mdFile.new_paragraph(f"- **Recomendação {i+1}**: {recommendation}")
@@ -1184,7 +1187,7 @@ def _generate_references(mdFile, refs_list=REFS_LIST, links_list=LINKS_LIST):
 
     mdFile.write("\n")
     # generate header
-    mdFile.new_header(level=1, title='Bibliografia')
+    mdFile.new_header(level=1, title='Referências')
 
     # cycle over the references and links
     for i, (ref, link) in enumerate(zip(refs_list, links_list)):

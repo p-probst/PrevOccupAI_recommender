@@ -1,7 +1,7 @@
 ########## EU-OSHA ################
 REF_1 = ("Agência Europeia para a Segurança e Saúde no Trabalho. (2021). Postura sentada e estática por períodos "
          "prolongados no trabalho: Efeitos na saúde e conselhos de boas práticas (Resumo). Serviço das Publicações da "
-         "nião Europeia.")
+         "União Europeia.")
 LINK_1 = "https://osha.europa.eu/pt/publications/postura-sentada-e-estatica-por-periodos-prolongados-no-trabalho-efeitos-na-saude-e-conselhos-de-boas-praticas-resumo"
 
 REF_1_1 = "European Agency for Safety and Health at Work. (2017, February 9). Ergonomics in office work. OSHwiki."
@@ -82,6 +82,6 @@ LINK_13 = "https://doi.org/10.1186/s12891-015-0497-2"
 # lists
 # ------------------------------------------------------------------------------------------------------------------- #
 
-REFS_LIST = [REF_1, REF_1_1, REF_2, REF_3, REF_4, REF_5, REF_6, REF_7, REF_8, REF_9, REF_10, REF_11, REF_12, REF_13]
-LINKS_LIST = [LINK_1, LINK_1_1, LINK_2, LINK_3, LINK_4, LINK_5, LINK_6, LINK_7, LINK_8, LINK_9, LINK_10, LINK_11, LINK_12, LINK_13]
+REFS_LIST = [REF_1, REF_12, REF_4, REF_1_1, REF_5, REF_9, REF_10, REF_6, REF_11, REF_7, REF_8, REF_13, REF_3, REF_2]
+LINKS_LIST = [LINK_1, LINK_12, LINK_4, LINK_1_1, LINK_5, LINK_9, LINK_10, LINK_6, LINK_11, LINK_7, LINK_8, LINK_13, LINK_3, LINK_2]
 

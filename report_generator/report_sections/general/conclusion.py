@@ -8,7 +8,7 @@ SECTION_1 = 'section_1'
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-SECTION_0_PT = "Conclusão"
+SECTION_0_PT = "Mensagem Final"
 SECTION_1_PT = (
     "Gostaríamos de agradecer, de forma sincera, a sua participação neste estudo. A sua colaboração foi "
     "essencial para o sucesso do projeto PrevOccupAI+, tornando possível a recolha de dados e o desenvolvimento "

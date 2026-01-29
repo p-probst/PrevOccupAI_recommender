@@ -23,10 +23,12 @@ SUMMARY_1_PT = ("As tabelas seguintes apresentam um resumo dos principais indica
                 "longo do período de monitorização. Para cada métrica, são sintetizadas as regras de risco consideradas, "
                 "a incidência das situações detetadas, os dias em que ocorreram e as respetivas recomendações.")
 
-SUMMARY_2_PT = ("Este resumo foi pensado para te dar uma visão rápida e integrada dos resultados, ajudando a identificar "
-                "de forma simples potenciais fatores de risco e áreas que podem merecer maior atenção. Para uma análise "
-                "mais detalhada de cada métrica e do respetivo contexto, recomenda-se a consulta das "
-                "secções anteriores do relatório.")
+SUMMARY_2_PT = (
+    "Este resumo foi concebido para lhe proporcionar uma visão global e integrada dos resultados, facilitando "
+    "a identificação de potenciais fatores de risco e de áreas que poderão merecer maior atenção. Para uma "
+    "análise mais detalhada de cada métrica e do respetivo enquadramento, recomenda-se a consulta das secções "
+    "anteriores do relatório."
+)
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
 # ------------------------------------------------------------------------------------------------------------------- #

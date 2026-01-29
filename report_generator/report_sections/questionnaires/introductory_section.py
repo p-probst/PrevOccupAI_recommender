@@ -6,6 +6,7 @@ from constants import PT, ENG
 SECTION_0 = 'section_0'
 SECTION_1 = 'section_1'
 SECTION_2 = 'section_2'
+SECTION_3 = 'section_3'
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -22,7 +23,14 @@ SECTION_2_PT = (
     "personalizadas sempre que se tenha verificado risco associado, com exceção dos resultados dos questionários "
     "psicossociais, uma vez que estes correspondem a valores médios de toda a população do estudo."
 )
-
+SECTION_3_PT = (
+    "Os resultados de cada questionário estão organizados por dimensões, sendo que a cada dimensão está "
+    "associado um código de cores que indica o respetivo nível de risco. "
+    "A **cor verde** corresponde a **baixo risco**, a **cor amarela** sinaliza a existência de um **risco moderado**, "
+    "e a **cor vermelha** indica um **risco elevado**. "
+    "As dimensões assinaladas a amarelo ou a vermelho são consideradas de risco e, por esse motivo, "
+    "são acompanhadas por recomendações específicas."
+)
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -36,7 +44,8 @@ QUEST_INTRO_DICT = {
     PT: {
         SECTION_0: SECTION_0_PT,
         SECTION_1: SECTION_1_PT,
-        SECTION_2: SECTION_2_PT
+        SECTION_2: SECTION_2_PT,
+        SECTION_3: SECTION_3_PT,
     },
 
     ENG: {

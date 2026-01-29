@@ -11,17 +11,15 @@ INTRO_1_PT = "Avaliação Ambiental"
 INTRO_2_PT = (
     "Ambientes de trabalho com condições inadequadas aumentam o risco de lesões músculo-esqueléticas e "
     "influenciam negativamente a produtividade e o bem-estar geral do trabalhador. Neste contexto, foram "
-    "avaliados fatores ambientais, tais como a o nível de iluminação, ar, ruído e organização do posto de trabalho. "
-    "A entidade patronal desempenha um papel fundamental na redução destes riscos. "
-    "Nesse sentido, foram também identificadas e transmitidas as medidas coletivas a implementar."
+    "avaliados fatores ambientais, tais como o nível de iluminação, a qualidade do ar, o ruído e a organização "
+    "do posto de trabalho. "
+    "Relativamente à dimensão da privacidade do escritório, os resultados apresentados têm um caráter "
+    "exclusivamente informativo, não estando associadas recomendações individuais, uma vez que este aspeto "
+    "depende sobretudo de fatores organizacionais. "
+    "A entidade patronal desempenha um papel fundamental na redução destes riscos e, nesse sentido, foram "
+    "identificadas e transmitidas as medidas coletivas a implementar."
 )
-RISK_PT = (
-    "A cada equipamento está associada uma cor que representa o nível de risco identificado. "
-    "A **cor verde** indica **baixo risco**, a **cor amarela** sinaliza a existência de um **risco de nível médio**, "
-    "e a **cor vermelha** corresponde a um **risco elevado**. "
-    "As dimensões assinalados a amarelo ou a vermelho são considerados de risco e, por esse motivo, "
-    "são apresentadas recomendações específicas. Considerando isto, foi delineado o seguinte risco: "
-)
+
 PLOT_EXPLAIN_1_PT = (
     "O gráfico abaixo apresenta os resultados calculados com base nas respostas dadas ao questionário de "
     "avaliação ambiental. A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados."
@@ -47,7 +45,7 @@ PLOT_ENG = ""
 ENVIRONMENT_DICT = {
     PT: {
         INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT],
-        RISK_RULE_KEY: [RISK_PT],
+        RISK_RULE_KEY: [],
         PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_1_PT, PLOT_EXPLAIN_2_2_PT, PLOT_EXPLAIN_2_3_PT, PLOT_EXPLAIN_2_4_PT,
                            PLOT_EXPLAIN_2_5_PT, PLOT_EXPLAIN_2_6_PT],
     },

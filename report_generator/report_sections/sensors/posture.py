@@ -31,7 +31,7 @@ INTRO_4_PT = (
 )
 
 INTRO_5_PT = (
-    "Um dos **indicadores analisados** foi a área da elipse de confiança a 95%. De forma simples, este valor representa a área onde ocorrem a maioria (95%) dos pequenos movimentos** "
+    "Um dos **indicadores analisados** foi a área da elipse de confiança a 95%. De forma simples, este valor representa a área onde ocorrem a **maioria (95%) dos pequenos movimentos** "
     "do tronco durante o período analisado. Valores mais elevados indicam maior variabilidade postural, enquanto valores "
     "muito baixos podem refletir uma postura excessivamente rígida "
     "ou estática."

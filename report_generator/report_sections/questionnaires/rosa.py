@@ -23,14 +23,6 @@ INTRO_3_PT = (
     "no posto de trabalho."
 )
 
-RISK_1_PT = (
-    "A cada equipamento está associada uma cor que representa o nível de risco identificado. "
-    "A **cor verde** indica **baixo risco**, a **cor amarela** sinaliza a existência de um **risco de nível médio**, "
-    "e a **cor vermelha** corresponde a um **risco elevado**. "
-    "Os equipamentos assinalados a amarelo ou a vermelho são considerados de risco e, por esse motivo, "
-    "são apresentadas recomendações específicas. Considerando isto, foi delineado o seguinte risco: "
-)
-
 PLOT_EXPLAIN_0_PT = (
     "O gráfico abaixo apresenta os resultados calculados com base nas respostas dadas ao questionário de "
     "avaliação biomecânica, para os diferentes equipamentos utilizados ao longo do dia de trabalho. "
@@ -58,7 +50,7 @@ PLOT_ENG = ""
 ROSA_DICT = {
     PT: {
         INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT],
-        RISK_RULE_KEY: [RISK_1_PT],
+        RISK_RULE_KEY: [],
         PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_0_PT, PLOT_EXPLAIN_1_1_PT, PLOT_EXPLAIN_1_2_PT, PLOT_EXPLAIN_1_3_PT, PLOT_EXPLAIN_1_4_PT, PLOT_EXPLAIN_1_5_PT, PLOT_EXPLAIN_1_6_PT]
     },
 
