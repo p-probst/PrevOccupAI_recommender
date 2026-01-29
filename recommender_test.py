@@ -13,7 +13,7 @@ OH_PROFILES_PATH = "D:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 cwd_ = Path.cwd()
 
 # define subject (for testing)
-subject_id = 80
+subject_id = 81
 
 # load the OH profile and the recommendation system json
 with open(cwd_ / "recommender/recommendations.json", "r", encoding="utf-8") as file:
