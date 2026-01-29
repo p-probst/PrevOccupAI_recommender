@@ -8,13 +8,13 @@ SECTION_1 = 'section_1'
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-SECTION_0_PT = "Mensagem Final"
+SECTION_0_PT = "Mensagem final"
 SECTION_1_PT = (
-    "Gostaríamos de agradecer, de forma sincera, a sua participação neste estudo. A sua colaboração foi "
+    "Gostaríamos sinceramente de agradecer a sua participação neste estudo. A sua colaboração foi "
     "essencial para o sucesso do projeto PrevOccupAI+, tornando possível a recolha de dados e o desenvolvimento "
     "das ferramentas e análises apresentadas neste relatório. "
-    "Encorajamo-lo/a a analisar com atenção os riscos identificados e a tentar aplicar, sempre que possível, "
-    "as recomendações aqui apresentadas no seu dia a dia de trabalho, de forma consciente e gradual. "
+    "Encorajamo-la/o a analisar com atenção os riscos identificados e a tentar aplicar, sempre que possível, "
+    "as recomendações aqui apresentadas no seu dia-a-dia de trabalho, de forma consciente e gradual. "
     "Esperamos que os resultados e orientações fornecidos neste relatório contribuam para a melhoria da sua "
     "saúde, bem-estar e qualidade de vida no trabalho. "
     "Por fim, acreditamos que o projeto PrevOccupAI+ poderá ter um impacto duradouro, não só a nível individual, "

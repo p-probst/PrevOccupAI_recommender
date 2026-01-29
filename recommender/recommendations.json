@@ -164,7 +164,7 @@
                 "score_a_adapted": {
                     "rule": {
                         "pt": [
-                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -186,7 +186,7 @@
                 "monitor_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -208,7 +208,7 @@
                 "phone_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -230,7 +230,7 @@
                 "mouse_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -250,7 +250,7 @@
                 "keyboard_adapted_norm": {
                     "rule": {
                         "pt": [
-                            "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                            "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                         ],
                         "en": [
                             "If the color is yellow or red for that topic of the questionnaire."
@@ -273,7 +273,7 @@
             "Nível de Iluminação": {
                 "rule": {
                     "pt": [
-                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -293,7 +293,7 @@
             "Ar": {
                 "rule": {
                     "pt": [
-                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -311,7 +311,7 @@
             "Ruído": {
                 "rule": {
                     "pt": [
-                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -329,7 +329,7 @@
             "Design do Escritório": {
                 "rule": {
                     "pt": [
-                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."
@@ -347,7 +347,7 @@
             "Organização do Escritório": {
                 "rule": {
                     "pt": [
-                        "Se a cor for **amarela ou vermelha** para esse tópico do questionário."
+                        "Se a cor for **amarela ou vermelha** para essa dimensão do questionário."
                     ],
                     "en": [
                         "If the color is yellow or red for that topic of the questionnaire."

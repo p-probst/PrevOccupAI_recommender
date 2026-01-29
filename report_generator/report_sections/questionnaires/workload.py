@@ -11,18 +11,18 @@ INTRO_1_PT = "Registo diário da carga de trabalho"
 
 INTRO_2_PT = (
     "O trabalho de escritório pode envolver não apenas exigências físicas, mas também uma carga significativa "
-    "de exigência mental e organizacional. Fatores como a necessidade de concentração prolongada, pressão temporal, "
+    "de exigência mental e organizacional. Fatores como a necessidade de concentração prolongada, pressão, "
     "interrupções frequentes e elevada quantidade de tarefas podem contribuir para o aumento do esforço diário "
     "perceptido pelo trabalhador."
 )
 
 INTRO_3_PT = (
-    "De forma a avaliar a perceção da carga de trabalho ao longo da semana, "
+    "De forma a avaliar a **perceção da carga de trabalho** ao longo da semana, "
     "preencheu diariamente um questionário de autoavaliação no final de cada dia de trabalho. "
-    "O questionário avaliou aspetos relacionados com o esforço mental e a concentração exigidos, "
+    "O questionário avaliou aspetos relacionados com o **esforço mental e a concentração exigidos, "
     "a sensação de pressão ou urgência ao longo do dia, o impacto de interrupções frequentes na realização das tarefas, "
     "a relação entre o esforço investido e os recursos ou apoio disponíveis, "
-    "bem como a perceção global da carga de trabalho diária."
+    "bem como a perceção global da carga de trabalho diária**."
     " As respostas foram registadas através de uma escala de 5 pontos, "
     "que varia entre \"discordo completamente\" e \"concordo completamente\". "
 )
@@ -30,16 +30,15 @@ INTRO_3_PT = (
 INTRO_4_PT = (
     "A informação apresentada serve para ajudar a compreender a intensidade da carga de trabalho subjetiva durante a semana das aquisições. "
     "Esta informação será utilizada em conjunto com os dados dos sensores, nomeadamente de  "
-    "frequência cardíaca e atividade muscular, com o objetivo de identificar possíveis "
-    "situações de stress ao longo de cada dia de trabalho e assim gerar recomendações personalizadas. "
+    "frequência cardíaca e atividade muscular, com o objetivo de **identificar possíveis "
+    "situações de stress** ao longo de cada dia de trabalho e assim gerar recomendações personalizadas. "
 )
 
 PLOT_1_PT = (
     "O gráfico apresentado resume as respostas ao questionário diário de carga de trabalho ao longo da semana. "
     "Cada painel corresponde a um dia de trabalho, permitindo comparar a exigência e carga de trabalho nos diferentes dias da semana. "
-    "No eixo vertical encontram-se as opções de resposta e no eixo horizontal estão representadas as cinco afirmações avaliadas, "
-    "relacionadas com esforço mental, pressão, interrupções, relação entre esforço e recursos disponíveis "
-    "e carga de trabalho global."
+    "No eixo vertical encontram-se as opções de resposta e no eixo horizontal estão representadas as cinco afirmações avaliadas. "
+
 )
 
 

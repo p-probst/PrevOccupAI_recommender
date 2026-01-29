@@ -8,26 +8,22 @@ COPSOQ_EXPLAIN_KEY = f'copsoq_{PLOT_EXPLAIN_KEY}'
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_1_PT = "Avaliação Psicossocial"
+INTRO_1_PT = "Avaliação psicossocial"
 INTRO_2_PT = (
-    "Os fatores psicossociais permitem avaliar as interações entre o ambiente de trabalho, o conteúdo das tarefas, "
-    "as condições organizacionais e as características pessoais extralaborais dos trabalhadores, que podem "
+    "Os fatores psicossociais permitem avaliar as interações entre o **ambiente de trabalho**, o **conteúdo das tarefas**, "
+    "as **condições organizacionais** e as **características pessoais extralaborais dos trabalhadores**, que podem "
     "influenciar a saúde, a produtividade e a satisfação profissional. Para este efeito, foram utilizados dois questionários validados: COPSOQ e MUEQ."
     " COPSOQ (*Copenhagen Psychosocial Questionnaire*) é um instrumento científico internacionalmente reconhecido para avaliar e "
     "melhorar os fatores psicossociais no local de trabalho. MUEQ (*Maastricht Upper Extremity Questionnaire*) é um questionário utilizado "
     "para avaliar lesões musculoesqueléticas. No contexto deste estudo, MUEQ foi utilizado para avaliar a qualidade das pausas.  "
 )
 INTRO_3_PT = (
-"A avaliação psicossocial é realizada ao nível do grupo, o que significa que os resultados apresentados neste "
-    "relatório correspondem a valores médios de toda a população que participou no estudo, e não a valores individuais. "
+"A **avaliação psicossocial é realizada ao nível do grupo**, o que significa que os resultados apresentados neste "
+    "relatório correspondem a **valores médios** de toda a população que participou no estudo, e não a valores individuais. "
     "Deste modo, não serão apresentadas recomendações individuais, mas apenas recomendações de natureza organizacional "
     "dirigidas à CML. Nesta secção são apresentadas quatro visualizações com os resultados da avaliação psicossocial da população do estudo."
 )
-RISK_PT = (
-    "A cada tópico está associado uma cor que representa o nível de risco identificado. "
-    "A cor verde indica baixo risco, a cor amarela sinaliza a existência de algum risco, "
-    "e a cor vermelha corresponde a um risco elevado. "
-)
+
 PLOT_EXPLAIN_1_PT = (
     "Os dois primeiros gráficos mostram os resultados do questionário COPSOQ para toda a população do estudo e para os "
     "trabalhadores que desempenham a mesma função, ou seja, ‘front office’ ou ‘back office’. "
@@ -64,7 +60,7 @@ PLOT_EXPLAIN_1_27_PT = "27. Stress"
 PLOT_EXPLAIN_1_28_PT = "28. Sintomas depressivos"
 PLOT_EXPLAIN_1_29_PT = "29. Autoeficácia"
 PLOT_EXPLAIN_2_PT = (
-    "Os dois primeiros gráficos mostram os resultados do questionário MUEQ para toda a população do estudo e para os "
+    "Os próximos dois gráficos mostram os resultados do questionário MUEQ para toda a população do estudo e para os "
     "trabalhadores que desempenham a mesma função, ou seja, ‘front office’ ou ‘back office’. "
     "A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados. "
 )
@@ -84,7 +80,7 @@ PLOT_ENG = ""
 COPSOQ_DICT = {
     PT: {
         INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT],
-        RISK_RULE_KEY: [RISK_PT],
+        RISK_RULE_KEY: [],
         COPSOQ_EXPLAIN_KEY: [
             PLOT_EXPLAIN_1_PT,
             PLOT_EXPLAIN_1_1_PT,

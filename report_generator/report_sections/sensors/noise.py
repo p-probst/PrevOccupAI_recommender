@@ -12,9 +12,9 @@ INTRO_2_PT = (
     "A exposição prolongada ou excessiva a níveis elevados de ruído pode causar problemas de saúde, como stress, "
     "dificuldade de concentração e diminuição da produtividade no trabalho. De acordo com orientações de "
     "organizações internacionais, níveis de ruído abaixo de 80 dBA não estão geralmente associados a riscos "
-    "significativos de perda auditiva. No entanto, em contextos de trabalho de escritório, níveis de ruído acima "
-    "de 60 dBA, apesar de não serem necessariamente perigosos para a audição, são considerados incomodativos, podendo "
-    "afetar negativamente a capacidade de concentração e o bem-estar emocional do trabalhador. "
+    "significativos de perda auditiva. No entanto, em contextos de trabalho de escritório, **níveis de ruído acima "
+    "de 60 dBA**, apesar de não serem necessariamente perigosos para a audição, são **considerados incomodativos, podendo "
+    "afetar negativamente a capacidade de concentração e o bem-estar emocional do trabalhador**. "
     "Deste modo, para avaliar o nível de ruído a que o trabalhador está exposto e identificar possíveis riscos, "
     "foram definidas quatro classes de ruído:"
 )
@@ -40,17 +40,17 @@ INTRO_6_PT = (
 )
 
 PLOT_EXPLAIN_1_PT = (
-    "O gráfico abaixo apresenta um cronograma do nível de ruído a que esteve exposta/o ao longo do dia, "
+    "O gráfico abaixo apresenta um **cronograma do nível de ruído** a que esteve exposta/o ao longo do dia, "
     "durante todos os dias de aquisição. Cada barra horizontal corresponde a um dia da semana, e as linhas "
     "verticais tracejadas indicam as diferentes horas do dia. "
-    "Foram utilizados tons de verde para representar os períodos em que o nível de ruído foi silencioso ou baixo, "
-    "amarelo para ruído incomodativo e vermelho para ruído elevado. "
-    "Para construir este gráfico, os dados de ruído foram organizados em intervalos de 10 minutos, sendo "
+    "Foram utilizados tons de **verde** para representar os períodos em que o **nível de ruído foi silencioso ou baixo**, "
+    "**amarelo para ruído incomodativo** e **vermelho para ruído elevado**. "
+    "Para construir este gráfico, os dados de ruído foram separados em intervalos de 10 minutos, sendo "
     "atribuído a cada intervalo o nível de ruído que ocorreu com maior frequência nesse período."
 )
 
 PLOT_EXPLAIN_2_PT = (
-    "O gráfico seguinte mostra a distribuição dos níveis de ruído por dia, ajudando a compreender a proporção "
+    "O gráfico seguinte mostra a **distribuição dos níveis** de ruído por dia, ajudando a compreender a proporção "
     "do tempo, relativamente à duração total do seu turno de trabalho, durante o qual esteve exposta/o aos "
     "diferentes níveis de ruído. Cada barra vertical corresponde a um dia de aquisição."
 )

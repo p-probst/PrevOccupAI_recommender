@@ -14,20 +14,20 @@ INTRO_2_PT =(
     "A análise considera exclusivamente as acelerações do punho, não sendo avaliados movimentos de rotação."
 )
 INTRO_3_PT = (
-    "Durante o trabalho de escritório, são comuns movimentos frequentes do punho e da mão, "
-    "como ao utilizar o rato, o teclado ou manusear documentos. "
-    "Estes movimentos podem ser pequenos e repetitivos ou mais rápidos e abruptos, "
-    "estando padrões muito intensos associados a maior esforço dos membros superiores."
+    "Durante o trabalho de escritório são frequentes os movimentos do punho e da mão, "
+    "como na utilização do rato, do teclado ou no manuseamento de documentos. "
+    "Padrões de movimento muito intensos ou repetitivos podem estar associados a um maior esforço "
+    "dos membros superiores."
 )
+
 INTRO_4_PT = (
-    "Por outro lado, uma frequência muito reduzida de movimentos do punho "
-    "também pode não ser desejável. "
-    "A imobilidade prolongada, especialmente na ausência de apoio ergonómico adequado, "
-    "pode contribuir para posturas desfavoráveis e desconforto músculo-esquelético."
+    "Por outro lado, uma frequência muito reduzida de movimentos do punho também pode ser desfavorável. "
+    "A imobilidade prolongada, sobretudo na ausência de apoio ergonómico adequado, pode contribuir "
+    "para posturas inadequadas e desconforto músculo-esquelético."
 )
 INTRO_5_PT = (
     "**A percentagem de movimentos significativos** do punho indica quantos dos movimentos realizados "
-    "foram mais rápidos ou abruptos, *em relação ao total de movimentos registados* "
+    "foram mais rápidos ou abruptos, **em relação ao total de movimentos registados** "
     "durante o trabalho sentado. "
     "Esta métrica permite identificar tanto situações de elevada atividade do punho "
     "como padrões de imobilidade prolongada, devendo ser interpretada no contexto ergonómico."
@@ -36,20 +36,18 @@ INTRO_5_PT = (
 PLOT_EXPLAIN_1_PT = (
     "O gráfico apresenta a **percentagem de movimentos significativos do punho** "
     "ao longo da semana. "
-    "Cada linha corresponde a um dia de trabalho e cada coluna a uma aquisição. "
+    "Cada linha corresponde a um dia de trabalho e cada coluna a uma aquisição (I, II, III, IV) nesse dia. "
     "Valores mais elevados indicam maior frequência de movimentos rápidos do punho, "
     "enquanto células a cinzento indicam ausência de dados."
 )
 RISK_PT = (
-    "Não existem, atualmente, indicadores científicos que definam uma percentagem ideal de movimentos "
-    "significativos do punho. No entanto, um *número reduzido** destes movimentos pode indicar um **comportamento "
-    "mais estático do punho** que, em conjunto com a utilização prolongada de um rato não ergonómico ou a ausência "
-    "de apoio para o punho, pode conduzir a uma **flexão do punho superior a 20 graus**, valor considerado de **risco "
-    "para o desenvolvimento de lesões músculo-esqueléticas**. "
-    "Assim, mesmo não sendo possível definir recomendações personalizadas, a **realização regular de exercícios "
-    "de mobilização do punho** pode constituir uma prática saudável para ajudar a reduzir este risco."
+    "Atualmente, não existem indicadores científicos que definam uma percentagem ideal de movimentos "
+    "significativos do punho. No entanto, um **número reduzido** destes movimentos pode refletir um **comportamento "
+    "mais estático** que, associado ao uso prolongado de um rato não ergonómico ou à ausência de apoio para o "
+    "punho, pode levar a uma **flexão superior a 20 graus**, considerada um fator de **risco para lesões "
+    "músculo-esqueléticas**. Assim, embora não seja possível definir recomendações personalizadas, a **realização "
+    "regular de exercícios de mobilização do punho** pode ajudar a reduzir este risco."
 )
-
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
 # ------------------------------------------------------------------------------------------------------------------- #

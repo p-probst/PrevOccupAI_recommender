@@ -12,7 +12,7 @@ INTRO_2_PT = (
     "Com o objetivo de estudar a saúde ocupacional, foram recolhidos dados diariamente ao longo de uma semana de trabalho. "
     "Foram utilizados três dispositivos diferentes: "
 )
-INTRO_3_PT = ("- um **smartphone**, que realizou aquisições ao longo de **todo o turno de trabalho**. Este dispositivo adquiriu "
+INTRO_3_PT = ("- um **smartphone**, colocado ao peito, que realizou aquisições ao longo de **todo o turno de trabalho**. Este dispositivo adquiriu "
               "dados de movimento e de nível de ruído.")
 INTRO_4_PT = ("- Um **smartwatch**, agendado para adquirir **quatro vezes por dia durante 20 minutos**, recolheu sinais de movimento do punho e "
               "frequência cardíaca.")

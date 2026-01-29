@@ -38,7 +38,7 @@ INTRO_6_EMG_PT = (
     "Foram definidas as seguintes classes:"
 )
 INTRO_7_EMG_PT = "- **Abaixo do habitual**: esforço muscular inferior ao normalmente observado para essa pessoa. Corresponde a trabalho leve."
-INTRO_8_EMG_PT = "- **Habitual – Típico baixo**: esforço dentro do padrão normal de si, mas no intervalo mais baixo de intensidade."
+INTRO_8_EMG_PT = "- **Habitual – Típico baixo**: esforço dentro do seu padrão normal, mas no intervalo mais baixo de intensidade."
 INTRO_9_EMG_PT = "- **Habitual – Típico alto**: esforço ainda considerado normal para si, mas mais próximo do seu limite habitual."
 INTRO_10_EMG_PT = (
     "- **Alto para si**: esforço muscular acima do que é habitual para si. "
@@ -50,9 +50,9 @@ RISK_PT = "Em relação aos figuras da atividade muscular alongo dos dias, foi d
 PLOT_EXPLAIN_1_PT = ("O gráfico que se segue apresenta uma visão geral semanal da intensidade relativa da atividade "
                      "muscular nos ombros (trapézios) esquerdo e direito. **Cada linha corresponde a uma sessão de trabalho**, "
                      "identificada pelo horário, e mostra a **percentagem do tempo em que o músculo esteve ativo**, "
-                     "distribuída por os diferentes níveis de esforço. "
-                     "As cores representam quanto intenso foi o esforço em relação ao padrão habitual da própria pessoa."
-                     "De um modo geral, estão previstas quatro sessões de aquisição por dia, no entanto, em alguns casos, "
+                     "distribuída pelos diferentes níveis de esforço. "
+                     "As cores representam o quão intenso foi o esforço em relação ao padrão habitual da própria pessoa."
+                     " De um modo geral, estão previstas quatro sessões de aquisição por dia, no entanto, em alguns casos, "
                      "podem ocorrer falhas nos dispositivos, resultando em dados em falta. "
                      "Sempre que a informação de um dos lados (esquerdo ou direito) não esteja disponível numa determinada sessão, "
                      "essa ausência é assinalada através de uma barra a cinzento. Caso os dados de um dos lados estejam em falta "

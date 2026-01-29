@@ -27,7 +27,7 @@ INTRO_4_PT = (
     " Este rácio tem em consideração a **frequência cardíaca máxima, que depende da idade**, e a "
     "**frequência cardíaca em repouso** de cada trabalhador. Com base neste rácio, foram definidos diferentes níveis "
     "para classificar a frequência cardíaca. Uma vez que **valores entre 30% e 39% são considerados normais** durante "
-    "atividade física ligeira, a presença destes valores, ou superiores, enquanto o trabalhador se encontra sentado "
+    "atividade física ligeira, a presença destes valores, ou superiores, enquanto o trabalhador se encontra sentado, "
     "pode ser interpretada como um possível indicador de stress. Assim, foram definidas as seguintes classes:"
 )
 
@@ -39,7 +39,7 @@ INTRO_7_PT = "- **Elevado**: rácio de frequência cardíaca superior a **39%**.
 
 
 PLOT_EXPLAIN_1_PT = (
-    "O gráfico abaixo apresenta a variação da frequência cardíaca em cada aquisição ao longo dos diferentes "
+    "O gráfico abaixo apresenta a variação da frequência cardíaca em cada aquisição (I, II, III, IV) ao longo dos diferentes "
     "dias da semana. Cada barra vermelha representa uma aquisição e mostra, no topo, o valor máximo de "
     "frequência cardíaca registado (em batimentos por minuto) e, na base, o valor mínimo. "
     "Desta forma, é possível analisar as variações da frequência cardíaca entre aquisições no mesmo dia "

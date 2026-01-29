@@ -31,15 +31,16 @@ INTRO_6_PT = (
 
 INTRO_7_PT = (
     "- **iluminância** (lux), medida em vários pontos do posto de trabalho de cada participante, "
-    "tendo sido calculada a média dessas medições para obtenção do valor final."
+    "tendo sido calculada a média dessas medições para obtenção do valor final. Quanto maior a iluminância, maior a intensidade "
+    "da luz que incide no seu posto de trabalho."
 )
 PLOT_EXPLAIN_PT = (
-    "Os gráficos que se seguem apresentam os valores medidos pelos sensores ambientais, representados por linhas verdes, "
+    "Os gráficos que se seguem apresentam os **valores medidos pelos sensores ambientais**, representados por **linhas verdes**, "
     "bem como os respetivos valores de referência, definidos com base em publicações de organizações internacionais "
     "e em literatura científica. "
-    "Sempre que existam valores de referência mínimos, estes são representados por uma linha azul tracejada. "
-    "Os valores de referência máximos, ou o valor de referência único, "
-    "são representados por uma linha vermelha tracejada. As condições ambientais são alheias ao trabalhador, logo não"
+    "Sempre que existam valores de **referência mínimos**, estes são representados por uma **linha azul tracejada**. "
+    "Os valores de **referência máximos**, ou o valor de **referência único*+, "
+    "são representados por uma **linha vermelha tracejada**. As condições ambientais são alheias ao trabalhador, logo não"
     " existem recomendações individuais mas apenas organizacionais."
 )
 # ------------------------------------------------------------------------------------------------------------------- #

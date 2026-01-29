@@ -16,8 +16,8 @@ INTRO_2_PT = (
 )
 
 INTRO_3_PT = (
-    "De forma a avaliar a presença e evolução da dor ao longo da semana de trabalho, "
-    "preencheu um questionário de autoavaliação da dor no início e no final de cada turno. "
+    "De forma a avaliar a **presença e evolução da dor** ao longo da semana de trabalho, "
+    "preencheu um questionário de autoavaliação da dor no **início e no final de cada turno**. "
     "Este questionário consistiu na identificação das zonas do corpo onde existia dor, "
     "bem como na indicação da sua intensidade."
 )

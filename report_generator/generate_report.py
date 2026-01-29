@@ -204,7 +204,7 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.new_paragraph(introduction_dict[SECTION_1])
     mdFile.write("\n")
 
-    mdFile.new_header(level=2, title="Contexto")
+    mdFile.new_header(level=2, title="Contexto do estudo")
     mdFile.new_paragraph(introduction_dict[SECTION_2])
     mdFile.write("\n")
     mdFile.new_paragraph(introduction_dict[SECTION_3])
@@ -229,6 +229,10 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
     mdFile.new_paragraph(introduction_dict[SECTION_12])
     mdFile.write("\n")
     mdFile.new_paragraph(introduction_dict[SECTION_13])
+    mdFile.write("\n")
+
+    mdFile.new_header(level=2, title="Estrutura do relatório")
+    mdFile.new_paragraph(introduction_dict[SECTION_14])
     mdFile.write("\n")
 
 
@@ -275,20 +279,6 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
                         os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_posture_views_grid.png'),
                         caption=None, max_width=1, max_height=0.99)
 
-
-
-    # # vista de lado
-    # _add_centered_image(mdFile,
-    #                     os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Lateral.png'),
-    #                     caption=None, max_width=1, max_height=0.99)
-    #
-    #
-    #
-    #
-    # # vista superior
-    # _add_centered_image(mdFile,
-    #                     os.path.join(plots_path, str(subject_id), 'posture_plots', f'{subject_id}_Vista Superior.png'),
-    #                     caption=None, max_width=1, max_height=0.99)
 
     # risk section
     mdFile.new_paragraph(posture_dict[RISK_RULE_KEY][0])
@@ -408,16 +398,13 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][5])
     mdFile.new_paragraph(hr_dict[INTRODUCTION_KEY][6])
 
-    mdFile.write("\n")
-    mdFile.new_line(' \pagebreak ')
-    mdFile.write("\n")
     # ----- Paragraph: circular relative heart rate plot explanation + Plot: circular heart rate plot ----- #
     mdFile.new_paragraph(hr_dict[PLOT_EXPLAIN_KEY][1])
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'HR_distributions',
                                      f'HR_plot_circular_{subject_id}.png'),
                         caption=None, max_width=1, max_height=0.9)
-
+    mdFile.new_line(' \pagebreak ')
     # ----- Paragraph: RISK RULES: hr ratio + RISK OCCURRENCES: hr ratio ----- #
     mdFile.new_paragraph(hr_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, slightly_elevated_hr_recommendations)
@@ -775,9 +762,6 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     _add_questionnaire_recommendations(mdFile, environment_recommendations[RECOMMENDATIONS_KEY])
     # --------------------------------------- PSYCHOSOCIAL (COPSOQ AND MUEQ) --------------------------------------#
     mdFile.write("\n")
-    mdFile.new_line(' \pagebreak ')
-    mdFile.write("\n")
-
     # intro
     mdFile.new_header(level=2, title=psycho_dict[INTRODUCTION_KEY][0])
     mdFile.new_paragraph(psycho_dict[INTRODUCTION_KEY][1])

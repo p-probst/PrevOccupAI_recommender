@@ -7,11 +7,12 @@ from constants import PT, ENG, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-INTRO_1_PT = "Avaliação Ambiental"
+INTRO_1_PT = "Avaliação ambiental"
 INTRO_2_PT = (
-    "Ambientes de trabalho com condições inadequadas aumentam o risco de lesões músculo-esqueléticas e "
+    "Ambientes de trabalho com condições inadequadas "
     "influenciam negativamente a produtividade e o bem-estar geral do trabalhador. Neste contexto, foram "
-    "avaliados fatores ambientais, tais como o nível de iluminação, a qualidade do ar, o ruído e a organização "
+    "avaliados fatores ambientais, tais como o **nível de iluminação**, a **qualidade do ar**, o **ruído** e o **design**, **privacidade** e "
+    "**organização do escritório**. "
     "do posto de trabalho. "
     "Relativamente à dimensão da privacidade do escritório, os resultados apresentados têm um caráter "
     "exclusivamente informativo, não estando associadas recomendações individuais, uma vez que este aspeto "
@@ -22,7 +23,7 @@ INTRO_2_PT = (
 
 PLOT_EXPLAIN_1_PT = (
     "O gráfico abaixo apresenta os resultados calculados com base nas respostas dadas ao questionário de "
-    "avaliação ambiental. A tabela abaixo mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados."
+    "avaliação ambiental. A tabela mostra as diferentes dimensões do questionário, numeradas conforme a figura dos resultados."
 )
 PLOT_EXPLAIN_2_1_PT = "1. Iluminação"
 PLOT_EXPLAIN_2_2_PT = "2. Ar"

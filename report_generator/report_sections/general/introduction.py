@@ -17,10 +17,11 @@ SECTION_10 = 'section_10'
 SECTION_11 = 'section_11'
 SECTION_12 = 'section_12'
 SECTION_13 = 'section_13'
+SECTION_14 = 'section_14'
 # ------------------------------------------------------------------------------------------------------------------- #
 # portuguese
 # ------------------------------------------------------------------------------------------------------------------- #
-SECTION_0_PT = "Relatório Ocupacional Individual - PrevOccupAI+"
+SECTION_0_PT = "Relatório ocupacional individual - PrevOccupAI+"
 SECTION_1_PT = (
     "É com grande satisfação que lhe apresentamos os resultados do projeto PrevOccupAI+, sob a forma deste "
     "relatório personalizado, que integra os dados recolhidos ao longo de uma semana de trabalho. "
@@ -86,6 +87,15 @@ SECTION_12_PT = (
 )
 SECTION_13_PT = ("Caso tenha alguma(s) questão(ões) relativamente ao documento e/ou à informação nele contida, "
                          "é possível contactar-nos em: **biosignals.libphys@gmail.com**.")
+
+SECTION_14_PT = (
+    "Os resultados apresentados neste relatório estão organizados em dois grandes grupos: os resultados dos "
+    "questionários e os resultados provenientes dos sensores. Em cada grupo, a informação encontra-se "
+    "estruturada de acordo com a área do questionário ou com o tipo de sensor e métrica analisados. "
+    "Para uma leitura rápida dos principais riscos identificados e das respetivas recomendações, pode consultar "
+    "a secção do resumo. No entanto, recomenda-se a leitura integral do relatório, de forma a obter uma "
+    "compreensão completa e contextualizada da sua saúde ocupacional."
+)
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -112,6 +122,7 @@ INTRO_DICT = {
         SECTION_11: SECTION_11_PT,
         SECTION_12: SECTION_12_PT,
         SECTION_13: SECTION_13_PT,
+        SECTION_14: SECTION_14_PT,
     },
 
     ENG: {
