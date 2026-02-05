@@ -1,16 +1,33 @@
+import os
+
 from report_generator.generate_report import generate_report
 
 
-DRIVE = 'E'
+DRIVE = 'D'
 OH_PROFILE_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 PLOTS_OUTPUT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_plots"
 EMG_PLOT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\results\\emg_pipeline\\plots"
 REPORT_OUTPUT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_reports"
 
-subject_id = 81
+# subject_id = 106
+# generate_report(REPORT_OUTPUT_PATH, subject_id, PLOTS_OUTPUT_PATH, EMG_PLOT_PATH, OH_PROFILE_PATH)
+
+# list all files in the directory
+files = os.listdir(OH_PROFILE_PATH)
+
+# get all subject IDs
+subject_ids = sorted([int(file.split('_')[0]) for file in files])
+
+# cycle over all subjects
+for subject_id in subject_ids:
+
+    print("-----------------------------------------------------------------------")
+    print(f"----------- Generating report for subject: {subject_id} -----------")
+    print("-----------------------------------------------------------------------")
+
+    generate_report(REPORT_OUTPUT_PATH, subject_id, PLOTS_OUTPUT_PATH, EMG_PLOT_PATH, OH_PROFILE_PATH)
 
 
-generate_report(REPORT_OUTPUT_PATH, subject_id, PLOTS_OUTPUT_PATH, EMG_PLOT_PATH, OH_PROFILE_PATH)
 # run here the recommender together with report generator
 
 # input: the OH-profiles

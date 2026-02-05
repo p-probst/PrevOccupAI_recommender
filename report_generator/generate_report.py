@@ -51,12 +51,12 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
     # init work type
     work_type = ''
 
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     mdFile.write("\n")
 
     # ------------------------ Section: Introduction ------------------------ #
     _generate_introduction_section(mdFile)
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     mdFile.write("\n")
 
     # get work type from OH profile
@@ -84,7 +84,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     mdFile.write("\n")
     _generate_daily_questionnaire(mdFile, subject_id, plots_path)
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     mdFile.write("\n")
 
 
@@ -97,7 +97,7 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     # ------------------------ Sub-Section: Environmental Sensors (single recording) ------------------------ #
     _generate_environmental_sensors_section(mdFile, subject_id, plots_path)
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Sub-Section: Sensor Timeline (daily recording) ------------------------ #
     _generate_sensor_timeline_section(mdFile, subject_id, plots_path)
@@ -108,41 +108,41 @@ def generate_report(report_folder_path, subject_id, plots_path, emg_plots_path, 
 
     # add recs to list
     list_recs.extend([noise_exposure_rec, noise_continuous_rec])
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Sub-Section: Movement Sensors: Human Activities (daily recording) ------------------------ #
     (sit_proportions_rec, sit_total_rec, sit_continuous_rec_1h, sit_continuous_rec_2h, stand_proportions_rec,
      steps_rec) = _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system)
     list_recs.extend([sit_proportions_rec, sit_total_rec, sit_continuous_rec_1h, sit_continuous_rec_2h, stand_proportions_rec, steps_rec])
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Sub-Section: Movement Sensors: Posture (daily recording) ------------------------ #
     posture_rec = _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system)
     list_recs.append(posture_rec)
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Sub-Section: Movement Sensors: Wrist (daily recording) ------------------------ #
     _generate_wrist_section(mdFile, subject_id, plots_path)
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Sub-Section: Hear Rate Sensor (daily recording) ------------------------ #
     max_hr_rec, slightly_elevated_hr_rec, elevated_hr_rec = _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system)
     list_recs.extend([max_hr_rec, slightly_elevated_hr_rec, elevated_hr_rec])
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Sub-Section: EMG Sensor (daily recording) ------------------------ #
     emg_rec_high, emg_rec_above_high = _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, emg_plots_path, recommendation_system)
     list_recs.extend([emg_rec_high, emg_rec_above_high])
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Section: Summary ------------------------ #
 
     _generate_summary_section(mdFile, list_recs, rosa_rec, env_rec)
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Section: Conclusion ------------------------ #
     _generate_conclusion_section(mdFile, conclusion_dict=CONCLUSION_DICT[PT])
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # ------------------------ Section: References ------------------------ #
     _generate_references(mdFile)
@@ -338,7 +338,7 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
                                      f'relative_bins_sessions_week.png'),
                         caption=None, max_width=1, max_height=0.95)
 
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     mdFile.write("\n")
     # add risk rules and detection
     mdFile.new_paragraph(emg_dict[RISK_RULE_KEY][0])
@@ -386,7 +386,7 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
     _add_rules_and_risk_occurrences(mdFile, max_hr_recommendations)
     mdFile.write("\n")
     mdFile.write("\n\\vspace{0.9em}\n")
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
 
     # ----- Paragraph: relative hear rate explanation ----- #
@@ -404,7 +404,7 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
                         os.path.join(plots_path, str(subject_id), 'HR_distributions',
                                      f'HR_plot_circular_{subject_id}.png'),
                         caption=None, max_width=1, max_height=0.9)
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     # ----- Paragraph: RISK RULES: hr ratio + RISK OCCURRENCES: hr ratio ----- #
     mdFile.new_paragraph(hr_dict[RISK_RULE_KEY][0])
     _add_rules_and_risk_occurrences(mdFile, slightly_elevated_hr_recommendations)
@@ -464,7 +464,7 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
             max_height=0.6
         )
 
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # timeline risks
     mdFile.new_paragraph(har_dict[RISK_RULE_KEY][0])
@@ -489,7 +489,7 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
     _add_rules_and_risk_occurrences(mdFile, sitting_proportions_recommendations)
     _add_rules_and_risk_occurrences(mdFile, standing_proportions_recommendations)
     mdFile.write("\n")
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     # check recommendations
     recommendations = _get_recommendation_set(
         [sitting_proportions_recommendations, sitting_total_recommendations, sitting_continuous_recommendations_1h,
@@ -499,6 +499,7 @@ def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profile
     mdFile.write("\n")
 
     # describe plot - steps
+    mdFile.new_paragraph(har_dict[INTRODUCTION_KEY][4])
     mdFile.new_paragraph(har_dict[PLOT_EXPLAIN_KEY][2])
     _add_centered_image(mdFile,
                         os.path.join(plots_path, str(subject_id), 'human_activities',
@@ -698,7 +699,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # describe plots
     mdFile.new_paragraph(rosa_dict[PLOT_EXPLAIN_KEY][0])
     mdFile.write("\n")
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     mdFile.write("\n")
 
     # add table
@@ -772,7 +773,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     # describe plots
     mdFile.new_paragraph(psycho_dict[COPSOQ_EXPLAIN_KEY][0])
     mdFile.write("\n")
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
     mdFile.write("\n")
     # describe plots: only PLOT_EXPLAIN_1_1_PT ... PLOT_EXPLAIN_1_29_PT
     # --- COPSOQ (only 1_1 to 1_29) in a 2-column table ---
@@ -794,7 +795,7 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
                         os.path.join(plots_path, str(subject_id), 'questionnaire_plots', f'copsoq_{work_type}.png'),
                         caption=f'Resultados do questionário COPSOQ: média de trabalhadores de {work_type_full}')
     mdFile.write("\n")
-    mdFile.new_line(' \pagebreak ')
+    mdFile.write("\n\n\\newpage\n\n")
 
     # describe plots
     mdFile.new_paragraph(psycho_dict[MUEQ_EXPLAIN_KEY][0])

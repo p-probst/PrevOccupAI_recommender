@@ -41,7 +41,7 @@ PLOT_EXPLAIN_1_PT = (
 " Cada par de figuras corresponde a um dia de aquisição, permitindo comparar visualmente "
     "as zonas do corpo onde foi reportada dor e a respetiva intensidade antes e depois do trabalho."
 " As cores utilizadas representam a intensidade da dor, de acordo com a escala numérica apresentada no topo do gráfico. A ausência de "
-    "dor corresponde a uma intensidade zero, ou seja, sem dor."
+    "dor corresponde a uma intensidade zero, ou seja, sem dor. "
     "Sempre que não é reportada dor, as figuras correspondentes surgem sem marcação de áreas coloridas."
 )
 

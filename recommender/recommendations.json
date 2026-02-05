@@ -19,15 +19,15 @@
                 "recommendation": {
                     "pt": [
                         "Levantar-se da cadeira a cada 20-30 minutos.",
-                        "Levantar-se e movimentar-se durante, pelo menos, 10 minutos após duas horas de postura sentada. Sempre que possível, evite sentar-se por longos períodos de tempo.",
+                        "Levantar-se e movimentar-se durante, pelo menos, 10 minutos após duas horas de postura sentada. Aproveite e faça uma pausa ativa, sempre que possível, evite sentar-se por longos períodos de tempo.",
                         "Trabalhar de forma ativa, alternando entre estar sentado, estar de pé e movimentar-se.",
-                        "Para contrariar trabalho muito sedentário, tentar ultrapassar os limites minimos de atividade física semanal: 150 minutos/semana de atividade física aeróbica moderada ou 75 minutos/semana de atividade aeróbica vigorosa."
+                        "Para contrariar trabalho muito sedentário, faça pausas ativas e tente ultrapassar os limites minimos de atividade física semanal: 150 minutos/semana de atividade física aeróbica moderada ou 75 minutos/semana de atividade aeróbica vigorosa."
                     ],
                     "en": [
                         "Stand up from your chair every 20–30 minutes.",
-                        "Stand up and move for at least 10 minutes after two hours of sitting. Whenever possible, avoid sitting for long periods of time.",
+                        "Stand up and move for at least 10 minutes after two hours of sitting. Make active pauses and, whenever possible, avoid sitting for long periods of time.",
                         "Work actively by alternating between sitting, standing, and moving.",
-                        "To counteract highly sedentary work, aim to exceed the minimum weekly physical activity recommendations: 150 minutes per week of moderate aerobic physical activity or 75 minutes per week of vigorous aerobic activity."
+                        "To counteract highly sedentary work, make active pauses and aim to exceed the minimum weekly physical activity recommendations: 150 minutes per week of moderate aerobic physical activity or 75 minutes per week of vigorous aerobic activity."
                     ]
                 }
             },
@@ -42,10 +42,10 @@
                 },
                 "recommendation": {
                     "pt": [
-                        "Fazer pausas ativas. Longos períodos de posturas sedentárias, tanto de pé , como sentado, são prejudiciais para a saúde."
+                        "Fazer pausas ativas. Longos períodos de posturas estaticas, tanto de pé, como sentado, são prejudiciais para a saúde."
                     ],
                     "en": [
-                        "Take active breaks. Long periods of sedentary postures, whether standing or sitting, are harmful to health."
+                        "Take active breaks. Long periods of static postures, whether standing or sitting, are harmful to health."
                     ]
                 }
             },
@@ -60,10 +60,12 @@
                 },
                 "recommendation": {
                     "pt": [
-                        "Fazer pausas ativas, interrompendo o tempo sentado com períodos de caminhada."
+                        "Fazer pausas ativas, interrompendo o tempo sentado com períodos de caminhada.",
+                        "Sempre se possível, tente de aumentar o numéro de passos por dia."
                     ],
                     "en": [
-                        "Take active breaks by interrupting sitting time with periods of walking."
+                        "Take active breaks by interrupting sitting time with periods of walking.",
+                        "Whenever possible, try to increase your daily step count."
                     ]
                 }
             }
@@ -86,7 +88,7 @@
                     "Se se sentir sobrecarregada/o e aflita/o, fazer uma pausa durante alguns minutos, respirar fundo, e só depois retornar ao trabalho.",
                     "Apanhar ar durante a hora de almoço ou dar um passeio durante o dia.",
                     "Desenvolver boas relações com os colegas criando uma rede de apoio.",
-                    "Realizar exercício físico. Atividade física, tanto aeróbica como treino de força, tem beneficios para a saúde mental, nomeadamente na redução do stress, ansiedade e sintomas depressivos."
+                    "Realizar exercício físico. Atividade física, tem beneficios para a saúde mental, nomeadamente na redução do stress, ansiedade e sintomas depressivos."
                 ],
                 "en": [
                     "If you feel overwhelmed or distressed, take a short break for a few minutes, breathe deeply, and only then return to work.",
@@ -109,12 +111,12 @@
             },
             "recommendation": {
                 "pt": [
-                    "A exposição durante longos períodos de tempo a ruído incomodativo pode provocar stresse, fadiga e distração. Fazer pausas ativas e em contacto com a natureza, podem ajudar a recuperar a energia e o bem estar.",
-                    "Utilizar equipamento que permita atenuar o ruido (exemplo: ariculares com cancelamento de ruído)."
+                    "A exposição durante longos períodos de tempo a ruído incomodativo pode provocar stresse, fadiga e distração. Fazer pausas ativas pode ajudar a recuperar a energia e o bem estar."
+
                 ],
                 "en": [
                     "Prolonged exposure to disturbing noise can cause stress, fatigue, and distraction. Taking active breaks and spending time in contact with nature can help restore energy and wellbeing.",
-                    "Use equipment that helps reduce noise exposure (e.g., noise-cancelling headphones)."
+                    "Use personal protective equipment when noise levels are high. In the case of disturbing noise, use noise-cancelling headphones."
                 ]
             }
         },
@@ -148,7 +150,7 @@
             },
             "recommendation": {
                 "pt": [
-                    "Realizar exercício físico. Atividade física, tanto aeróbica como treino de força, tem beneficios para a saúde mental, nomeadamente na redução do stress, ansiedade e sintomas depressivos. ",
+                    "Realizar exercício físico. Atividade física, tem beneficios para a saúde mental, nomeadamente na redução do stress, ansiedade e sintomas depressivos. ",
                     "Apanhar ar durante a hora de almoço ou dar um passeio durante o dia."
                 ],
                 "en": [
@@ -239,11 +241,13 @@
                     "recommendation": {
                         "pt": [
                             "Posicionar o rato em linha com o ombro, mantendo o pulso direito.",
-                            "Colocar o rato na mesma superfície que o teclado e o mais próximo possível do mesmo."
+                            "Colocar o rato na mesma superfície que o teclado e o mais próximo possível do mesmo.",
+                            "O rato deve ser utilizado com a menor frequência possível, devendo optar-se, sempre que possível, pelo uso de teclas de atalho no teclado."
                         ],
                         "en": [
                             "Position the mouse in line with the shoulder, keeping the wrist straight.",
-                            "Place the mouse on the same surface as the keyboard and as close to it as possible."
+                            "Place the mouse on the same surface as the keyboard and as close to it as possible.",
+                            "The mouse should be used as little as possible, opting instead for keyboard shortcuts whenever possible."
                         ]
                     }
                 },
@@ -319,9 +323,10 @@
                 },
                 "recommendation": {
                     "pt": [
-                        "Utilizar equipamento de proteção indivídual quando o ruído é elevado. No caso de ruído incomodativo, utilizar auriculares com cancelamento de ruído."
+                        "A exposição durante longos períodos de tempo a ruído incomodativo pode provocar stresse, fadiga e distração. Pausas ativas podem ajudar a recuperar a energia e o bem estar."
                     ],
                     "en": [
+                        "Prolonged exposure to disturbing noise can cause stress, fatigue, and distraction. Taking active breaks and spending time in contact with nature can help restore energy and wellbeing.",
                         "Use personal protective equipment when noise levels are high. In the case of disturbing noise, use noise-cancelling headphones."
                     ]
                 }

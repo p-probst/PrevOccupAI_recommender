@@ -22,11 +22,17 @@ INTRO_3_PT = ("Deste modo, torna-se fundamental identificar situações de risco
     "do dia de trabalho**, reduzindo o tempo passado sentado e incentivando a realização de mais movimento.")
 
 INTRO_4_PT = (
-    "Para o estudo das atividades realizadas ao longo do dia de trabalho, foram desenvolvidos modelos de inteligência artificial que, "
-    "com base nos dados dos sensores de movimento do smartphone, permitem distinguir entre três atividades principais: "
+    "Para o estudo das atividades realizadas ao longo do dia de trabalho, foram desenvolvidos **modelos de inteligência artificial** que, "
+    "com base nos dados dos sensores de movimento do smartphone, permitem distinguir entre **três atividades principais**: "
     "estar **sentado**, estar **de pé** e a **andar**. A partir desta informação, é possível determinar quanto tempo cada trabalhador "
     "passou em cada uma destas atividades e, assim, identificar possíveis padrões de risco."
 )
+
+INTRO_5_PT = ("A Organização Mundial da Saúde (OMS) recomenda que adultos realizem **pelo menos 4 mil passos por dia**. "
+              "Esta quantidade é considerado o mínimo para evitar o sedentarismo. A **meta ideal**, para obter benefícios "
+              "significativos para à saúde, situa-se entre **7 e 9 mil passos por dia**. Estudos indicam que este nível de "
+              "atividade pode reduzir significativamente o risco de doenças crónicas e morte prematura. Sempre que "
+              "possível, procure integrar este objetivo no seu dia a dia.")
 
 RISK_1_PT = "Em relação ao cronograma das atividades ao longo do dia, foram delineados os seguinte riscos:"
 RISK_2_PT = "Em relação à distribuição das atividades ao longo do dia, foram delineados os seguinte riscos:"
@@ -51,7 +57,7 @@ PLOT_EXPLAIN_3_PT = (
     "O último gráfico apresentado relativamente às atividades corresponde ao **número de passos "
     "e da distância percorrida** por dia. A parte da barra a azul corresponde ao número de passos efetivamente realizados, enquanto que, a "
     "parte a cinzento, indica o número de passos recomendado para um dia inteiro. "
-    "Este valor recomendado depende da idade do trabalhador e encontra-se indicado no topo do gráfico. "
+    "Este valor recomendado depende da sua idade e encontra-se indicado no topo do gráfico. "
     "A correspondente distância percorrida no respetivo dia, expressa em quilómetros (km), é apresentada à direita de cada barra."
 )
 
@@ -68,7 +74,7 @@ PLOT_ENG = ""
 # ------------------------------------------------------------------------------------------------------------------- #
 HAR_DICT = {
     PT: {
-        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT, INTRO_4_PT],
+        INTRODUCTION_KEY: [INTRO_1_PT, INTRO_2_PT, INTRO_3_PT, INTRO_4_PT, INTRO_5_PT],
         RISK_RULE_KEY: [RISK_1_PT, RISK_2_PT, RISK_3_PT],
         PLOT_EXPLAIN_KEY: [PLOT_EXPLAIN_1_PT, PLOT_EXPLAIN_2_PT, PLOT_EXPLAIN_3_PT],
     },
