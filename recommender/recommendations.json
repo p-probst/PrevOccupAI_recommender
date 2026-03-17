@@ -115,8 +115,7 @@
 
                 ],
                 "en": [
-                    "Prolonged exposure to disturbing noise can cause stress, fatigue, and distraction. Taking active breaks and spending time in contact with nature can help restore energy and wellbeing.",
-                    "Use personal protective equipment when noise levels are high. In the case of disturbing noise, use noise-cancelling headphones."
+                    "Prolonged exposure to disturbing noise can cause stress, fatigue, and distraction. Taking active breaks can help restore energy and wellbeing."
                 ]
             }
         },
@@ -142,10 +141,11 @@
             "rule": {
                 "pt": [
                     "Se o músculo (direto ou esquerdo) esteve em nível de contração **Alto para si** durante mais de **30% do tempo**, em pelo menos **duas aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*.",
-                  "Se o músculo (direto ou esquerdo) esteve em nível de contração **Típico-alto** durante mais de **25% do tempo**, em pelo menos **três aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*."
+                    "Se o músculo (direto ou esquerdo) esteve em nível de contração **Típico-alto** durante mais de **25% do tempo**, em pelo menos **três aquisições** no mesmo dia e a média dos itens do questionário de carga de trabalho *concentração e esforço mental*, *apressado e sobre pressão* e *exigência da carga do trabalho* for pelo menos *concordo*."
                 ],
                 "en": [
-                    "If the muscle was in activity level High for you for more than 30% of the time, in at least two acquisitions on the same day, and the mean score of the workload questionnaire items *focus and mental strain*, *rushed and under pressure*, and *heavy workload* was at least *agree*."
+                    "If the muscle (left or right) was in activity level High for you for more than 30% of the time, in at least two acquisitions on the same day, and the mean score of the workload questionnaire items *focus and mental strain*, *rushed and under pressure*, and *heavy workload* was at least *agree*.",
+                    "If the muscle was (left or right) was in activity level **typical-high** for more than 25% of the time, in at least **three acquisitions** on the same day, and the mean score of the workload questionnaire items *focus and mental strain*, *rushed and under pressure*, and *heavy workload* was at least *agree*."
                 ]
             },
             "recommendation": {

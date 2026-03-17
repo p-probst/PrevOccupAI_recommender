@@ -25,9 +25,8 @@ SUMMARY_1_PT = ("As tabelas seguintes apresentam um resumo dos principais indica
 
 SUMMARY_2_PT = (
     "Este resumo foi concebido para lhe proporcionar uma visão global e integrada dos resultados, facilitando "
-    "a identificação de potenciais fatores de risco e de áreas que poderão merecer maior atenção. Para uma "
-    "análise mais detalhada de cada métrica e do respetivo enquadramento, recomenda-se a consulta das secções "
-    "anteriores do relatório."
+    "a identificação de potenciais fatores de risco e de áreas que poderão merecer maior atenção. **Para uma compreensão** "
+    "**mais aprofundada** de cada métrica e do respetivo enquadramento, **recomenda-se a leitura das secções seguintes do relatório**."
 )
 # ------------------------------------------------------------------------------------------------------------------- #
 # english
