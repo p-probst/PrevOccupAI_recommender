@@ -8,7 +8,7 @@ import pandas as pd
 
 # internal imports
 from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
-from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
+from recommender.utils import dates_to_weekdays, evaluate_continuous_timeline_risk
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -86,26 +86,8 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
     # init the recommendations dict with the rule
     recommendations_dict = {RULE_KEY: [full_recommender_dict['sensors']['noise']['rule'][language][0]]}
 
-    # init list for holding the dates and counter for tracking risk instances
-    risk_dates = []
-    total_num_instances = 0
-
-    # cycle over the noise metrics
-    for acquisition_date, session_dict in noise_metrics.items():
-
-        for acquisition_time, metrics_dict in session_dict.items():
-
-            # get the noise timeline
-            noise_timeline_dict = metrics_dict['Noise_timeline_wlen-10']
-
-            # get number of instances
-            num_risk_instances = get_timeline_risk_durations(noise_timeline_dict, noise_level_label, min_duration_minutes=exposure_limit_minutes)
-
-            if num_risk_instances > 0:
-
-                # add acquisition date to the list
-                risk_dates.append(acquisition_date)
-                total_num_instances += num_risk_instances
+    # evaluate the noise timeline continuous risk
+    risk_dates, total_num_instances = evaluate_continuous_timeline_risk(noise_metrics, 'Noise_timeline_wlen-10', noise_level_label, exposure_limit_minutes, 0)
 
 
     if len(risk_dates) > 0:

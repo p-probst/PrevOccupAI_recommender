@@ -9,7 +9,7 @@ from typing import Dict, List
 
 # internal imports
 from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
-from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
+from recommender.utils import dates_to_weekdays, evaluate_continuous_timeline_risk
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -180,12 +180,12 @@ def get_continuous_sitting_recommendations(oh_profile: Dict,
         recommendations_dict = {
             RULE_KEY: [full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language][0]]}
 
-        min_num_risk_instances = 2
+        instance_threshold = 1
     elif exposure_limit_minutes == HAR_EXPOSURE_LIMIT_2H:
         recommendations_dict = {
             RULE_KEY: [full_recommender_dict['sensors']['human_activities']['sitting']['rule'][language][1]]}
 
-        min_num_risk_instances = 1
+        instance_threshold = 0
 
     else:
         raise ValueError('Exposure limit must be either 60.0 min, or 120.0 min')
@@ -193,25 +193,27 @@ def get_continuous_sitting_recommendations(oh_profile: Dict,
     # get the human activity metrics
     har_metrics = oh_profile['sensor_metrics']['human_activities']
 
-    # init list for holding the dates and counter for tracking risk instances
-    risk_dates = []
-    total_num_instances = 0
+    # evaluate the HAR timeline continuous risk
+    risk_dates, total_num_instances = evaluate_continuous_timeline_risk(har_metrics, 'HAR_timeline', activity_class_label, exposure_limit_minutes, instance_threshold)
 
-    # cycle over the noise metrics
-    for acquisition_date, session_dict in har_metrics.items():
-
-        for acquisition_time, metrics_dict in session_dict.items():
-
-            har_timeline_dict = metrics_dict['HAR_timeline']
-
-            # get number of instances
-            num_risk_instances = get_timeline_risk_durations(har_timeline_dict, activity_class_label,
-                                                             min_duration_minutes=exposure_limit_minutes)
-
-            if num_risk_instances >= min_num_risk_instances:
-                # add acquisition date to the list
-                risk_dates.append(acquisition_date)
-                total_num_instances += 1
+    # # init list for holding the dates and counter for tracking risk instances
+    # risk_dates = []
+    # total_num_instances = 0
+    #
+    # # cycle over the noise metrics
+    # for acquisition_date, session_dict in har_metrics.items():
+    #
+    #     for acquisition_time, metrics_dict in session_dict.items():
+    #
+    #         har_timeline_dict = metrics_dict['HAR_timeline']
+    #
+    #         # get number of instances
+    #         num_risk_instances = count_continuous_timeline_risk_breach(har_timeline_dict, activity_class_label, exposure_limit_minutes=exposure_limit_minutes)
+    #
+    #         if num_risk_instances >= instance_threshold:
+    #             # add acquisition date to the list
+    #             risk_dates.append(acquisition_date)
+    #             total_num_instances += 1
 
     if len(risk_dates) > 0:
 

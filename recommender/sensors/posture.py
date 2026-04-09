@@ -8,7 +8,7 @@ import pandas as pd
 
 # internal imports
 from constants import RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
-from recommender.utils import dates_to_weekdays, get_timeline_risk_durations
+from recommender.utils import dates_to_weekdays
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
