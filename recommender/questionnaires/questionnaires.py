@@ -8,6 +8,7 @@ import pandas as pd
 
 # internal imports
 from constants import RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
+from recommender.utils import load_or_generate_csv, get_language_mapper_values
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -33,12 +34,12 @@ ROSA_MAPPING = {
 
 # Maps internal environmental questionnaire keys to human-readable dimension labels per language.
 # The Portuguese labels intentionally match the raw profile keys so that no translation is lost.
+# no recommendations for office privacy (privacidade do escritório) thus they are omitted
 ENVIRONMENT_MAPPING = {
     "Nível de Iluminação":       {"pt": "Nível de Iluminação",       "eng": "Lighting Level"},
     "Ar":                        {"pt": "Ar",                        "eng": "Air"},
     "Ruído":                     {"pt": "Ruído",                     "eng": "Noise"},
     "Design do Escritório":      {"pt": "Design do Escritório",      "eng": "Office Design"},
-    "Privacidade do Escritório": {"pt": "Privacidade do Escritório", "eng": "Office Privacy"},
     "Organização do Escritório": {"pt": "Organização do Escritório", "eng": "Office Organisation"}
 }
 
@@ -61,13 +62,14 @@ def generate_rosa_csv(rosa_data_csv_path: str | Path, oh_profile_path: str) -> p
     :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
     :return: DataFrame containing per-subject ROSA metrics.
     """
-    return _load_or_generate_csv(csv_dir=rosa_data_csv_path, filename=ROSA_CSV_FILENAME,
-                                 oh_profile_path=oh_profile_path,
-                                 oh_metric_hierarchy="single_instance_questionnaires.biomechanical.ROSA",
-                                 level_names=[], value_paths=list(ROSA_MAPPING.keys()))
+
+    return load_or_generate_csv(csv_dir=rosa_data_csv_path, filename=ROSA_CSV_FILENAME,
+                                oh_profile_path=oh_profile_path,
+                                oh_metric_hierarchy="single_instance_questionnaires.biomechanical.ROSA",
+                                level_names=[], value_paths=list(ROSA_MAPPING.keys()))
 
 
-def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_path: str) -> pd.DataFrame:
+def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
     """
     Load or generate the environmental questionnaire subject-metrics CSV.
 
@@ -76,14 +78,18 @@ def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_p
 
     :param environment_data_csv_path: Directory in which the CSV is stored (or will be created).
     :param oh_profile_path: Path to the OH profile data.
+    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
     :return: DataFrame containing per-subject environmental questionnaire metrics.
-
     """
-    return _load_or_generate_csv(csv_dir=environment_data_csv_path, filename=ENVIRONMENT_CSV_FILENAME,
-                                 oh_profile_path=oh_profile_path,
-                                 oh_metric_hierarchy="single_instance_questionnaires.environmental",
-                                 level_names=[],
-                                 value_paths=list(ENVIRONMENT_MAPPING.keys()))
+
+    # get the values to be extracted based on the language
+    values_to_extract = get_language_mapper_values(ENVIRONMENT_MAPPING, language)
+
+    return load_or_generate_csv(csv_dir=environment_data_csv_path, filename=ENVIRONMENT_CSV_FILENAME,
+                                oh_profile_path=oh_profile_path,
+                                oh_metric_hierarchy="single_instance_questionnaires.environmental",
+                                level_names=[],
+                                value_paths=values_to_extract)
 
 
 def get_rosa_recommendations(rosa_subject_metrics_df: pd.DataFrame, subject_id: int,
@@ -188,50 +194,6 @@ def get_environment_recommendations(environmental_subject_metrics_df: pd.DataFra
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
-
-def _load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: str, oh_metric_hierarchy: str,
-                          level_names: list, value_paths: list) -> pd.DataFrame:
-    """
-    Load a metrics CSV from disk if it exists, otherwise parse OH profiles to generate and save it.
-
-    :param csv_dir: Directory where the CSV is stored (or will be written to).
-    :param filename: Filename of the CSV file.
-    :param oh_profile_path: Path to folder containing the OH profiles of all subjects.
-    :param oh_metric_hierarchy: Dot-separated path into the OH profile hierarchy to the dimension (or sub-dimension)
-                                that should be extracted.
-    :param level_names: OH-profile level names. Correspond to levels within metrics, such as e.g., date, session, side,
-                        etc. Applies only to metrics that are extracted daily.
-                        Examples:
-                        "date"
-                        "session"
-    :param value_paths: list of metrics or metric paths that should be extracted from the OH-profile hierarchy.
-                        Examples:
-                        "score_adapted_a" (ROSA metric)
-                        "Noise_statistics.min" (specific noise metric)
-                        "Noise_statistics.*"   (all noise metrics)
-    :return: DataFrame with the requested metrics for all subjects.
-    """
-    # Build the full absolute path so that the existence check and the save target
-    # are always the same location, regardless of the current working directory.
-    csv_path = Path(csv_dir) / filename
-
-    if not csv_path.exists():
-        # Parse OH profiles — this is the expensive step that is avoided on repeat runs.
-        profiles = load_profiles(oh_profile_path)
-
-        # extract the requested metrics from the OH-profiles
-        df = extract_nested(profiles, base_path=oh_metric_hierarchy, level_names=level_names, value_paths=value_paths,
-                            exclude_patterns=[])
-
-        # store the dataframe to csv file
-        df.to_csv(csv_path, index=False)
-
-    else:
-        df = pd.read_csv(csv_path)
-
-    return df
-
-
 def _evaluate_questionnaire_risks(df: pd.DataFrame, subject_id: int, risk_metrics: Iterable[str], recommender_sub_dict: Dict,
                                   language: str, risk_metric_mapping: Dict | None = None) -> Dict:
     """
@@ -285,11 +247,8 @@ def _build_recommendations_dict(rule: str | list, risk_recommendations: list | d
     (2) a list: contains the list of recommendations for the sensor-related metrics (only for metrics for which a risk was detected).
     (3) a list: contains a single string indicating that no risks were detected (in case no risks were detected).
 
-    :param rule: the rules as extracted from recommendations.json. The data type changes based on whether the
-                 recommendations are questionnaire- or sensor-based.
-                 (1) Questionnaire-based: dictionary with recommendations for each questionnaire dimension. The key is
-                                          the dimension, while the recommendation is the value (type: str)
-                 (2) Sensor-based: List with one more rules
+    :param rule: the rules as extracted from recommendations.json. The dictionary with recommendations for each
+                 questionnaire dimension. The key is the dimension, while the recommendation is the value (type: str)
     :param risk_recommendations: Output of
     :type risk_recommendations: recommendations for the identified risks
     :param language: Output language ('pt' or 'eng'). Default: 'pt' (used to obtain language specific message if there

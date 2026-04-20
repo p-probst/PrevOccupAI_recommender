@@ -7,6 +7,7 @@ from recommender import assess_low_postural_variability
 
 # set path to OH profiles
 OH_PROFILES_PATH = "E:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
+LANGUAGE = 'pt'
 
 
 # define working directory
@@ -27,10 +28,10 @@ with open(Path(OH_PROFILES_PATH) /f"{subject_id}_OH_profile.json", "r", encoding
 
 # ------- get CSV data --------- #
 # load noise risk subjects
-noise_risk_subjects_df = recommender.generate_noise_csv(cwd_, OH_PROFILES_PATH)
+noise_risk_subjects_df = recommender.generate_noise_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE)
 
 # load HAR subject data
-har_subject_data_df = recommender.generate_har_csv(cwd_, OH_PROFILES_PATH)
+har_subject_data_df = recommender.generate_har_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE)
 
 # load HR subject data
 hr_subject_data_df = recommender.generate_hr_csv(cwd_, OH_PROFILES_PATH)
@@ -45,7 +46,7 @@ posture_subject_data_df = recommender.generate_posture_csv(cwd_, OH_PROFILES_PAT
 rosa_subjects_data_df = recommender.generate_rosa_csv(cwd_, OH_PROFILES_PATH)
 
 # load environment data
-environment_data_df = recommender.generate_environment_csv(cwd_, OH_PROFILES_PATH)
+environment_data_df = recommender.generate_environment_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE)
 
 
 

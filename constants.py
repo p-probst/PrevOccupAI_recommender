@@ -20,6 +20,9 @@ RECOMMENDATIONS_KEY = 'recommendations'
 RULE_KEY = 'rule'
 RISK_DIMENSIONS_KEY = 'risk_dimensions' # only for questionnaire related risks
 
+# general keys for recommendations.json
+SENSORS_KEY = 'sensors'
+
 # no recommendations
 NO_RECOMMENDATIONS = {
     PT: "Boas notícias: Não se detetaram situações de risco.",

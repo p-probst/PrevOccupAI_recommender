@@ -8,11 +8,21 @@ Available Functions
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
-from datetime import datetime
+import sys
+from pathlib import Path
 from babel.dates import format_date
 from typing import List
 from datetime import datetime, timedelta
+import pandas as pd
 from typing import Dict, Tuple
+
+# internal imports
+from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS
+
+# external imports
+project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
+sys.path.append(str(project_path))
+from oh_parser import load_profiles, extract_nested
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # file constants
@@ -23,6 +33,60 @@ TIME_FMT = "%H:%M:%S.%f"
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
+def load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: str, oh_metric_hierarchy: str,
+                          level_names: list, value_paths: list) -> pd.DataFrame:
+    """
+    Load a metrics CSV from disk if it exists, otherwise parse OH profiles to generate and save it.
+
+    :param csv_dir: Directory where the CSV is stored (or will be written to).
+    :param filename: Filename of the CSV file.
+    :param oh_profile_path: Path to folder containing the OH profiles of all subjects.
+    :param oh_metric_hierarchy: Dot-separated path into the OH profile hierarchy to the dimension (or sub-dimension)
+                                that should be extracted.
+    :param level_names: OH-profile level names. Correspond to levels within metrics, such as e.g., date, session, side,
+                        etc. Applies only to metrics that are extracted daily.
+                        Examples:
+                        "date"
+                        "session"
+    :param value_paths: list of metrics or metric paths that should be extracted from the OH-profile hierarchy.
+                        Examples:
+                        "score_adapted_a" (ROSA metric)
+                        "Noise_statistics.min" (specific noise metric)
+                        "Noise_statistics.*"   (all noise metrics)
+    :return: DataFrame with the requested metrics for all subjects.
+    """
+    # Build the full absolute path so that the existence check and the save target
+    # are always the same location, regardless of the current working directory.
+    csv_path = Path(csv_dir) / filename
+
+    if not csv_path.exists():
+        # Parse OH profiles — this is the expensive step that is avoided on repeat runs.
+        profiles = load_profiles(oh_profile_path)
+
+        # extract the requested metrics from the OH-profiles
+        df = extract_nested(profiles, base_path=oh_metric_hierarchy, level_names=level_names, value_paths=value_paths,
+                            exclude_patterns=[])
+
+        # store the dataframe to csv file
+        df.to_csv(csv_path, index=False)
+
+    else:
+        df = pd.read_csv(csv_path)
+
+    return df
+
+
+def get_language_mapper_values(mapper_dict: Dict, language: str) -> List[str]:
+    """
+    Returns all OH-profile keys from the mapper_dict, according to the defined language.
+    :param mapper_dict: A dictionary containing the OH-profile keys for different languages.
+    :param language: The language. Either 'pt' or 'eng'.
+    :return: list containing the OH-profile keys.
+    """
+
+    return [sub_dict[language] for sub_dict in mapper_dict.values()]
+
+
 def dates_to_weekdays(dates: List[str], date_format: str, locale: str = "en") -> List[str]:
     """
     Convert a list of date strings to localized weekday names.
@@ -40,6 +104,7 @@ def dates_to_weekdays(dates: List[str], date_format: str, locale: str = "en") ->
         )
         for d in dates
     ]
+
 
 def evaluate_continuous_timeline_risk(oh_profile_sub_dict: Dict, oh_timeline_metric: str, class_labels: List[str], exposure_limit_minutes: float, instance_threshold: int) -> Tuple[List[str], int]:
     """
@@ -87,6 +152,7 @@ def evaluate_continuous_timeline_risk(oh_profile_sub_dict: Dict, oh_timeline_met
 
     return risk_dates, total_num_instances
 
+
 def get_mean_workload_score(workload_answers_dict: Dict[str, int], workload_question_keys: List[str]) -> float:
     """
     Calculates the mean workload score for the defined workload question keys.
@@ -116,6 +182,51 @@ def get_mean_workload_score(workload_answers_dict: Dict[str, int], workload_ques
             score_sum += workload_answers_dict[question_key]
 
     return score_sum / num_questions
+
+
+def build_sensor_recommendations_dict(rule: list, risk_dates: list, total_num_risk_instances: int, full_recommender_dict: Dict, sensor_dimension: str, language: str='pt'):
+    """
+    function to build the full recommendation dictionary. This function only works for recommendations with a single
+    nested structure (i.e., noise, emg, heart rate, posture). The function does not work for double nested recommendations
+    as it is the case with human activities.
+
+    The recommendation dictionary contains the following keys:
+    RECOMMENDATIONS_KEY = 'recommendations': list of strings containing the recommendations.
+    RULE_KEY = 'rule': list of strings containing the applied rule(s).
+
+    The following keys are ONLY included in case a risk was detected:
+    RISK_DATES_KEY = 'risk_dates': list of strings containing the days on which risks were detected.
+    NUM_INSTANCES_KEY = 'num_instances': int indicating the number of instances a risk was detected.
+
+    :param rule: the rules as extracted from recommendations.json.
+    :param risk_dates: list of date strings containing the days on which risks were detected.
+    :param total_num_risk_instances: the total number of risk instances detected.
+    :param full_recommender_dict: the full recommendations JSON loaded as a dict.
+    :param sensor_dimension: the sensor dimension used in the recommendations.json.
+    :param language: Output language code ('pt' or 'eng'). Default: 'pt'
+    :return: dictionary containing the recommendations and the described metadata if risks were detected.
+    """
+
+    # init the recommendations dictionary
+    recommendations_dict = {RULE_KEY: rule}
+
+    # check the length of the risk_dates. This indicates whether risks were detected or not
+    if len(risk_dates) > 0:
+
+        # transform the dates to strings
+        risk_dates = dates_to_weekdays(risk_dates, date_format="%d-%m-%Y", locale=language)
+
+        # generate the recommendation dictionary together with the metadata
+        recommendations_dict[RISK_DATES_KEY] = risk_dates
+        recommendations_dict[NUM_INSTANCES_KEY] = total_num_risk_instances
+        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors'][sensor_dimension]['recommendation'][language]
+
+    else:
+
+        # add that there are no recommendations needed
+        recommendations_dict[RECOMMENDATIONS_KEY] = [NO_RECOMMENDATIONS[language]]
+
+    return recommendations_dict
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
