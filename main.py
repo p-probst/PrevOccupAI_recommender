@@ -3,7 +3,7 @@ import os
 from report_generator.generate_report import generate_report
 
 
-DRIVE = 'D'
+DRIVE = 'E'
 OH_PROFILE_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_profiles"
 PLOTS_OUTPUT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\OH_plots"
 EMG_PLOT_PATH = f"{DRIVE}:\\Backup PrevOccupAI_PLUS Data\\results\\emg_pipeline\\plots"
@@ -19,7 +19,7 @@ files = os.listdir(OH_PROFILE_PATH)
 subject_ids = sorted([int(file.split('_')[0]) for file in files])
 
 # cycle over all subjects
-for subject_id in subject_ids:
+for subject_id in [80]: #subject_ids:
 
     print("-----------------------------------------------------------------------")
     print(f"----------- Generating report for subject: {subject_id} -----------")

@@ -8,8 +8,8 @@ import pandas as pd
 
 # internal imports
 from constants import USER, SENSORS_KEY, RULE_KEY
-from recommender.utils import (evaluate_continuous_timeline_risk, load_or_generate_csv,
-                               get_language_mapper_values, build_sensor_recommendations_dict)
+from recommender.utils import evaluate_continuous_timeline_risk, load_or_generate_csv, \
+                              get_language_mapper_values, build_sensor_recommendations_dict, evaluate_subject_risk
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -33,7 +33,7 @@ NOISE_MAPPING = {
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str, language='pt') -> pd.DataFrame:
+def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
     """
     Load or generate the noise subject-metrics CSV. This is generated based on the OH profiles of the entire
     worker population. During the generation process and additional column is created, which contains the sum of time
@@ -82,7 +82,7 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
 
     The function identifies using the subject's OH-profile, extended sections in which the subject was exposed to
     disruptive or high noise for more than 60 minutes.
-    :param oh_profile: the subject OH-profile
+    :param oh_profile: the subject's OH-profile
     :param full_recommender_dict:The full recommendations JSON loaded as a dict.
     :param noise_level_label: list of the labels of the classes for which the noise exposure should be evaluated
     :param exposure_limit_minutes: the exposure limit in minutes
@@ -99,11 +99,14 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
     # define the sensor dimension
     sensor_dimension = 'noise'
 
+    # get the sub-dictionary containing the rule and the recommendation
+    sensor_recommender_dict = full_recommender_dict[SENSORS_KEY][sensor_dimension]
+
     # get the noise metrics from the OH profile
     noise_metrics = oh_profile['sensor_metrics'][sensor_dimension]
 
     # extract the rule upon which the recommendation is evaluated
-    rule = [full_recommender_dict[SENSORS_KEY][sensor_dimension][RULE_KEY][language][0]]
+    rule = [sensor_recommender_dict[RULE_KEY][language][0]]
 
     # get the noise timeline key
     # TODO: currently has to be extracted in english as the portuguese version of the OH-profile does not exist yet
@@ -114,8 +117,7 @@ def get_continuous_noise_recommendations(oh_profile: Dict,
 
     # generate the recommendations dictionary
     recommendations_dict = build_sensor_recommendations_dict(rule, risk_dates, total_num_instances,
-                                                             full_recommender_dict,
-                                                             sensor_dimension, language)
+                                                             sensor_recommender_dict, language)
 
     return recommendations_dict
 
@@ -139,35 +141,21 @@ def get_noise_exposure_recommendations(noise_subject_metrics: pd.DataFrame, subj
     # define the sensor dimension
     sensor_dimension = 'noise'
 
-    # init the risk days and the number of detected risk instances
-    risk_dates = []
-    total_num_instances = 0
+    # get the sub-dictionary containing the rule and the recommendations
+    sensor_recommender_dict = full_recommender_dict[SENSORS_KEY][sensor_dimension]
 
     # get the rule
-    rule = [full_recommender_dict[SENSORS_KEY][sensor_dimension][RULE_KEY][language][1]]
+    rule = [sensor_recommender_dict[RULE_KEY][language][1]]
 
     # filter the DataFrame to only contain subjects that exceed the noise rule
     noise_risk_subjects = noise_subject_metrics[noise_subject_metrics[LOUD_NOISE_SUM] >= NOISE_RULE_MAX_LOUD_NOISE_PERCENTAGE]
 
-    # get the unique subject IDs
-    risk_subjects = noise_risk_subjects['subject_id'].unique().tolist()
-
     # check whether the subject is part of the risk subjects
-    if subject_id in risk_subjects:
-
-        # get rows that belong to subject
-        subject_data = noise_risk_subjects[noise_risk_subjects['subject_id'] == subject_id]
-
-        # count number of instances
-        total_num_instances = len(subject_data)
-
-        # get the dates
-        risk_dates = subject_data['date'].tolist()
+    risk_dates, total_num_instances = evaluate_subject_risk(noise_risk_subjects, subject_id)
 
     # generate the recommendations
     recommendations_dict = build_sensor_recommendations_dict(rule, risk_dates, total_num_instances,
-                                                             full_recommender_dict,
-                                                             sensor_dimension, language)
+                                                             sensor_recommender_dict, language)
 
     return recommendations_dict
 

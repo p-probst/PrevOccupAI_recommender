@@ -303,11 +303,11 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
 
     # ------- get emg recommendations --------- #
     emg_recommendations_above_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
-                                                          'high_for_you_pct', 30.0, 2,
+                                                          'high_for_you_pct', 2,
                                                           recommendation_system)
 
     emg_recommendations_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
-                                                                   'typical_high_pct', 25.0, 3,
+                                                                   'typical_high_pct', 3,
                                                                    recommendation_system)
 
     mdFile.write("\n")
@@ -1001,11 +1001,11 @@ def _generate_summary_section_at_beginning(mdFile, subject_id, oh_profile, oh_pr
 
     # ------- get emg recommendations --------- #
     emg_rec_above_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
-                                                                         'high_for_you_pct', 30.0, 2,
+                                                                         'high_for_you_pct', 2,
                                                                          recommendation_system)
 
     emg_rec_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
-                                                                   'typical_high_pct', 25.0, 3,
+                                                                   'typical_high_pct', 3,
                                                                    recommendation_system)
     list_recs.extend([emg_rec_high, emg_rec_above_high])
 

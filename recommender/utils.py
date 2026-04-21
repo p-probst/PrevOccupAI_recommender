@@ -11,13 +11,13 @@ Available Functions
 import sys
 from pathlib import Path
 from babel.dates import format_date
-from typing import List
 from datetime import datetime, timedelta
 import pandas as pd
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List, Set
 
 # internal imports
-from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS
+from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
+    SENSORS_KEY
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -96,17 +96,14 @@ def dates_to_weekdays(dates: List[str], date_format: str, locale: str = "en") ->
     :param locale: Locale code (e.g. 'en', 'pt', 'pt_PT')
     :return: List of weekday names
     """
-    return [
-        format_date(
-            datetime.strptime(d, date_format),
-            format="EEEE",
-            locale=locale
-        )
-        for d in dates
-    ]
+
+    # transform date strings into datetime objects and sort them
+    sorted_dates = sorted([datetime.strptime(d, date_format) for d in dates])
+
+    return [format_date(d, format="EEEE", locale=locale) for d in sorted_dates]
 
 
-def evaluate_continuous_timeline_risk(oh_profile_sub_dict: Dict, oh_timeline_metric: str, class_labels: List[str], exposure_limit_minutes: float, instance_threshold: int) -> Tuple[List[str], int]:
+def evaluate_continuous_timeline_risk(oh_profile_sub_dict: Dict, oh_timeline_metric: str, class_labels: List[str], exposure_limit_minutes: float, instance_threshold: int) -> Tuple[Set[str], int]:
     """
     Evaluates continuous risks regarding exposure over time (timeline metrics, e.g., noise timeline, human activity timeline)
     The function identifies continuous exposure of the defined class_labels within the oh_metric using the
@@ -128,7 +125,7 @@ def evaluate_continuous_timeline_risk(oh_profile_sub_dict: Dict, oh_timeline_met
     """
 
     # init variables to hold the results
-    risk_dates = []
+    risk_dates = set()
     total_num_instances = 0
 
     # cycle over the acquisition dates and retrieve the metric dictionary for each acquisition session
@@ -147,8 +144,92 @@ def evaluate_continuous_timeline_risk(oh_profile_sub_dict: Dict, oh_timeline_met
             if num_exposure_instances > instance_threshold:
 
                 # update the risk dates list and the total number of instances
-                risk_dates.append(acquisition_date)
+                risk_dates.add(acquisition_date)
                 total_num_instances += num_exposure_instances
+
+    return risk_dates, total_num_instances
+
+
+def evaluate_subject_risk(risk_subjects_df: pd.DataFrame, subject_id: int) -> Tuple[Set[str], int]:
+    """
+    Evaluates whether the subject is among the risk subjects contained in risk_subjects_df.
+    :param risk_subjects_df: pandas.DataFrame containing the risk subjects.
+    :param subject_id: the subject ID.
+    :return: Tuple containing a list of the dates on which the subject was exposed to the risk and the total number of instances.
+    """
+
+    # init the risk days and the number of detected risk instances
+    risk_dates = set()
+    total_num_instances = 0
+
+    # get the unique subject IDs
+    risk_subjects = risk_subjects_df['subject_id'].unique().tolist()
+
+    # check whether the subject is part of the risk subjects
+    if subject_id in risk_subjects:
+
+        # get the rows that belong to the subject
+        subject_data = risk_subjects_df[risk_subjects_df['subject_id'] == subject_id]
+
+        # count the number instances
+        total_num_instances = len(subject_data)
+
+        # get the dates
+        risk_dates = set(subject_data['date'].tolist())
+
+    return risk_dates, total_num_instances
+
+
+def evaluate_subject_risk_with_mental_strain(risk_subjects_df: pd.DataFrame, subject_id: int, oh_profile: Dict,
+                                             instance_threshold_metric: int, threshold_workload: int) -> Tuple[Set[str], int]:
+    """
+    Evaluates whether the subject is among the risk subjects contained in risk_subjects_df AND at the same time has
+    high mean mental strain. This evaluation is done for each acquisition date.
+    :param risk_subjects_df: pandas.DataFrame containing the risk subjects.
+    :param subject_id: the subject ID.
+    :param oh_profile: the subject's OH-profile
+    :param instance_threshold_metric: the threshold for how many instances for the specific metric should be at least
+                                      detected per day for the metric to be counted as a risk.
+    :param threshold_workload: the threshold for mental strain. If the daily mental strain is above (or equal) to this
+                               threshold, it is considered a risk.
+    :return: Tuple containing a list of the dates on which the subject was exposed to the risk and the total number of instances.
+    """
+
+    # init the risk days and the number of detected risk instances
+    risk_dates = set()
+    total_num_instances = 0
+
+    # get the unique subject IDs.
+    risk_subjects = risk_subjects_df['subject_id'].unique().tolist()
+
+    # check whether the subject is within the risk subjects
+    if subject_id in risk_subjects:
+
+        # get the rows that belong to that subject
+        subject_data = risk_subjects_df[risk_subjects_df['subject_id'] == subject_id]
+
+        # perform groupby by date to check the number instances per day
+        for acquisition_date, day_df in subject_data.groupby('date'):
+
+            # check whether the instance threshold is met
+            if len(day_df) >= instance_threshold_metric:
+
+                # get the workload questionnaire results from the OH profile
+                day_workload_dict = oh_profile['daily_questionnaires']['workload'][acquisition_date]
+
+                # calculate the mean of the workload questionnaire
+                workload_mean = get_mean_workload_score(day_workload_dict,
+                                                        ['focus_and_mental_strain',
+                                                         'rushed_and_under_pressure',
+                                                         'heavy_workload'])
+
+                if workload_mean >= threshold_workload:
+
+                    # update the total number of instances
+                    total_num_instances += 1
+
+                    # update the dates
+                    risk_dates.add(acquisition_date)
 
     return risk_dates, total_num_instances
 
@@ -184,7 +265,7 @@ def get_mean_workload_score(workload_answers_dict: Dict[str, int], workload_ques
     return score_sum / num_questions
 
 
-def build_sensor_recommendations_dict(rule: list, risk_dates: list, total_num_risk_instances: int, full_recommender_dict: Dict, sensor_dimension: str, language: str='pt'):
+def build_sensor_recommendations_dict(rule: list, risk_dates: Set[str], total_num_risk_instances: int, sensor_recommender_dict: Dict, language: str='pt'):
     """
     function to build the full recommendation dictionary. This function only works for recommendations with a single
     nested structure (i.e., noise, emg, heart rate, posture). The function does not work for double nested recommendations
@@ -201,8 +282,8 @@ def build_sensor_recommendations_dict(rule: list, risk_dates: list, total_num_ri
     :param rule: the rules as extracted from recommendations.json.
     :param risk_dates: list of date strings containing the days on which risks were detected.
     :param total_num_risk_instances: the total number of risk instances detected.
-    :param full_recommender_dict: the full recommendations JSON loaded as a dict.
-    :param sensor_dimension: the sensor dimension used in the recommendations.json.
+    :param sensor_recommender_dict: the recommendation dictionary for the sensor, as retrieved from recommendations.json.
+                                    The dictionary contains the rule and the recommendations.
     :param language: Output language code ('pt' or 'eng'). Default: 'pt'
     :return: dictionary containing the recommendations and the described metadata if risks were detected.
     """
@@ -214,12 +295,12 @@ def build_sensor_recommendations_dict(rule: list, risk_dates: list, total_num_ri
     if len(risk_dates) > 0:
 
         # transform the dates to strings
-        risk_dates = dates_to_weekdays(risk_dates, date_format="%d-%m-%Y", locale=language)
+        risk_dates = dates_to_weekdays(list(risk_dates), date_format="%d-%m-%Y", locale=language)
 
         # generate the recommendation dictionary together with the metadata
         recommendations_dict[RISK_DATES_KEY] = risk_dates
         recommendations_dict[NUM_INSTANCES_KEY] = total_num_risk_instances
-        recommendations_dict[RECOMMENDATIONS_KEY] = full_recommender_dict['sensors'][sensor_dimension]['recommendation'][language]
+        recommendations_dict[RECOMMENDATIONS_KEY] = sensor_recommender_dict[RECOMMENDATIONS_KEY][language]
 
     else:
 

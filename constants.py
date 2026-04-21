@@ -16,7 +16,7 @@ PLOT_EXPLAIN_KEY = 'plot_explain'
 # recommendation keys for generated recommendations
 RISK_DATES_KEY = 'risk_dates'
 NUM_INSTANCES_KEY = 'num_instances'
-RECOMMENDATIONS_KEY = 'recommendations'
+RECOMMENDATIONS_KEY = 'recommendation'
 RULE_KEY = 'rule'
 RISK_DIMENSIONS_KEY = 'risk_dimensions' # only for questionnaire related risks
 
