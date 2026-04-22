@@ -1,65 +1,24 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
-import sys
-from pathlib import Path
 from typing import Dict, Tuple
 import pandas as pd
 
 # internal imports
-from constants import RULE_KEY, USER, SENSORS_KEY
-from recommender.utils import  get_language_mapper_values, load_or_generate_csv, \
-    build_sensor_recommendations_dict, evaluate_subject_risk
+from constants import RULE_KEY, SENSORS_KEY
+from recommender.load.language_mappings import POSTURE_MAPPING
+from recommender.utils import  get_language_mapper_values, build_sensor_recommendations_dict, evaluate_subject_risk
 
-# external imports
-project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
+
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-POSTURE_CSV_FILENAME = "posture_subject_metrics.csv"
-
 POSTURE_MIN_ELLIPSE_AREA_THRESHOLD = 0.6 # square meters
 
-# TODO: for now only english is implemented. Therefore, at the moment all values are the same for the code to work
-POSTURE_MAPPING = {
-
-    "posture_95_confidence_ellipse_area": {"pt": "posture_95_confidence_ellipse_area", "eng": "posture_95_confidence_ellipse_area"},
-    "posture_ap_range": {"pt": "posture_ap_range", "eng": "posture_ap_range"},
-    "posture_ml_range": {"pt": "posture_ml_range", "eng": "posture_ml_range"},
-
-}
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_posture_csv(posture_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
-    """
-    Load or generate the posture subject-metrics CSV. This is generated based on the OH-profiles of the entire worker
-    population.
-
-    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
-    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
-    :param posture_data_csv_path: Directory in which the CSV is stored (or will be created)
-    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
-    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
-    :return: DataFrame containing per-subject posture metrics.
-    """
-
-    # get the values to be extracted
-    values_to_extract = get_language_mapper_values(POSTURE_MAPPING, language)
-
-    # extract the metrics
-    df_posture_metrics = load_or_generate_csv(csv_dir=posture_data_csv_path, filename=POSTURE_CSV_FILENAME,
-                                              oh_profile_path=oh_profile_path,
-                                              oh_metric_hierarchy="sensor_metrics.posture",
-                                              level_names=["date", "session"],
-                                              value_paths=values_to_extract)
-
-    return df_posture_metrics
-
-
 def assess_low_postural_variability(df: pd.DataFrame, subject_col: str, ellipse_area_col: str,
                                     percentile: float = 0.05, flag_daily: bool = True) -> Tuple[pd.DataFrame, float]:
     """

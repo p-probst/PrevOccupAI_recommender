@@ -1,27 +1,19 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
-import sys
-from pathlib import Path
 import pandas as pd
-from typing import Dict, List
+from typing import Dict
 
 
 # internal imports
-from constants import RULE_KEY, USER, SENSORS_KEY
-from recommender.utils import get_language_mapper_values, load_or_generate_csv, \
-                              evaluate_subject_risk_with_mental_strain, build_sensor_recommendations_dict
-
-# external imports
-project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
+from constants import RULE_KEY,  SENSORS_KEY
+from recommender.load.language_mappings import HEART_RATE_MAPPING
+from recommender.utils import get_language_mapper_values, evaluate_subject_risk_with_mental_strain, \
+                              build_sensor_recommendations_dict
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-HR_CSV_FILENAME = "hr_subject_metrics.csv"
-
 MAX_HR_THRESHOLD = 100
 NUM_INSTANCES_MAX_HR = 2
 SLIGHTLY_ELEVATED_HR_THRESHOLD = 0.25  # 25 percent
@@ -29,41 +21,9 @@ NUM_INSTANCES_ELEVATED_HR = 2
 ELEVATED_HR_THRESHOLD = 0.125  # 12.5 percent
 MAX_THRESHOLD_WORKLOAD = 3
 
-HEART_RATE_MAPPING = {
-
-    "max": {"pt": "max", "eng": "max"},
-    "Ligeiramente elevado": {"pt": "Ligeiramente elevado", "eng": "Slightly elevated"},
-    "Elevado": {"pt": "Elevado", "eng": "Elevated"},
-}
-
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_hr_csv(hr_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
-    """
-    Load or generate the heart rate subject-metrics CSV. This is generated based on the OH-profiles of the entire
-    worker population.
-    :param hr_data_csv_path: Directory in which the CSV is stored (or will be created)
-    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
-    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
-    :return: pandas.DataFrame containing per-subject heart rate metrics
-    """
-
-    # get the values to be extracted
-    values_to_extract = get_language_mapper_values(HEART_RATE_MAPPING, language)
-
-    # load or generate the DataFrame
-    df_hr_metrics = load_or_generate_csv(csv_dir=hr_data_csv_path, filename=HR_CSV_FILENAME,
-                                         oh_profile_path=oh_profile_path,
-                                         oh_metric_hierarchy="sensor_metrics.heart_rate",
-                                         level_names=["date", "session"],
-                                         value_paths=[f"HR_BPM_stats.{values_to_extract[0]}",
-                                                      f"HR_distributions.{values_to_extract[1]}",
-                                                      f"HR_distributions.{values_to_extract[2]}",])
-
-    return df_hr_metrics
-
-
 def get_max_frequency_recommendation(hr_subject_metrics_df: pd.DataFrame, oh_profile: Dict, subject_id: int,
                                      full_recommender_dict: Dict, language: str = 'pt') -> Dict:
     """

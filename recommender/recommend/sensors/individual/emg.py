@@ -1,72 +1,25 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
-import sys
-from pathlib import Path
 import pandas as pd
 from typing import Dict
 
 # internal imports
-from constants import  RULE_KEY, USER, SENSORS_KEY
-from recommender.utils import get_language_mapper_values, load_or_generate_csv, build_sensor_recommendations_dict, \
-                              evaluate_subject_risk_with_mental_strain
-
-# external imports
-project_path = Path(f"C:/{USER}/phill/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
-
+from constants import  RULE_KEY, SENSORS_KEY
+from recommender.load.language_mappings import EMG_MAPPING
+from recommender.utils import get_language_mapper_values, build_sensor_recommendations_dict, evaluate_subject_risk_with_mental_strain
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-EMG_CSV_FILENAME = 'emg_subject_metrics.csv'
-
 EMG_HIGH_THRESHOLD = 30.0 # 30 percent
 EMG_TYPICAL_HIGH_THRESHOLD = 25.0 # 25 percent
 NUM_INSTANCES_HIGH_EMG = 2
 MAX_THRESHOLD_WORKLOAD = 3
 
-# TODO: for now only english is implemented. Therefore, at the moment all values are the same for the code to work
-EMG_MAPPING = {
-
-    "typical_high_pct": {"pt": "typical_high_pct", "eng": "typical_high_pct"},
-    "high_for_you_pct": {"pt": "high_for_you_pct", "eng": "high_for_you_pct"}
-
-}
-
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_emg_csv(har_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
-    """
-    Load or generate the EMG subject-metrics CSV. This is generated based on the OH-profiles of the entire worker
-    population. The metrics are extracted for the left and the right positioning of the muscleBAN
-
-    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
-    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
-    :param har_data_csv_path: Directory in which the CSV is stored (or will be created)
-    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
-    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
-    :return: pandas.DataFrame containing per-subject EMG metrics.
-    """
-
-    # get the values to be extracted
-    values_to_extract = get_language_mapper_values(EMG_MAPPING, language)
-
-    # extract the metric
-    df_emg_metrics = load_or_generate_csv(csv_dir=har_data_csv_path, filename=EMG_CSV_FILENAME,
-                                          oh_profile_path=oh_profile_path,
-                                          oh_metric_hierarchy="sensor_metrics.emg",
-                                          level_names=["date", "session"],
-                                          value_paths=[f"left.EMG_relative_bins.{values_to_extract[0]}",
-                                                       f"right.EMG_relative_bins.{values_to_extract[0]}",
-                                                       f"left.EMG_relative_bins.{values_to_extract[1]}",
-                                                       f"right.EMG_relative_bins.{values_to_extract[1]}"])
-
-    return df_emg_metrics
-
-
 def get_emg_recommendations(emg_subject_metrics_df: pd.DataFrame, oh_profile: Dict, subject_id: int,
                             emg_class: str, max_instances: int,
                             full_recommender_dict: Dict, language: str = 'pt') -> Dict:

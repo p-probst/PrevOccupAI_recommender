@@ -1,48 +1,16 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
-import sys
-from pathlib import Path
 from typing import Dict, Iterable
 import pandas as pd
 
 # internal imports
-from constants import RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS, USER
-from recommender.utils import load_or_generate_csv, get_language_mapper_values
-
-# external imports
-project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
-
+from constants import RECOMMENDATIONS_KEY, RULE_KEY, NO_RECOMMENDATIONS
+from recommender.load.language_mappings import ROSA_MAPPING, ENVIRONMENT_MAPPING
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-ROSA_CSV_FILENAME = 'rosa_subject_metrics.csv'
-ENVIRONMENT_CSV_FILENAME = 'environment_subject_metrics.csv'
-
-# Maps internal ROSA metric keys to human-readable dimension labels per language.
-# Keys must match the value_paths extracted from the OH profile.
-ROSA_MAPPING = {
-    "score_a_adapted":       {"pt": "Cadeira",  "eng": "Chair"},
-    "monitor_adapted_norm":  {"pt": "Monitor",  "eng": "Monitor"},
-    "phone_adapted_norm":    {"pt": "Telefone", "eng": "Phone"},
-    "mouse_adapted_norm":    {"pt": "Rato",     "eng": "Mouse"},
-    "keyboard_adapted_norm": {"pt": "Teclado",  "eng": "Keyboard"},
-}
-
-# Maps internal environmental questionnaire keys to human-readable dimension labels per language.
-# The Portuguese labels intentionally match the raw profile keys so that no translation is lost.
-# no recommendations for office privacy (privacidade do escritório) thus they are omitted
-ENVIRONMENT_MAPPING = {
-    "Nível de Iluminação":       {"pt": "Nível de Iluminação",       "eng": "Lighting Level"},
-    "Ar":                        {"pt": "Ar",                        "eng": "Air"},
-    "Ruído":                     {"pt": "Ruído",                     "eng": "Noise"},
-    "Design do Escritório":      {"pt": "Design do Escritório",      "eng": "Office Design"},
-    "Organização do Escritório": {"pt": "Organização do Escritório", "eng": "Office Organisation"}
-}
-
 # Subjects scoring at or above this normalised threshold (0–1 scale) are considered at medium risk.
 MEDIUM_RISK_LEVEL = 1 / 3
 
@@ -50,48 +18,6 @@ MEDIUM_RISK_LEVEL = 1 / 3
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-
-def generate_rosa_csv(rosa_data_csv_path: str | Path, oh_profile_path: str) -> pd.DataFrame:
-    """
-    Load or generate the ROSA biomechanical subject-metrics CSV.
-
-    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is
-    generated and saved there. On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
-
-    :param rosa_data_csv_path: Directory in which the CSV is stored (or will be created).
-    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
-    :return: DataFrame containing per-subject ROSA metrics.
-    """
-
-    return load_or_generate_csv(csv_dir=rosa_data_csv_path, filename=ROSA_CSV_FILENAME,
-                                oh_profile_path=oh_profile_path,
-                                oh_metric_hierarchy="single_instance_questionnaires.biomechanical.ROSA",
-                                level_names=[], value_paths=list(ROSA_MAPPING.keys()))
-
-
-def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
-    """
-    Load or generate the environmental questionnaire subject-metrics CSV.
-
-    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is
-    generated and saved there. On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
-
-    :param environment_data_csv_path: Directory in which the CSV is stored (or will be created).
-    :param oh_profile_path: Path to the OH profile data.
-    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
-    :return: DataFrame containing per-subject environmental questionnaire metrics.
-    """
-
-    # get the values to be extracted based on the language
-    values_to_extract = get_language_mapper_values(ENVIRONMENT_MAPPING, language)
-
-    return load_or_generate_csv(csv_dir=environment_data_csv_path, filename=ENVIRONMENT_CSV_FILENAME,
-                                oh_profile_path=oh_profile_path,
-                                oh_metric_hierarchy="single_instance_questionnaires.environmental",
-                                level_names=[],
-                                value_paths=values_to_extract)
-
-
 def get_rosa_recommendations(rosa_subject_metrics_df: pd.DataFrame, subject_id: int,
                              full_recommender_dict: Dict, language: str = 'pt') -> Dict:
     """

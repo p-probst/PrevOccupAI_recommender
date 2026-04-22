@@ -16,8 +16,7 @@ import pandas as pd
 from typing import Dict, Tuple, List, Set
 
 # internal imports
-from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
-    SENSORS_KEY
+from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")

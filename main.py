@@ -19,7 +19,7 @@ files = os.listdir(OH_PROFILE_PATH)
 subject_ids = sorted([int(file.split('_')[0]) for file in files])
 
 # cycle over all subjects
-for subject_id in [80]: #subject_ids:
+for subject_id in subject_ids:
 
     print("-----------------------------------------------------------------------")
     print(f"----------- Generating report for subject: {subject_id} -----------")

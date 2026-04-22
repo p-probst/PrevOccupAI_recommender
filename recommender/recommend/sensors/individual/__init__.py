@@ -1,0 +1,5 @@
+from .emg import get_emg_recommendations
+from .heart_rate import get_elevated_hr_recommendations, get_max_frequency_recommendation
+from .human_activities import get_steps_recommendations, get_standing_proportions_recommendations, get_sitting_proportions_recommendations, get_continuous_sitting_recommendations, get_total_sitting_duration_recommendation
+from .noise import get_continuous_noise_recommendations, get_noise_exposure_recommendations
+from .posture import get_postural_displacement_recommendation

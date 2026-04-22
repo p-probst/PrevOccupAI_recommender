@@ -1,0 +1,172 @@
+# ------------------------------------------------------------------------------------------------------------------- #
+# imports
+# ------------------------------------------------------------------------------------------------------------------- #
+import pandas as pd
+from pathlib import Path
+
+# internal imports
+from .language_mappings import NOISE_MAPPING, EMG_MAPPING, POSTURE_MAPPING, HAR_MAPPING, HEART_RATE_MAPPING
+from recommender.utils import load_or_generate_csv, get_language_mapper_values
+
+# ------------------------------------------------------------------------------------------------------------------- #
+# constants
+# ------------------------------------------------------------------------------------------------------------------- #
+NOISE_CSV_FILENAME = "noise_subject_metrics.csv"
+HAR_CSV_FILENAME = "har_subject_metrics.csv"
+POSTURE_CSV_FILENAME = "posture_subject_metrics.csv"
+EMG_CSV_FILENAME = 'emg_subject_metrics.csv'
+HR_CSV_FILENAME = "hr_subject_metrics.csv"
+
+LOUD_NOISE_SUM = 'sum_loud_noise'
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+# public functions
+# ------------------------------------------------------------------------------------------------------------------- #
+def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
+    """
+    Load or generate the noise subject-metrics CSV. This is generated based on the OH profiles of the entire
+    worker population. During the generation process and additional column is created, which contains the sum of time
+    of exposure to disrupting and high noise
+
+    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
+    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
+
+    :param noise_risk_csv_path: Directory in which the CSV is stored (or will be created)
+    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
+    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
+    :return: DataFrame containing per-subject noise metrics.
+    """
+
+    # get the values to be extracted (only the first two values needed here)
+    values_to_extract = get_language_mapper_values(NOISE_MAPPING, language)[0:-1]
+
+    # load or generate the DataFrame
+    df_noise_metrics = load_or_generate_csv(csv_dir=noise_risk_csv_path, filename=NOISE_CSV_FILENAME,
+                                            oh_profile_path=oh_profile_path,
+                                            oh_metric_hierarchy="sensor_metrics.noise",
+                                            level_names=["date", "session"],
+                                            value_paths=[f'Noise_distributions.{values_to_extract[0]}',
+                                                         f'Noise_distributions.{values_to_extract[1]}'])
+
+    # check whether the LOUD_NOISE_SUM column exists (this is only needed if the metrics are generated for the first time
+    if not LOUD_NOISE_SUM in df_noise_metrics.columns:
+
+        # add up disrupting and high noise
+        df_noise_metrics[LOUD_NOISE_SUM] = (df_noise_metrics[f'Noise_distributions.{values_to_extract[0]}']
+                                            + df_noise_metrics[f'Noise_distributions.{values_to_extract[1]}'])
+
+        # save the updated DataFrame
+        df_noise_metrics.to_csv(Path(noise_risk_csv_path) / NOISE_CSV_FILENAME, index=False)
+
+
+    return df_noise_metrics
+
+
+def generate_har_csv(har_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
+    """
+    Load or generate the har subject-metrics CSV. This is generated based on the OH profiles of the entire
+    worker population.
+
+    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
+    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
+
+    :param har_data_csv_path: Directory in which the CSV is stored (or will be created)
+    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
+    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
+    :return: DataFrame containing per-subject har metrics.
+    """
+
+    # get the values to be extracted
+    values_to_extract = get_language_mapper_values(HAR_MAPPING, language)
+
+    df_har_metrics = load_or_generate_csv(csv_dir=har_data_csv_path, filename=HAR_CSV_FILENAME,
+                                          oh_profile_path=oh_profile_path,
+                                          oh_metric_hierarchy="sensor_metrics.human_activities",
+                                          level_names=["date", "session"],
+                                          value_paths=[f"HAR_distributions.{values_to_extract[0]}",
+                                                       f"HAR_distributions.{values_to_extract[1]}",
+                                                       f"HAR_durations.{values_to_extract[2]}",
+                                                       f"HAR_steps.{values_to_extract[3]}"])
+
+    return df_har_metrics
+
+
+def generate_posture_csv(posture_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
+    """
+    Load or generate the posture subject-metrics CSV. This is generated based on the OH-profiles of the entire worker
+    population.
+
+    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
+    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
+    :param posture_data_csv_path: Directory in which the CSV is stored (or will be created)
+    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
+    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
+    :return: DataFrame containing per-subject posture metrics.
+    """
+
+    # get the values to be extracted
+    values_to_extract = get_language_mapper_values(POSTURE_MAPPING, language)
+
+    # extract the metrics
+    df_posture_metrics = load_or_generate_csv(csv_dir=posture_data_csv_path, filename=POSTURE_CSV_FILENAME,
+                                              oh_profile_path=oh_profile_path,
+                                              oh_metric_hierarchy="sensor_metrics.posture",
+                                              level_names=["date", "session"],
+                                              value_paths=values_to_extract)
+
+    return df_posture_metrics
+
+
+def generate_emg_csv(har_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
+    """
+    Load or generate the EMG subject-metrics CSV. This is generated based on the OH-profiles of the entire worker
+    population. The metrics are extracted for the left and the right positioning of the muscleBAN
+
+    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
+    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
+    :param har_data_csv_path: Directory in which the CSV is stored (or will be created)
+    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
+    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
+    :return: pandas.DataFrame containing per-subject EMG metrics.
+    """
+
+    # get the values to be extracted
+    values_to_extract = get_language_mapper_values(EMG_MAPPING, language)
+
+    # extract the metric
+    df_emg_metrics = load_or_generate_csv(csv_dir=har_data_csv_path, filename=EMG_CSV_FILENAME,
+                                          oh_profile_path=oh_profile_path,
+                                          oh_metric_hierarchy="sensor_metrics.emg",
+                                          level_names=["date", "session"],
+                                          value_paths=[f"left.EMG_relative_bins.{values_to_extract[0]}",
+                                                       f"right.EMG_relative_bins.{values_to_extract[0]}",
+                                                       f"left.EMG_relative_bins.{values_to_extract[1]}",
+                                                       f"right.EMG_relative_bins.{values_to_extract[1]}"])
+
+    return df_emg_metrics
+
+def generate_hr_csv(hr_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
+    """
+    Load or generate the heart rate subject-metrics CSV. This is generated based on the OH-profiles of the entire
+    worker population.
+    :param hr_data_csv_path: Directory in which the CSV is stored (or will be created)
+    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
+    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
+    :return: pandas.DataFrame containing per-subject heart rate metrics
+    """
+
+    # get the values to be extracted
+    values_to_extract = get_language_mapper_values(HEART_RATE_MAPPING, language)
+
+    # load or generate the DataFrame
+    df_hr_metrics = load_or_generate_csv(csv_dir=hr_data_csv_path, filename=HR_CSV_FILENAME,
+                                         oh_profile_path=oh_profile_path,
+                                         oh_metric_hierarchy="sensor_metrics.heart_rate",
+                                         level_names=["date", "session"],
+                                         value_paths=[f"HR_BPM_stats.{values_to_extract[0]}",
+                                                      f"HR_distributions.{values_to_extract[1]}",
+                                                      f"HR_distributions.{values_to_extract[2]}",])
+
+    return df_hr_metrics
+

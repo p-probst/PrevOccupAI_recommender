@@ -1,25 +1,19 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
-import sys
-from pathlib import Path
 import pandas as pd
-from typing import Dict, List, Set
+from typing import Dict, List
 
 
 # internal imports
-from constants import RULE_KEY, USER, SENSORS_KEY
-from recommender.utils import evaluate_continuous_timeline_risk, get_language_mapper_values, load_or_generate_csv, \
+from constants import RULE_KEY, SENSORS_KEY
+from recommender.load.language_mappings import HAR_MAPPING
+from recommender.utils import evaluate_continuous_timeline_risk, get_language_mapper_values, \
                                evaluate_subject_risk, build_sensor_recommendations_dict
 
-# external imports
-project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-HAR_CSV_FILENAME = "har_subject_metrics.csv"
 HUMAN_ACTIVITIES_KEY = 'human_activities'
 
 HAR_RULE_MAX_SITTING_TIME_SECONDS = 5.0 * 3600 # total of 5 hours of sitting
@@ -28,46 +22,9 @@ HAR_RULE_MIN_STEPS = 700
 HAR_EXPOSURE_LIMIT_1H = 60.0 # 60 minutes
 HAR_EXPOSURE_LIMIT_2H = 120.0
 
-HAR_MAPPING = {
-
-    "Sentado": {"pt": "Sentado", "eng": "Sitting"},
-    "De pé": {"pt": "De pé", "eng": "Standing"},
-    "Sentado_duration_sec": {"pt": "Sentado_duration_sec", "eng": "sitting_duration_sec"},
-    "num_steps": {"pt": "num_steps", "eng": "num_steps"}
-}
-
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_har_csv(har_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
-    """
-    Load or generate the har subject-metrics CSV. This is generated based on the OH profiles of the entire
-    worker population.
-
-    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
-    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
-
-    :param har_data_csv_path: Directory in which the CSV is stored (or will be created)
-    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
-    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
-    :return: DataFrame containing per-subject har metrics.
-    """
-
-    # get the values to be extracted
-    values_to_extract = get_language_mapper_values(HAR_MAPPING, language)
-
-    df_har_metrics = load_or_generate_csv(csv_dir=har_data_csv_path, filename=HAR_CSV_FILENAME,
-                                          oh_profile_path=oh_profile_path,
-                                          oh_metric_hierarchy="sensor_metrics.human_activities",
-                                          level_names=["date", "session"],
-                                          value_paths=[f"HAR_distributions.{values_to_extract[0]}",
-                                                       f"HAR_distributions.{values_to_extract[1]}",
-                                                       f"HAR_durations.{values_to_extract[2]}",
-                                                       f"HAR_steps.{values_to_extract[3]}"])
-
-    return df_har_metrics
-
-
 def get_sitting_proportions_recommendations(har_subject_metrics_df: pd.DataFrame, subject_id: int,
                                            full_recommender_dict: Dict, language: str = 'pt') -> Dict:
     """

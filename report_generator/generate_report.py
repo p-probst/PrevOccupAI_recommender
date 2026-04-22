@@ -33,6 +33,8 @@ from report_generator.report_sections.sensors.posture import POSTURE_DICT
 from constants import PT, INTRODUCTION_KEY, RISK_RULE_KEY, PLOT_EXPLAIN_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
     USER, NUM_INSTANCES_KEY, RULE_KEY, RISK_DATES_KEY
 import recommender as recommender
+import recommender.recommend.sensors as sensor_rec
+import recommender.recommend.questionnaires as questionnaire_rec
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -243,10 +245,10 @@ def _generate_introduction_section(mdFile, introduction_dict=INTRO_DICT[PT]):
 def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, recommendation_system, posture_dict=POSTURE_DICT[PT]):
 
     # load posture data
-    posture_subject_data_df = recommender.generate_posture_csv(Path.cwd(), oh_profiles_path)
+    posture_subject_data_df = recommender.load.generate_posture_csv(Path.cwd(), oh_profiles_path)
 
     # ------- get posture recommendations --------- #
-    posture_recommendations = recommender.get_postural_displacement_recommendation(posture_subject_data_df, subject_id,
+    posture_recommendations = sensor_rec.individual.get_postural_displacement_recommendation(posture_subject_data_df, subject_id,
                                                                                    recommendation_system)
 
     mdFile.write("\n")
@@ -299,14 +301,14 @@ def _generate_posture_section(mdFile, subject_id, oh_profiles_path, plots_path, 
 def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system, emg_dict=EMG_DICT[PT]):
 
     # load EMG data
-    emg_subject_data_df = recommender.generate_emg_csv(Path.cwd(), oh_profiles_path)
+    emg_subject_data_df = recommender.load.generate_emg_csv(Path.cwd(), oh_profiles_path)
 
     # ------- get emg recommendations --------- #
-    emg_recommendations_above_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+    emg_recommendations_above_high = sensor_rec.individual.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
                                                           'high_for_you_pct', 2,
                                                           recommendation_system)
 
-    emg_recommendations_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+    emg_recommendations_high = sensor_rec.individual.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
                                                                    'typical_high_pct', 3,
                                                                    recommendation_system)
 
@@ -362,12 +364,12 @@ def _generate_emg_sec(mdFile, subject_id, oh_profile, oh_profiles_path, plots_pa
 def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_path, plots_path, recommendation_system, hr_dict=HEART_RATE_DICT[PT]):
 
     # load HR subject data
-    hr_subject_data_df = recommender.generate_hr_csv(Path.cwd(), oh_profiles_path)
+    hr_subject_data_df = recommender.load.generate_hr_csv(Path.cwd(), oh_profiles_path)
 
     # ------- get heart rate recommendations --------- #
-    max_hr_recommendations = recommender.get_max_frequency_recommendation(hr_subject_data_df, oh_profile, subject_id, recommendation_system)
-    slightly_elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id,'Ligeiramente elevado',recommendation_system)
-    elevated_hr_recommendations = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id, 'Elevado',recommendation_system)
+    max_hr_recommendations = sensor_rec.individual.get_max_frequency_recommendation(hr_subject_data_df, oh_profile, subject_id, recommendation_system)
+    slightly_elevated_hr_recommendations = sensor_rec.individual.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id,'Ligeiramente elevado',recommendation_system)
+    elevated_hr_recommendations = sensor_rec.individual.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,subject_id, 'Elevado',recommendation_system)
 
     # ----- Paragraph: Introduction and Context ----- #
     mdFile.write("\n")
@@ -427,15 +429,15 @@ def _generate_heart_rate_section(mdFile, subject_id, oh_profile, oh_profiles_pat
 
 def _generate_human_activities_section(mdFile, subject_id,oh_profile, oh_profiles_path, plots_path, recommendation_system, har_dict=HAR_DICT[PT]):
     # load HAR subject data
-    har_subject_data_df = recommender.generate_har_csv(Path.cwd(), oh_profiles_path)
+    har_subject_data_df = recommender.load.generate_har_csv(Path.cwd(), oh_profiles_path)
 
     # load recommendations
-    sitting_proportions_recommendations = recommender.get_sitting_proportions_recommendations(har_subject_data_df,subject_id,recommendation_system)
-    sitting_total_recommendations = recommender.get_total_sitting_duration_recommendation(har_subject_data_df,subject_id,recommendation_system)
-    sitting_continuous_recommendations_2h = recommender.get_continuous_sitting_recommendations(oh_profile, recommendation_system,activity_class_label=['Sentado'],exposure_limit_minutes=120.0)
-    sitting_continuous_recommendations_1h = recommender.get_continuous_sitting_recommendations(oh_profile,recommendation_system,activity_class_label=['Sentado'],exposure_limit_minutes=60.0)
-    standing_proportions_recommendations = recommender.get_standing_proportions_recommendations(har_subject_data_df,subject_id,recommendation_system)
-    steps_recommendations = recommender.get_steps_recommendations(har_subject_data_df, subject_id,recommendation_system)
+    sitting_proportions_recommendations =sensor_rec.individual.get_sitting_proportions_recommendations(har_subject_data_df,subject_id,recommendation_system)
+    sitting_total_recommendations = sensor_rec.individual.get_total_sitting_duration_recommendation(har_subject_data_df,subject_id,recommendation_system)
+    sitting_continuous_recommendations_2h = sensor_rec.individual.get_continuous_sitting_recommendations(oh_profile, recommendation_system,activity_class_label=['Sentado'],exposure_limit_minutes=120.0)
+    sitting_continuous_recommendations_1h = sensor_rec.individual.get_continuous_sitting_recommendations(oh_profile,recommendation_system,activity_class_label=['Sentado'],exposure_limit_minutes=60.0)
+    standing_proportions_recommendations = sensor_rec.individual.get_standing_proportions_recommendations(har_subject_data_df,subject_id,recommendation_system)
+    steps_recommendations = sensor_rec.individual.get_steps_recommendations(har_subject_data_df, subject_id,recommendation_system)
 
     mdFile.write("\n")
     # introduction title
@@ -553,11 +555,11 @@ def _generate_noise_section(mdFile, subject_id, plots_path, oh_profile, oh_profi
     # get noise recommender
 
     # load noise risk subjects
-    noise_risk_subjects_df = recommender.generate_noise_csv(Path.cwd(), oh_profiles_path)
+    noise_risk_subjects_df = recommender.load.generate_noise_csv(Path.cwd(), oh_profiles_path)
 
     # ger noise recommendations
-    noise_exposure_recommendations = recommender.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id, recommendation_system)
-    noise_continuous_recommendations = recommender.get_continuous_noise_recommendations(oh_profile, recommendation_system, noise_level_label=['Ruído incomodativo','Ruído elevado'])
+    noise_exposure_recommendations = sensor_rec.individual.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id, recommendation_system)
+    noise_continuous_recommendations = sensor_rec.individual.get_continuous_noise_recommendations(oh_profile, recommendation_system, noise_level_label=['Ruído incomodativo','Ruído elevado'])
 
     mdFile.write("\n")
     # introduction title
@@ -719,11 +721,11 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     mdFile.write("\n")
 
     # get the subjects df
-    rosa_subjects_data_df = recommender.generate_rosa_csv(Path.cwd(), oh_profiles_path)
+    rosa_subjects_data_df = recommender.load.generate_rosa_csv(Path.cwd(), oh_profiles_path)
 
     # generate recommendations
-    rosa_recommendations = recommender.get_rosa_recommendations(rosa_subjects_data_df, subject_id,
-                                                                recommendation_system)
+    rosa_recommendations = questionnaire_rec.individual.get_rosa_recommendations(rosa_subjects_data_df, subject_id,
+                                                                                 recommendation_system)
     # add rules
     mdFile.write("\n")
     _add_rules(mdFile, rosa_recommendations)
@@ -754,11 +756,11 @@ def _generate_questionnaires_section(mdFile, subject_id, plots_path, oh_profiles
     mdFile.write("\n")
 
     # get the subjects df
-    environment_data_df = recommender.generate_environment_csv(Path.cwd(), oh_profiles_path)
+    environment_data_df = recommender.load.generate_environment_csv(Path.cwd(), oh_profiles_path)
 
     # generate recommendations
-    environment_recommendations = recommender.get_environment_recommendations(environment_data_df, subject_id,
-                                                                              recommendation_system)
+    environment_recommendations = questionnaire_rec.individual.get_environment_recommendations(environment_data_df, subject_id,
+                                                                                               recommendation_system)
     # add rules
     mdFile.write("\n")
     _add_rules(mdFile, environment_recommendations)
@@ -906,62 +908,62 @@ def _generate_summary_section_at_beginning(mdFile, subject_id, oh_profile, oh_pr
     # (1) questionnaires
     # (1.1) ROSA
     # get the subjects df
-    rosa_subjects_data_df = recommender.generate_rosa_csv(Path.cwd(), oh_profiles_path)
+    rosa_subjects_data_df = recommender.load.generate_rosa_csv(Path.cwd(), oh_profiles_path)
 
     # generate recommendations
-    rosa_rec = recommender.get_rosa_recommendations(rosa_subjects_data_df, subject_id,
+    rosa_rec = questionnaire_rec.individual.get_rosa_recommendations(rosa_subjects_data_df, subject_id,
                                                                 recommendation_system)
 
     # (1.2) Environment
     # get the subjects df
-    environment_data_df = recommender.generate_environment_csv(Path.cwd(), oh_profiles_path)
+    environment_data_df = recommender.load.generate_environment_csv(Path.cwd(), oh_profiles_path)
 
     # generate recommendations
-    env_rec = recommender.get_environment_recommendations(environment_data_df, subject_id,
+    env_rec = questionnaire_rec.individual.get_environment_recommendations(environment_data_df, subject_id,
                                                                               recommendation_system)
 
     # (2) sensors
     # (2.1) Noise
     # load noise risk subjects
-    noise_risk_subjects_df = recommender.generate_noise_csv(Path.cwd(), oh_profiles_path)
+    noise_risk_subjects_df = recommender.load.generate_noise_csv(Path.cwd(), oh_profiles_path)
 
     # ger noise recommendations
-    noise_exposure_rec = recommender.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id,
+    noise_exposure_rec = sensor_rec.individual.get_noise_exposure_recommendations(noise_risk_subjects_df, subject_id,
                                                                                     recommendation_system)
-    noise_continuous_rec = recommender.get_continuous_noise_recommendations(oh_profile,
-                                                                                        recommendation_system,
-                                                                                        noise_level_label=[
-                                                                                            'Ruído incomodativo',
-                                                                                            'Ruído elevado'])
+    noise_continuous_rec = sensor_rec.individual.get_continuous_noise_recommendations(oh_profile,
+                                                                                      recommendation_system,
+                                                                                      noise_level_label=[
+                                                                                      'Ruído incomodativo',
+                                                                                      'Ruído elevado'])
 
     # add recs to list
     list_recs.extend([noise_exposure_rec, noise_continuous_rec])
 
     # (2.2) human activities
-    har_subject_data_df = recommender.generate_har_csv(Path.cwd(), oh_profiles_path)
+    har_subject_data_df = recommender.load.generate_har_csv(Path.cwd(), oh_profiles_path)
 
     # load recommendations
-    sit_proportions_rec = recommender.get_sitting_proportions_recommendations(har_subject_data_df,
-                                                                                              subject_id,
-                                                                                              recommendation_system)
-    sit_total_rec = recommender.get_total_sitting_duration_recommendation(har_subject_data_df,
+    sit_proportions_rec = sensor_rec.individual.get_sitting_proportions_recommendations(har_subject_data_df,
+                                                                                        subject_id,
+                                                                                        recommendation_system)
+    sit_total_rec = sensor_rec.individual.get_total_sitting_duration_recommendation(har_subject_data_df,
                                                                                           subject_id,
                                                                                           recommendation_system)
-    sit_continuous_rec_2h = recommender.get_continuous_sitting_recommendations(oh_profile,
+    sit_continuous_rec_2h = sensor_rec.individual.get_continuous_sitting_recommendations(oh_profile,
                                                                                                recommendation_system,
                                                                                                activity_class_label=[
                                                                                                    'Sentado'],
                                                                                                exposure_limit_minutes=120.0)
-    sit_continuous_rec_1h = recommender.get_continuous_sitting_recommendations(oh_profile,
+    sit_continuous_rec_1h = sensor_rec.individual.get_continuous_sitting_recommendations(oh_profile,
                                                                                                recommendation_system,
                                                                                                activity_class_label=[
                                                                                                    'Sentado'],
                                                                                                exposure_limit_minutes=60.0)
-    stand_proportions_rec = recommender.get_standing_proportions_recommendations(har_subject_data_df,
+    stand_proportions_rec = sensor_rec.individual.get_standing_proportions_recommendations(har_subject_data_df,
                                                                                                 subject_id,
                                                                                                 recommendation_system)
     steps_rec\
-        = recommender.get_steps_recommendations(har_subject_data_df, subject_id,
+        = sensor_rec.individual.get_steps_recommendations(har_subject_data_df, subject_id,
                                                                   recommendation_system)
 
     list_recs.extend(
@@ -970,26 +972,26 @@ def _generate_summary_section_at_beginning(mdFile, subject_id, oh_profile, oh_pr
 
     # (2.3) posture
     # load posture data
-    posture_subject_data_df = recommender.generate_posture_csv(Path.cwd(), oh_profiles_path)
+    posture_subject_data_df = recommender.load.generate_posture_csv(Path.cwd(), oh_profiles_path)
 
     # ------- get posture recommendations --------- #
-    posture_rec = recommender.get_postural_displacement_recommendation(posture_subject_data_df, subject_id,
+    posture_rec = sensor_rec.individual.get_postural_displacement_recommendation(posture_subject_data_df, subject_id,
                                                                                    recommendation_system)
 
     list_recs.append(posture_rec)
 
     #(2.4) heart rate
     # load HR subject data
-    hr_subject_data_df = recommender.generate_hr_csv(Path.cwd(), oh_profiles_path)
+    hr_subject_data_df = recommender.load.generate_hr_csv(Path.cwd(), oh_profiles_path)
 
     # ------- get heart rate recommendations --------- #
-    max_hr_rec = recommender.get_max_frequency_recommendation(hr_subject_data_df, oh_profile, subject_id,
+    max_hr_rec = sensor_rec.individual.get_max_frequency_recommendation(hr_subject_data_df, oh_profile, subject_id,
                                                                           recommendation_system)
-    slightly_elevated_hr_rec = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,
+    slightly_elevated_hr_rec = sensor_rec.individual.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,
                                                                                        subject_id,
                                                                                        'Ligeiramente elevado',
                                                                                        recommendation_system)
-    elevated_hr_rec = recommender.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,
+    elevated_hr_rec = sensor_rec.individual.get_elevated_hr_recommendations(hr_subject_data_df, oh_profile,
                                                                               subject_id, 'Elevado',
                                                                               recommendation_system)
 
@@ -997,14 +999,14 @@ def _generate_summary_section_at_beginning(mdFile, subject_id, oh_profile, oh_pr
 
     # (2.5) EMG
     # load EMG data
-    emg_subject_data_df = recommender.generate_emg_csv(Path.cwd(), oh_profiles_path)
+    emg_subject_data_df = recommender.load.generate_emg_csv(Path.cwd(), oh_profiles_path)
 
     # ------- get emg recommendations --------- #
-    emg_rec_above_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+    emg_rec_above_high = sensor_rec.individual.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
                                                                          'high_for_you_pct', 2,
                                                                          recommendation_system)
 
-    emg_rec_high = recommender.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
+    emg_rec_high = sensor_rec.individual.get_emg_recommendations(emg_subject_data_df, oh_profile, subject_id,
                                                                    'typical_high_pct', 3,
                                                                    recommendation_system)
     list_recs.extend([emg_rec_high, emg_rec_above_high])

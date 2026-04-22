@@ -1,78 +1,25 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
-import sys
-from pathlib import Path
 from typing import Dict, List
 import pandas as pd
 
 # internal imports
-from constants import USER, SENSORS_KEY, RULE_KEY
+from constants import SENSORS_KEY, RULE_KEY
+from recommender.load.language_mappings import NOISE_MAPPING
+from recommender.load.sensors import LOUD_NOISE_SUM
 from recommender.utils import evaluate_continuous_timeline_risk, load_or_generate_csv, \
                               get_language_mapper_values, build_sensor_recommendations_dict, evaluate_subject_risk
 
-# external imports
-project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
-sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-NOISE_CSV_FILENAME = "noise_subject_metrics.csv"
-
-LOUD_NOISE_SUM = 'sum_loud_noise'
 NOISE_RULE_MAX_LOUD_NOISE_PERCENTAGE = 0.5
-
-NOISE_MAPPING = {
-    "Ruído incomodativo": {"pt": "Ruído incomodativo", "eng": "Disruptive noise"},
-    "Ruído elevado": {"pt": "Ruído elevado", "eng": "High noise"},
-    "Ruído_cronograma_cjan_10": {"pt": "Ruído_cronograma_cjan_10", "eng": "Noise_timeline_wlen-10"}
-}
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
-    """
-    Load or generate the noise subject-metrics CSV. This is generated based on the OH profiles of the entire
-    worker population. During the generation process and additional column is created, which contains the sum of time
-    of exposure to disrupting and high noise
-
-    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
-    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
-
-    :param noise_risk_csv_path: Directory in which the CSV is stored (or will be created)
-    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
-    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
-    :return: DataFrame containing per-subject noise metrics.
-    """
-
-    # get the values to be extracted (only the first two values needed here)
-    values_to_extract = get_language_mapper_values(NOISE_MAPPING, language)[0:-1]
-
-    # load or generate the DataFrame
-    df_noise_metrics = load_or_generate_csv(csv_dir=noise_risk_csv_path, filename=NOISE_CSV_FILENAME,
-                                            oh_profile_path=oh_profile_path,
-                                            oh_metric_hierarchy="sensor_metrics.noise",
-                                            level_names=["date", "session"],
-                                            value_paths=[f'Noise_distributions.{values_to_extract[0]}',
-                                                         f'Noise_distributions.{values_to_extract[1]}'])
-
-    # check whether the LOUD_NOISE_SUM column exists (this is only needed if the metrics are generated for the first time
-    if not LOUD_NOISE_SUM in df_noise_metrics.columns:
-
-        # add up disrupting and high noise
-        df_noise_metrics[LOUD_NOISE_SUM] = (df_noise_metrics[f'Noise_distributions.{values_to_extract[0]}']
-                                            + df_noise_metrics[f'Noise_distributions.{values_to_extract[1]}'])
-
-        # save the updated DataFrame
-        df_noise_metrics.to_csv(Path(noise_risk_csv_path) / NOISE_CSV_FILENAME, index=False)
-
-
-    return df_noise_metrics
-
-
 def get_continuous_noise_recommendations(oh_profile: Dict,
                                          full_recommender_dict: Dict,
                                          noise_level_label: List[str] = None,
