@@ -8,7 +8,7 @@ import pandas as pd
 from constants import SENSORS_KEY, RULE_KEY
 from recommender.load.language_mappings import NOISE_MAPPING
 from recommender.load.sensors import LOUD_NOISE_SUM
-from recommender.utils import evaluate_continuous_timeline_risk, load_or_generate_csv, \
+from recommender.utils import evaluate_continuous_timeline_risk, \
                               get_language_mapper_values, build_sensor_recommendations_dict, evaluate_subject_risk
 
 

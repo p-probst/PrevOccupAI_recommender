@@ -3,6 +3,7 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 from pathlib import Path
 import pandas as pd
+from typing import Dict
 
 # internal imports
 from .language_mappings import ROSA_MAPPING, ENVIRONMENT_MAPPING
@@ -18,7 +19,7 @@ ENVIRONMENT_CSV_FILENAME = 'environment_subject_metrics.csv'
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def generate_rosa_csv(rosa_data_csv_path: str | Path, oh_profile_path: str) -> pd.DataFrame:
+def generate_rosa_csv(rosa_data_csv_path: str | Path, oh_profile_path: str, metadata_dict: Dict[str, str]=None) -> pd.DataFrame:
     """
     Load or generate the ROSA biomechanical subject-metrics CSV.
 
@@ -27,16 +28,18 @@ def generate_rosa_csv(rosa_data_csv_path: str | Path, oh_profile_path: str) -> p
 
     :param rosa_data_csv_path: Directory in which the CSV is stored (or will be created).
     :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
+    :param metadata_dict: dictionary defining which metadata should be extracted and added to the DataFrame. Default: None
     :return: DataFrame containing per-subject ROSA metrics.
     """
 
     return load_or_generate_csv(csv_dir=rosa_data_csv_path, filename=ROSA_CSV_FILENAME,
                                 oh_profile_path=oh_profile_path,
                                 oh_metric_hierarchy="single_instance_questionnaires.biomechanical.ROSA",
-                                level_names=[], value_paths=list(ROSA_MAPPING.keys()))
+                                level_names=[], value_paths=list(ROSA_MAPPING.keys()),
+                                metadata_dict=metadata_dict)
 
 
-def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_path: str, language: str='pt') -> pd.DataFrame:
+def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_path: str, language: str='pt', metadata_dict: Dict[str, str]=None) -> pd.DataFrame:
     """
     Load or generate the environmental questionnaire subject-metrics CSV.
 
@@ -46,6 +49,7 @@ def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_p
     :param environment_data_csv_path: Directory in which the CSV is stored (or will be created).
     :param oh_profile_path: Path to the OH profile data.
     :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
+    :param metadata_dict: dictionary defining which metadata should be extracted and added to the DataFrame. Default: None
     :return: DataFrame containing per-subject environmental questionnaire metrics.
     """
 
@@ -56,4 +60,5 @@ def generate_environment_csv(environment_data_csv_path: str | Path, oh_profile_p
                                 oh_profile_path=oh_profile_path,
                                 oh_metric_hierarchy="single_instance_questionnaires.environmental",
                                 level_names=[],
-                                value_paths=values_to_extract)
+                                value_paths=values_to_extract,
+                                metadata_dict=metadata_dict)

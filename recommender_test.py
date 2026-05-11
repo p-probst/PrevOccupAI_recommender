@@ -28,26 +28,30 @@ with open(Path(OH_PROFILES_PATH) /f"{subject_id}_OH_profile.json", "r", encoding
 
 
 # ------- get CSV data --------- #
+# define metadata to be extracted and added to the CSV data
+metadata_dict = {"work_type": "meta_data.work_type",
+                 "age": "meta_data.idade"}
+
 # load noise risk subjects
-noise_risk_subjects_df = recommender.load.generate_noise_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE)
+noise_risk_subjects_df = recommender.load.generate_noise_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE, metadata_dict=metadata_dict)
 
 # load HAR subject data
-har_subject_data_df = recommender.load.generate_har_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE)
+har_subject_data_df = recommender.load.generate_har_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE, metadata_dict=metadata_dict)
 
 # load HR subject data
-hr_subject_data_df = recommender.load.generate_hr_csv(cwd_, OH_PROFILES_PATH)
+hr_subject_data_df = recommender.load.generate_hr_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
 
 # load EMG data
-emg_subject_data_df = recommender.load.generate_emg_csv(cwd_, OH_PROFILES_PATH)
+emg_subject_data_df = recommender.load.generate_emg_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
 
 # load posture data
-posture_subject_data_df = recommender.load.generate_posture_csv(cwd_, OH_PROFILES_PATH)
+posture_subject_data_df = recommender.load.generate_posture_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
 
 # load rosa data
-rosa_subjects_data_df = recommender.load.generate_rosa_csv(cwd_, OH_PROFILES_PATH)
+rosa_subjects_data_df = recommender.load.generate_rosa_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
 
 # load environment data
-environment_data_df = recommender.load.generate_environment_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE)
+environment_data_df = recommender.load.generate_environment_csv(cwd_, OH_PROFILES_PATH, language=LANGUAGE, metadata_dict=metadata_dict)
 
 
 

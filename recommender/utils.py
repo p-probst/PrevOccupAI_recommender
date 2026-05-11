@@ -21,7 +21,7 @@ from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMME
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
 sys.path.append(str(project_path))
-from oh_parser import load_profiles, extract_nested
+from oh_parser import load_profiles, extract_nested, extract
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # file constants
@@ -33,7 +33,8 @@ TIME_FMT = "%H:%M:%S.%f"
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
 def load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: str, oh_metric_hierarchy: str,
-                          level_names: list, value_paths: list) -> pd.DataFrame:
+                          level_names: list, value_paths: list, exclude_patterns: list=[],
+                         metadata_dict: Dict[str, str]=None, date_fmt ="%d-%m-%Y") -> pd.DataFrame:
     """
     Load a metrics CSV from disk if it exists, otherwise parse OH profiles to generate and save it.
 
@@ -52,6 +53,8 @@ def load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: st
                         "score_adapted_a" (ROSA metric)
                         "Noise_statistics.min" (specific noise metric)
                         "Noise_statistics.*"   (all noise metrics)
+    :param exclude_patterns: list of metrics to exclude from the OH profile hierarchy.
+    :param metadata_dict: dictionary defining which metadata should be extracted and added to the DataFrame. Default: None
     :return: DataFrame with the requested metrics for all subjects.
     """
     # Build the full absolute path so that the existence check and the save target
@@ -63,16 +66,29 @@ def load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: st
         profiles = load_profiles(oh_profile_path)
 
         # extract the requested metrics from the OH-profiles
-        df = extract_nested(profiles, base_path=oh_metric_hierarchy, level_names=level_names, value_paths=value_paths,
-                            exclude_patterns=[])
+        metrics_df = extract_nested(profiles, base_path=oh_metric_hierarchy, level_names=level_names, value_paths=value_paths,
+                            exclude_patterns=exclude_patterns)
+
+        # extract the metadata from the OH-profile and add it to the extracted metrics if necessary
+        if metadata_dict:
+            metadata_df = extract(profiles, paths=metadata_dict, include_subject_id=True)
+
+            metrics_df = metrics_df.merge(metadata_df[["subject_id","work_type"]], on="subject_id", how="left")
+
+        if 'date' in metrics_df.columns:
+            # add weekday column
+            metrics_df['weekday'] = metrics_df['date'].apply(pd_date_to_weekday, args=(date_fmt, 'pt'))
+
+        # sort the dataFrame by the subject_id, date, and session
+        metrics_df = _sort_metrics_df(metrics_df)
 
         # store the dataframe to csv file
-        df.to_csv(csv_path, index=False)
+        metrics_df.to_csv(csv_path, index=False)
 
     else:
-        df = pd.read_csv(csv_path)
+        metrics_df = pd.read_csv(csv_path)
 
-    return df
+    return metrics_df
 
 
 def get_language_mapper_values(mapper_dict: Dict, language: str) -> List[str]:
@@ -84,6 +100,22 @@ def get_language_mapper_values(mapper_dict: Dict, language: str) -> List[str]:
     """
 
     return [sub_dict[language] for sub_dict in mapper_dict.values()]
+
+
+def pd_date_to_weekday(date_string: str, date_format: str, locale: str = "en") -> str:
+    """
+    Convert a date string to localized weekday names, based on its date format.
+
+    :param date_string: string representing a date
+    :param date_format: Format used to parse the input dates
+    :param locale: Locale code (e.g. 'en', 'pt', 'pt_PT')
+    :return: List of weekday names
+    """
+
+    # transform date strings into datetime objects and sort them
+    parsed_date = datetime.strptime(date_string, date_format)
+
+    return format_date(parsed_date, format="EEEE", locale=locale)
 
 
 def dates_to_weekdays(dates: List[str], date_format: str, locale: str = "en") -> List[str]:
@@ -311,6 +343,34 @@ def build_sensor_recommendations_dict(rule: list, risk_dates: Set[str], total_nu
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
+def _sort_metrics_df(metrics_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    sorts the metrics in ascending order based on the 'subject_id' column. If the 'date' and 'session' column are
+    available, these are also used for sorting
+    :param metrics_df: pandas.DataFrame containing the metrics extracted from all OH-profiles
+    :return: sorted metrics df
+    """
+
+    # convert subject_id column to int
+    metrics_df['subject_id'] = pd.to_numeric(metrics_df['subject_id'], errors='coerce')
+
+    # check whether the date column exists
+    if 'date' in metrics_df.columns:
+
+        # create additional columns that store the date and time as datetime objects.
+        # these are preferred for sorting
+        metrics_df['date_dt'] = pd.to_datetime(metrics_df['date'], format="%d-%m-%Y")
+        metrics_df['session_dt'] = pd.to_datetime(metrics_df['session'], format="%H-%M-%S").dt.time
+        metrics_df = metrics_df.sort_values(by=["subject_id", "date_dt", "session_dt"])
+
+        # drop the additional columns
+        metrics_df = metrics_df.drop(columns=["date_dt", "session_dt"])
+
+    else:
+        metrics_df = metrics_df.sort_values(by=["subject_id"])
+
+    return metrics_df
+
 def _count_continuous_timeline_risk_breach(timeline_dict: Dict, class_labels: List[str], exposure_limit_minutes: float=60.0) -> int:
     """
     Counts the number of instances a continuous timeline risk has been breached (e.g., seated for too long,
