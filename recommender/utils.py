@@ -28,6 +28,8 @@ from oh_parser import load_profiles, extract_nested, extract
 # ------------------------------------------------------------------------------------------------------------------- #
 TIME_FMT = "%H:%M:%S.%f"
 
+WEEKDAYS_PT = ['segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira']
+
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
@@ -87,6 +89,11 @@ def load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: st
 
     else:
         metrics_df = pd.read_csv(csv_path)
+
+    # check if the df contains the weekday column
+    if "weekday" in metrics_df.columns:
+        # transform to ordered categorical to ensure that when using groupby the correct ordering is being used
+        metrics_df['weekday'] = pd.Categorical(metrics_df['weekday'], categories=WEEKDAYS_PT, ordered=True)
 
     return metrics_df
 
@@ -360,12 +367,15 @@ def _sort_metrics_df(metrics_df: pd.DataFrame) -> pd.DataFrame:
         # create additional columns that store the date and time as datetime objects.
         # these are preferred for sorting
         metrics_df['date_dt'] = pd.to_datetime(metrics_df['date'], format="%d-%m-%Y")
-        metrics_df['session_dt'] = pd.to_datetime(metrics_df['session'], format="%H-%M-%S").dt.time
-        metrics_df = metrics_df.sort_values(by=["subject_id", "date_dt", "session_dt"])
+        metrics_df = metrics_df.sort_values(by=["subject_id", "date_dt"])
 
-        # drop the additional columns
-        metrics_df = metrics_df.drop(columns=["date_dt", "session_dt"])
 
+        if 'session' in metrics_df.columns:
+            metrics_df['session_dt'] = pd.to_datetime(metrics_df['session'], format="%H-%M-%S").dt.time
+            metrics_df = metrics_df.sort_values(by=["subject_id", "date_dt", "session_dt"])
+            metrics_df = metrics_df.drop(columns=["session_dt"])
+
+        metrics_df = metrics_df.drop(columns=["date_dt"])
     else:
         metrics_df = metrics_df.sort_values(by=["subject_id"])
 

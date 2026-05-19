@@ -29,3 +29,22 @@ NO_RECOMMENDATIONS = {
     ENG: "Good news: No risk situations were detected."
 }
 
+# pain questionnaire
+VIABLE_PAIN_DIMENSIONS = ["localização", "tempo", "incapacidade", "sofrimento", "intensidade", "perceção"]
+
+# colors for plotting
+BO_COLOR = "#4d92d0"
+FO_COLOR = "#06171c"
+EDGE_COLOR = "#222e35"
+
+GREEN = "#81C784"
+PALE_GREEN = "#A5D6A7"
+STRONG_GREEN = "#3F8D43"
+YELLOW = "#FFCC80"
+RED = "#EF9A9A"
+
+# work types order
+WORK_TYPES = ['FO', 'BO']
+
+FILE_FORMAT = '.png'
+

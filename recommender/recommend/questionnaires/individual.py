@@ -58,7 +58,7 @@ def get_rosa_recommendations(rosa_subject_metrics_df: pd.DataFrame, subject_id: 
 
     # evaluate the occupational risks for the subject
     detected_risks_dict = _evaluate_questionnaire_risks(df=rosa_subject_metrics_df, subject_id=subject_id,
-                                                        risk_metrics=ROSA_MAPPING.keys(), recommender_sub_dict=rosa_dict,
+                                                        risk_metrics=list(ROSA_MAPPING.keys())[:-1], recommender_sub_dict=rosa_dict,
                                                         language=language, risk_metric_mapping=ROSA_MAPPING)
 
     # generate recommendations according to the found risks

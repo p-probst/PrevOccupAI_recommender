@@ -9,6 +9,7 @@ ROSA_MAPPING = {
     "phone_adapted_norm":    {"pt": "Telefone", "eng": "Phone"},
     "mouse_adapted_norm":    {"pt": "Rato",     "eng": "Mouse"},
     "keyboard_adapted_norm": {"pt": "Teclado",  "eng": "Keyboard"},
+    "final_normalized":      {"pt": "ROSA Score", "eng": "ROSA Score"},
 }
 
 # no recommendations for office privacy (privacidade do escritório) thus they are omitted
@@ -44,7 +45,8 @@ HAR_MAPPING = {
     "Sentado": {"pt": "Sentado", "eng": "Sitting"},
     "De pé": {"pt": "De pé", "eng": "Standing"},
     "Sentado_duration_sec": {"pt": "Sentado_duration_sec", "eng": "sitting_duration_sec"},
-    "num_steps": {"pt": "num_steps", "eng": "num_steps"}
+    "num_steps": {"pt": "num_steps", "eng": "num_steps"},
+    "Andar": {"pt": "Andar", "eng": "Walking"},
 }
 
 NOISE_MAPPING = {
