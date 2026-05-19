@@ -88,5 +88,14 @@ vis.group.plot_environment_sensors_by_worktype(environment_sensors_data_df, save
 # load noise risk subjects
 noise_data_df = recommender.load.generate_noise_csv(cwd_, OH_PROFILES_PATH, language='pt', metadata_dict=metadata_dict)
 vis.group.plot_noise_distribution_by_worktype(noise_data_df, save_path=PLOT_PATH, show=False)
-vis.group.plot_elevated_noise_duration_by_worktype(noise_data_df, save_path=PLOT_PATH)
+vis.group.plot_elevated_noise_duration_by_worktype(noise_data_df, save_path=PLOT_PATH, show=False)
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+# NOISE
+# ------------------------------------------------------------------------------------------------------------------- #
+har_data_df = recommender.load.generate_har_csv(cwd_, OH_PROFILES_PATH, language='pt', metadata_dict=metadata_dict)
+vis.group.plot_activity_distributuions_by_worktype(har_data_df, save_path=PLOT_PATH, show=False)
+vis.group.plot_har_metric_by_worktype(har_data_df, 'HAR_steps.num_steps', save_path=PLOT_PATH, x_label="Número de passos", outlier_limit= 30, show=True)
+vis.group.plot_har_metric_by_worktype(har_data_df, 'HAR_durations.Sentado_duration_sec', save_path=PLOT_PATH, x_label="Tempo passado em atividade sedentária (hh:mm)",outlier_limit= 5000, show=True)
 
