@@ -92,10 +92,17 @@ vis.group.plot_elevated_noise_duration_by_worktype(noise_data_df, save_path=PLOT
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
-# NOISE
+# HAR
 # ------------------------------------------------------------------------------------------------------------------- #
 har_data_df = recommender.load.generate_har_csv(cwd_, OH_PROFILES_PATH, language='pt', metadata_dict=metadata_dict)
 vis.group.plot_activity_distributuions_by_worktype(har_data_df, save_path=PLOT_PATH, show=False)
-vis.group.plot_har_metric_by_worktype(har_data_df, 'HAR_steps.num_steps', save_path=PLOT_PATH, x_label="Número de passos", outlier_limit= 30, show=True)
-vis.group.plot_har_metric_by_worktype(har_data_df, 'HAR_durations.Sentado_duration_sec', save_path=PLOT_PATH, x_label="Tempo passado em atividade sedentária (hh:mm)",outlier_limit= 5000, show=True)
+vis.group.plot_sensor_metric_by_worktype(har_data_df, 'HAR_steps.num_steps', save_path=PLOT_PATH, x_label="Número de passos", lower_outlier_limit= 30, show=False)
+vis.group.plot_sensor_metric_by_worktype(har_data_df, 'HAR_durations.Sentado_duration_sec', save_path=PLOT_PATH, x_label="Tempo passado em atividade sedentária (hh:mm)",
+                                         lower_outlier_limit= 5000, show=False)
 
+# ------------------------------------------------------------------------------------------------------------------- #
+# Posture
+# ------------------------------------------------------------------------------------------------------------------- #
+# load posture data
+posture_data_df = recommender.load.generate_posture_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
+vis.group.plot_sensor_metric_by_worktype(posture_data_df, 'posture_95_confidence_ellipse_area', save_path=PLOT_PATH, x_label="Area de 95% confiança (m²)", upper_outlier_limit=2, show=True)

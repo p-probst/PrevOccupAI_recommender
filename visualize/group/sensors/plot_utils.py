@@ -5,15 +5,17 @@ import pandas as pd
 import ptitprince as pt
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.ticker as mticker
 import numpy as np
 
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from matplotlib.ticker import FuncFormatter
 from typing import Tuple, List, Dict
+from pathlib import Path
 
 
-from constants import WORK_TYPES, FO_COLOR, BO_COLOR
+from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -23,6 +25,59 @@ from constants import WORK_TYPES, FO_COLOR, BO_COLOR
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
+def plot_sensor_metric_by_worktype(metrics_df: pd.DataFrame, metric_column: str, save_path: str | Path, show: bool = True,
+                                   x_label: str = None, lower_outlier_limit: int = None, upper_outlier_limit: int = None) -> None:
+    """
+    generates a raincloud plot that displays the har_metric per day for the FO and BO populations
+    :param metrics_df: pandas.DataFrame containing the noise metric data
+    :param metric_column: HAR metric to plot
+    :param save_path: Path to where the figure will be written.
+    :param show: Indicates whether to show the figure.
+    :param x_label: Label for the x-axis.
+    :param lower_outlier_limit: Lower Outlier limit. Needed to remove recording of the one subject for which the acquisition stopped early on one day.
+    :param upper_outlier_limit: upper outlier limit.
+    :return: None
+    """
+
+    # check for work_type column
+    if "work_type" not in metrics_df.columns:
+        raise KeyError("Input CSV must contain a 'work_type' column.")
+
+    # collect the necessary columns
+    metric_df = metrics_df[[metric_column, 'weekday', 'work_type']]
+
+    if lower_outlier_limit:
+        # remove outlier from seated data (this one happened due to the phone acquisition time being incorrectly set)
+        metric_df = metric_df[metric_df[metric_column] > lower_outlier_limit]
+
+    if upper_outlier_limit:
+        metric_df = metric_df[metric_df[metric_column] < upper_outlier_limit]
+
+    # generate plot
+    fig, ax = plot_raincloud_by_day(metric_df, metric=metric_column)
+
+    # add label
+    if x_label:
+        ax.set_xlabel(x_label)
+
+    # transform x-ticks from seconds to hh:mm
+    if "duration_sec" in metric_column:
+        ax.xaxis.set_major_formatter(mticker.FuncFormatter(seconds_to_hhmm))
+
+    # save plot if necessary
+    if save_path is not None:
+        file_path = Path(save_path) / f'HAR_{metric_column.replace('.', '_')}_by_worktype{FILE_FORMAT}'
+        # Make sure the destination directory exists before writing.
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(file_path)
+
+    if show:
+        plt.show()
+
+    # ensure figure is closed
+    plt.close(fig)
+
+
 def plot_raincloud_by_day(metrics_df: pd.DataFrame, metric: str, fontsize: int=12) -> Tuple[Figure, Axes]:
     """
      generates a horizontal rain-cloud plot for each day contained in metrics_df.
