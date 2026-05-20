@@ -35,6 +35,8 @@ VIABLE_PAIN_DIMENSIONS = ["localização", "tempo", "incapacidade", "sofrimento"
 # colors for plotting
 BO_COLOR = "#4d92d0"
 FO_COLOR = "#06171c"
+# work type colors
+WORK_TYPE_COLORS = {'FO': FO_COLOR, 'BO': BO_COLOR}
 EDGE_COLOR = "#222e35"
 
 GREEN = "#81C784"
@@ -44,6 +46,7 @@ YELLOW = "#FFCC80"
 RED = "#EF9A9A"
 BLUE_STATE = '#7391AB'
 SALMON = '#F19C93'
+LIGHT_GRAY = '#E0E0E0'
 
 # work types order
 WORK_TYPES = ['FO', 'BO']

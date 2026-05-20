@@ -99,7 +99,7 @@ def plot_pain_localization_perception_by_work_type(metrics_df: pd.DataFrame, q_t
         save_path = Path(save_path) / f'{q_type}_by_work_type{FILE_FORMAT}'
         # Make sure the destination directory exists before writing.
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(save_path)
+        fig.savefig(save_path, dpi=300, bbox_inches='tight')
 
     if show:
         plt.show()
@@ -212,7 +212,7 @@ def plot_pain_levels_by_work_type(metrics_df: pd.DataFrame, q_type: str, eval_le
     if save_path is not None:
         save_path = Path(save_path) / f'{q_type}_by_work_type{FILE_FORMAT}'
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(save_path)
+        fig.savefig(save_path, dpi=300, bbox_inches='tight')
 
     if show:
         plt.show()

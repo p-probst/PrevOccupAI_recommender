@@ -18,6 +18,7 @@ HAR_CSV_FILENAME = "har_subject_metrics.csv"
 POSTURE_CSV_FILENAME = "posture_subject_metrics.csv"
 EMG_CSV_FILENAME = 'emg_subject_metrics.csv'
 HR_CSV_FILENAME = "hr_subject_metrics.csv"
+WRIST_CSV_FILENAME = "wrist_subject_metrics.csv"
 
 LOUD_NOISE_SUM = 'sum_loud_noise'
 
@@ -200,10 +201,29 @@ def generate_hr_csv(hr_data_csv_path: str | Path, oh_profile_path: str, language
                                          oh_metric_hierarchy="sensor_metrics.heart_rate",
                                          level_names=["date", "session"],
                                          value_paths=[f"HR_BPM_stats.{values_to_extract[0]}",
+                                                      f"HR_BPM_stats.{values_to_extract[4]}",
                                                       f"HR_distributions.{values_to_extract[1]}",
                                                       f"HR_distributions.{values_to_extract[2]}",
+                                                      f"HR_distributions.{values_to_extract[3]}",
                                                       "Session"],
                                          metadata_dict=metadata_dict)
 
     return df_hr_metrics
+
+def generate_wrist_csv(wrist_data_csv_path: str | Path, oh_profile_path: str, language: str='pt', metadata_dict: Dict[str, str]=None) -> pd.DataFrame:
+    """
+    Load or
+    :param wrist_data_csv_path:
+    :param oh_profile_path:
+    :param language:
+    :param metadata_dict:
+    :return:
+    """
+
+    return load_or_generate_csv(csv_dir=wrist_data_csv_path, filename=WRIST_CSV_FILENAME,
+                                oh_profile_path=oh_profile_path,
+                                oh_metric_hierarchy="sensor_metrics.wrist_activities",
+                                level_names=["date", "session"],
+                                value_paths=[".*"],
+                                metadata_dict=metadata_dict)
 

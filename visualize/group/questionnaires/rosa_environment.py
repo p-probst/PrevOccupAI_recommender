@@ -148,7 +148,7 @@ def plot_environment_sensors_by_worktype(metrics_df: pd.DataFrame, save_path: st
             file_path = Path(save_path) / f'{"_".join(cols)}_by_work_type{FILE_FORMAT}'
             # Make sure the destination directory exists before writing.
             file_path.parent.mkdir(parents=True, exist_ok=True)
-            fig.savefig(file_path)
+            fig.savefig(file_path, dpi=300, bbox_inches='tight')
 
         if show:
             plt.show()

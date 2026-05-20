@@ -11,8 +11,7 @@ from pathlib import Path
 from matplotlib.lines import Line2D
 
 # internal imports
-from constants import FILE_FORMAT, FO_COLOR, BO_COLOR
-
+from constants import FILE_FORMAT, WORK_TYPE_COLORS
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -65,8 +64,6 @@ QUESTION_LABEL_MAPPING = {
     }
 }
 
-# work type colors
-WORK_TYPE_COLOR = {'FO': FO_COLOR, 'BO': BO_COLOR}
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -133,7 +130,7 @@ def plot_workload_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, l
                     xmin=pos - 0.3,
                     xmax=pos + 0.3,
                     linewidth=7,
-                    color=WORK_TYPE_COLOR[str(work_type)]
+                    color=WORK_TYPE_COLORS[str(work_type)]
                 )
 
                 # Add error bar (whiskers)
@@ -146,7 +143,7 @@ def plot_workload_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, l
                         y=value,
                         yerr=std_value,
                         fmt='none',  # no marker
-                        ecolor=WORK_TYPE_COLOR[str(work_type)],
+                        ecolor=WORK_TYPE_COLORS[str(work_type)],
                         elinewidth=2,
                         capsize=5,
                         capthick=2

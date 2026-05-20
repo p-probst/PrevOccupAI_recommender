@@ -105,4 +105,18 @@ vis.group.plot_sensor_metric_by_worktype(har_data_df, 'HAR_durations.Sentado_dur
 # ------------------------------------------------------------------------------------------------------------------- #
 # load posture data
 posture_data_df = recommender.load.generate_posture_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
-vis.group.plot_sensor_metric_by_worktype(posture_data_df, 'posture_95_confidence_ellipse_area', save_path=PLOT_PATH, x_label="Area de 95% confiança (m²)", upper_outlier_limit=2, show=True)
+vis.group.plot_sensor_metric_by_worktype(posture_data_df, 'posture_95_confidence_ellipse_area', save_path=PLOT_PATH, x_label="Area de 95% confiança (m²)", upper_outlier_limit=2, show=False)
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+# Wrist movements
+# ------------------------------------------------------------------------------------------------------------------- #
+wrist_data_df = recommender.load.generate_wrist_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
+vis.group.plot_session_trajectories_by_worktype(wrist_data_df, metric_column='WRIST_significant_acceleration_percentage', save_path=PLOT_PATH, show=False)
+
+# ------------------------------------------------------------------------------------------------------------------- #
+# Heart rate
+# ------------------------------------------------------------------------------------------------------------------- #
+
+hr_data_df = recommender.load.generate_hr_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
+vis.group.plot_session_trajectories_by_worktype(hr_data_df, metric_column='HR_distributions.Elevado', save_path=PLOT_PATH, show=True)

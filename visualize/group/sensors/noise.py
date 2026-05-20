@@ -9,7 +9,7 @@ import matplotlib.ticker as mticker
 from pathlib import Path
 
 from constants import STRONG_GREEN, PALE_GREEN, YELLOW, RED, FILE_FORMAT
-from .plot_utils import plot_raincloud_by_day, seconds_to_hhmm, stacked_bar_plot
+from .plot_utils import plot_raincloud_by_day, seconds_to_hhmm, plot_stacked_bar_chart
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -63,7 +63,7 @@ def plot_noise_distribution_by_worktype(metrics_df: pd.DataFrame, save_path: str
     for work_type, group_df in metrics_df.groupby('work_type', sort=False, observed=False):
 
         # generate figure
-        fig, ax = stacked_bar_plot(group_df, relevant_cols, NOISE_CLASS_ORDER, NOISE_CLASS_COLORS, LEGEND_PATCHES)
+        fig, ax = plot_stacked_bar_chart(group_df, relevant_cols, NOISE_CLASS_ORDER, NOISE_CLASS_COLORS, LEGEND_PATCHES)
 
 
         # save plot if necessary
@@ -71,7 +71,7 @@ def plot_noise_distribution_by_worktype(metrics_df: pd.DataFrame, save_path: str
             file_path = Path(save_path) / f'noise_distributions_{work_type}{FILE_FORMAT}'
             # Make sure the destination directory exists before writing.
             file_path.parent.mkdir(parents=True, exist_ok=True)
-            fig.savefig(file_path)
+            fig.savefig(file_path, dpi=300, bbox_inches='tight')
 
         if show:
             plt.show()
@@ -113,7 +113,7 @@ def plot_elevated_noise_duration_by_worktype(metrics_df: pd.DataFrame, save_path
         file_path = Path(save_path) / f'noise_durations_by_worktype{FILE_FORMAT}'
         # Make sure the destination directory exists before writing.
         file_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(file_path)
+        fig.savefig(file_path, dpi=300, bbox_inches='tight')
 
     if show:
         plt.show()

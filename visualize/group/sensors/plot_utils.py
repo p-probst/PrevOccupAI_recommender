@@ -11,17 +11,20 @@ import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from matplotlib.ticker import FuncFormatter
+from matplotlib.colors import to_rgb
 from typing import Tuple, List, Dict
 from pathlib import Path
 
+from sympy.printing.pretty.pretty_symbology import line_width
 
-from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT
+from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT, WORK_TYPE_COLORS
+from recommender.utils import WEEKDAYS_PT
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-
+ROMAN_NUMERALS = {1: "I", 2: "II", 3: "III", 4: "IV"}
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -66,10 +69,10 @@ def plot_sensor_metric_by_worktype(metrics_df: pd.DataFrame, metric_column: str,
 
     # save plot if necessary
     if save_path is not None:
-        file_path = Path(save_path) / f'HAR_{metric_column.replace('.', '_')}_by_worktype{FILE_FORMAT}'
+        file_path = Path(save_path) / f'{metric_column.replace('.', '_')}_by_worktype{FILE_FORMAT}'
         # Make sure the destination directory exists before writing.
         file_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(file_path)
+        fig.savefig(file_path, dpi=300, bbox_inches='tight')
 
     if show:
         plt.show()
@@ -105,17 +108,19 @@ def plot_raincloud_by_day(metrics_df: pd.DataFrame, metric: str, fontsize: int=1
     ax.set_xlabel(metric, fontsize=fontsize + 2)
     ax.set_ylabel("")
     plt.setp(ax.get_xticklabels(), fontsize=fontsize)
-    plt.setp(ax.get_yticklabels(), fontsize=fontsize)
+    plt.setp(ax.get_yticklabels(), fontsize=fontsize+ 2, rotation=90, va="center")
     legend = ax.get_legend()
+    legend.set_title("Tipo de trabalho")
     plt.setp(legend.get_title(), fontsize=fontsize)
     plt.setp(legend.get_texts(), fontsize=fontsize)
 
 
     return fig, ax
 
-def stacked_bar_plot(metrics_df: pd.DataFrame, relevant_cols: List[str], metric_class_order: List[str],
-                     metric_class_colors: Dict[str, str], legend_patches: List[mpatches.Patch],
-                     fontsize: int=12) -> Tuple[Figure, Axes]:
+
+def plot_stacked_bar_chart(metrics_df: pd.DataFrame, relevant_cols: List[str], metric_class_order: List[str],
+                           metric_class_colors: Dict[str, str], legend_patches: List[mpatches.Patch],
+                           fontsize: int=12) -> Tuple[Figure, Axes]:
     """
     generates a stacked bar plot to display class percentages of the metrics contained in metrics_df.
     :param metrics_df: pandas.DataFrame containing metrics to plot.
@@ -180,6 +185,82 @@ def stacked_bar_plot(metrics_df: pd.DataFrame, relevant_cols: List[str], metric_
 
     return fig, ax
 
+def plot_session_trajectories_by_worktype(metrics_df:pd.DataFrame, metric_column: str, save_path: str | Path, show: bool = True,
+                                          fontsize: int=12, row_height=2.6, sup_y_label: str=None) -> None:
+    """
+
+    :param metrics_df:
+    :param metric_column:
+    :param save_path:
+    :param show:
+    :param fontsize:
+    :param row_height:
+    :param sup_y_label:
+    :return:
+    """
+
+    # get weekdays
+    weekdays = list(metrics_df["weekday"].cat.categories)
+
+    # get number of rows
+    n_rows = len(weekdays)
+
+    # generate plot
+    fig, axes = plt.subplots(n_rows, 2, figsize=(14, row_height * n_rows), sharex=True, sharey=True)
+
+    # group by work_type and weekday
+    grouped_df = metrics_df.groupby(["work_type", "weekday"], observed=False)
+
+    # cycle over the weekdays
+    for row_idx, weekday in enumerate(weekdays):
+
+        # cycle over the work types
+        for col_idx, work_type in enumerate(WORK_TYPES):
+
+            # get corresponding aces
+            ax = axes[row_idx, col_idx]
+
+            # get the corresponding grouped DataFrame
+            key = (work_type, weekday)
+            data_df = grouped_df.get_group(key) if key in grouped_df.groups else pd.DataFrame()
+
+            # plot the data
+            _plot_tracjectories(ax, data_df, metric_column, work_type)
+
+            # add grid
+            ax.grid(axis="y", linestyle="--", alpha=0.5)
+            ax.set_axisbelow(True)
+
+            # remove spines
+            for spine in ax.spines.values():
+                spine.set_visible(False)
+
+            # Row label on the left, column label on the top row only.
+            if col_idx == 0:
+                ax.set_ylabel(weekday, fontsize=fontsize + 2, rotation=90, va="center", labelpad=15)
+            if row_idx == 0:
+                ax.set_title(work_type, fontsize=fontsize + 2, fontweight="bold")
+            if row_idx == n_rows - 1:
+                ax.set_xlabel("Aquisição", fontsize=fontsize + 2)
+
+
+    if sup_y_label:
+        fig.supylabel(sup_y_label, fontsize=fontsize + 4)
+    fig.tight_layout()
+
+    # save plot if necessary
+    if save_path is not None:
+        file_path = Path(save_path) / f'{metric_column.replace('.', '_')}_by_worktype{FILE_FORMAT}'
+        # Make sure the destination directory exists before writing.
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(file_path, dpi=300, bbox_inches='tight')
+
+    if show:
+        plt.show()
+
+    # ensure figure is closed
+    plt.close(fig)
+
 
 def seconds_to_hhmm(x, pos):
     """
@@ -234,5 +315,70 @@ def _add_percentage_labels(ax: Axes, values: np.ndarray, min_display_percentage:
 
             # update the bottom position
             bottom_pos += value
+
+
+def _plot_tracjectories(ax: Axes, data_df: pd.DataFrame, metric_column: str, work_type: str, fontsize: int=12) -> None:
+    """
+
+    :param ax:
+    :param data_df:
+    :param metric_column:
+    :param color:
+    :param work_type:
+    :return:
+    """
+
+    # check for data
+    if data_df.empty:
+        ax.set_title(f"{work_type} - sem dados")
+        return
+
+    # get the color
+    color = WORK_TYPE_COLORS[work_type]
+
+    # get the lighter color shade
+    light_color = _lighten(color, amount=0.55)
+
+    # plot line per subject
+    for _, subject_df in data_df.groupby("subject_id"):
+
+        # sort the dataFrame by session to ensure correct order
+        subject_df = subject_df.sort_values("Session")
+
+        # plot the session data as a line
+        ax.plot(subject_df["Session"], subject_df[metric_column], color=light_color, alpha=0.5, linewidth=1)
+
+        # calculate mean and std for each session (over all subjects)
+        stats = data_df.groupby("Session")[metric_column].agg(["mean", "std", "count"])
+
+        # retrieve values to plot
+        x_vals = stats.index.to_numpy()
+        mean_vals = stats["mean"].to_numpy()
+        std_vals = stats["std"].fillna(0).to_numpy() # ensuring stats returns value in case only one subject is present
+
+        # plot the mean and the stad (as band)
+        ax.fill_between(x_vals, mean_vals - std_vals, mean_vals + std_vals, color=color, alpha=0.01, edgecolor="none")
+        ax.plot(x_vals, mean_vals, color=color, marker="o", linewidth=2.2, markersize=6, label="Média ± desvio padrão")
+
+        # overwrite x-ticks to only show the sessions
+        ax.set_xticks(x_vals)
+        ax.set_xticklabels([ROMAN_NUMERALS.get(x_val, str(x_val)) for x_val in x_vals])
+        plt.setp(ax.get_xticklabels(), fontsize=fontsize)
+        plt.setp(ax.get_yticklabels(), fontsize=fontsize)
+
+
+def _lighten(hex_color: str, amount: float = 0.55) -> tuple:
+    """
+    Return a lighter shade of ``hex_color`` by blending it toward white.
+
+    :param hex_color: Hex color string, e.g. ``"#4d92d0"``.
+    :param amount: Blend factor in ``[0, 1]``. ``0`` returns the original color;
+        ``1`` returns pure white. Defaults to ``0.55``.
+    :return: An RGB tuple suitable for matplotlib.
+    """
+    r, g, b = to_rgb(hex_color)
+    return (r + (1 - r) * amount,
+            g + (1 - g) * amount,
+            b + (1 - b) * amount)
 
 

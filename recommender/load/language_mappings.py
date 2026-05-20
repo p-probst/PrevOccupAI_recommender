@@ -38,6 +38,9 @@ HEART_RATE_MAPPING = {
     "max": {"pt": "max", "eng": "max"},
     "Ligeiramente elevado": {"pt": "Ligeiramente elevado", "eng": "Slightly elevated"},
     "Elevado": {"pt": "Elevado", "eng": "Elevated"},
+    "Normal": {"pt": "Normal", "eng": "Normal"},
+    "min": {"pt": "min", "eng": "min"},
+    "mean": {"pt": "mean", "eng": "mean"},
 }
 
 HAR_MAPPING = {

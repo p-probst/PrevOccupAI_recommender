@@ -5,9 +5,8 @@ import pandas as pd
 from pathlib import Path
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 
-from .plot_utils import plot_raincloud_by_day, seconds_to_hhmm, stacked_bar_plot
+from .plot_utils import plot_stacked_bar_chart
 from constants import BLUE_STATE, PALE_GREEN, SALMON, FILE_FORMAT
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -57,14 +56,14 @@ def plot_activity_distributuions_by_worktype(metrics_df: pd.DataFrame, save_path
     for work_type, group_df in metrics_df.groupby('work_type', sort=False, observed=False):
 
         # generate figure
-        fig, ax = stacked_bar_plot(group_df, relevant_cols, ACTIVITY_CLASS_ORDER, ACTIVITY_CLASS_COLORS, LEGEND_PATCHES)
+        fig, ax = plot_stacked_bar_chart(group_df, relevant_cols, ACTIVITY_CLASS_ORDER, ACTIVITY_CLASS_COLORS, LEGEND_PATCHES)
 
         # save plot if necessary
         if save_path is not None:
             file_path = Path(save_path) / f'har_distributions_{work_type}{FILE_FORMAT}'
             # Make sure the destination directory exists before writing.
             file_path.parent.mkdir(parents=True, exist_ok=True)
-            fig.savefig(file_path)
+            fig.savefig(file_path, dpi=300, bbox_inches='tight')
 
         if show:
             plt.show()
