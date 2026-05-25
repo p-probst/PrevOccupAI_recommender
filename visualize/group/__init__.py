@@ -4,6 +4,7 @@ from visualize.group.questionnaires.workload import plot_workload_by_worktype
 from visualize.group.sensors.noise import plot_noise_distribution_by_worktype, plot_elevated_noise_duration_by_worktype
 from visualize.group.sensors.human_activities import plot_activity_distributuions_by_worktype
 from visualize.group.sensors.plot_utils import plot_sensor_metric_by_worktype, plot_session_trajectories_by_worktype
+from visualize.group.sensors.heart_rate import plot_hr_ranges_by_worktype, plot_hr_circular_distribution_by_worktype, plot_hr_circular_distribution, plot_elevated_hr_trajectories_by_worktype
 
 __all__ = [
     "plot_pain_localization_perception_by_work_type",
@@ -14,5 +15,9 @@ __all__ = [
     "plot_elevated_noise_duration_by_worktype",
     "plot_activity_distributuions_by_worktype",
     "plot_sensor_metric_by_worktype",
-    "plot_session_trajectories_by_worktype"
+    "plot_session_trajectories_by_worktype",
+    "plot_hr_ranges_by_worktype",
+    "plot_hr_circular_distribution_by_worktype",
+    "plot_hr_circular_distribution",
+    "plot_elevated_hr_trajectories_by_worktype",
 ]

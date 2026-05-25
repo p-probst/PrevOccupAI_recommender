@@ -41,6 +41,7 @@ HEART_RATE_MAPPING = {
     "Normal": {"pt": "Normal", "eng": "Normal"},
     "min": {"pt": "min", "eng": "min"},
     "mean": {"pt": "mean", "eng": "mean"},
+    "Sem dados": {"pt": "Sem dados", "eng": "No data"},
 }
 
 HAR_MAPPING = {

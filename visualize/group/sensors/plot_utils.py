@@ -15,16 +15,14 @@ from matplotlib.colors import to_rgb
 from typing import Tuple, List, Dict
 from pathlib import Path
 
-from sympy.printing.pretty.pretty_symbology import line_width
-
 from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT, WORK_TYPE_COLORS
-from recommender.utils import WEEKDAYS_PT
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
 ROMAN_NUMERALS = {1: "I", 2: "II", 3: "III", 4: "IV"}
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -129,7 +127,7 @@ def plot_stacked_bar_chart(metrics_df: pd.DataFrame, relevant_cols: List[str], m
     :param metric_class_colors: dict containing the colors used for each class, where the key is the class name, and the value is the color
     :param legend_patches: list of legend patches to be used to display which color belongs to which class
     :param fontsize: the font size to be utilised for the labels
-    :return:
+    :return: a tuple containing the figure and axes.
     """
 
     # generate figure
@@ -185,18 +183,21 @@ def plot_stacked_bar_chart(metrics_df: pd.DataFrame, relevant_cols: List[str], m
 
     return fig, ax
 
+
 def plot_session_trajectories_by_worktype(metrics_df:pd.DataFrame, metric_column: str, save_path: str | Path, show: bool = True,
                                           fontsize: int=12, row_height=2.6, sup_y_label: str=None) -> None:
     """
-
-    :param metrics_df:
-    :param metric_column:
-    :param save_path:
-    :param show:
-    :param fontsize:
-    :param row_height:
-    :param sup_y_label:
-    :return:
+    Generates a subplot of shape (5, 2) containing session trajectories for each day and worktype . The trajectories
+    show the evolution of the chosen metric throughout the day (each session). For each subject a thin line is plotted.
+    The population mean is shown with a thick line and the standard deviation is plotted as a shaded area.
+    :param metrics_df: pandas.DataFrame containing metrics to plot.
+    :param metric_column: the metric to be plotted
+    :param save_path: Path to where the figure will be written.
+    :param show: Indicates whether to show the figure.
+    :param fontsize: the fontsize to use for labels and xy-ticks. Optional, default: 12
+    :param row_height: the height of each individual figure row. Optional, default: 2.6
+    :param sup_y_label: the overall y-label for the figure. Optional, default: None
+    :return: None
     """
 
     # get weekdays
@@ -348,23 +349,23 @@ def _plot_tracjectories(ax: Axes, data_df: pd.DataFrame, metric_column: str, wor
         # plot the session data as a line
         ax.plot(subject_df["Session"], subject_df[metric_column], color=light_color, alpha=0.5, linewidth=1)
 
-        # calculate mean and std for each session (over all subjects)
-        stats = data_df.groupby("Session")[metric_column].agg(["mean", "std", "count"])
+    # calculate mean and std for each session (over all subjects)
+    stats = data_df.groupby("Session")[metric_column].agg(["mean", "std", "count"])
 
-        # retrieve values to plot
-        x_vals = stats.index.to_numpy()
-        mean_vals = stats["mean"].to_numpy()
-        std_vals = stats["std"].fillna(0).to_numpy() # ensuring stats returns value in case only one subject is present
+    # retrieve values to plot
+    x_vals = stats.index.to_numpy()
+    mean_vals = stats["mean"].to_numpy()
+    std_vals = stats["std"].fillna(0).to_numpy() # ensuring stats returns value in case only one subject is present
 
-        # plot the mean and the stad (as band)
-        ax.fill_between(x_vals, mean_vals - std_vals, mean_vals + std_vals, color=color, alpha=0.01, edgecolor="none")
-        ax.plot(x_vals, mean_vals, color=color, marker="o", linewidth=2.2, markersize=6, label="Média ± desvio padrão")
+    # plot the mean and the stad (as band)
+    ax.fill_between(x_vals, mean_vals - std_vals, mean_vals + std_vals, color=color, alpha=0.2, edgecolor="none")
+    ax.plot(x_vals, mean_vals, color=color, marker="o", linewidth=2.2, markersize=6, label="Média ± desvio padrão")
 
-        # overwrite x-ticks to only show the sessions
-        ax.set_xticks(x_vals)
-        ax.set_xticklabels([ROMAN_NUMERALS.get(x_val, str(x_val)) for x_val in x_vals])
-        plt.setp(ax.get_xticklabels(), fontsize=fontsize)
-        plt.setp(ax.get_yticklabels(), fontsize=fontsize)
+    # overwrite x-ticks to only show the sessions
+    ax.set_xticks(x_vals)
+    ax.set_xticklabels([ROMAN_NUMERALS.get(x_val, str(x_val)) for x_val in x_vals])
+    plt.setp(ax.get_xticklabels(), fontsize=fontsize)
+    plt.setp(ax.get_yticklabels(), fontsize=fontsize)
 
 
 def _lighten(hex_color: str, amount: float = 0.55) -> tuple:
