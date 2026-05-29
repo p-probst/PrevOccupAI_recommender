@@ -16,7 +16,8 @@ import pandas as pd
 from typing import Dict, Tuple, List, Set
 
 # internal imports
-from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS
+from constants import USER, RULE_KEY, RISK_DATES_KEY, NUM_INSTANCES_KEY, RECOMMENDATIONS_KEY, NO_RECOMMENDATIONS, \
+    WEEKDAY_COL, DATE_COL, SESSION_TIME_COL, SUBJECT_ID_COL, WORKTYPE_COL
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -75,11 +76,11 @@ def load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: st
         if metadata_dict:
             metadata_df = extract(profiles, paths=metadata_dict, include_subject_id=True)
 
-            metrics_df = metrics_df.merge(metadata_df[["subject_id","work_type"]], on="subject_id", how="left")
+            metrics_df = metrics_df.merge(metadata_df[[SUBJECT_ID_COL,WORKTYPE_COL]], on=SUBJECT_ID_COL, how="left")
 
-        if 'date' in metrics_df.columns:
+        if DATE_COL in metrics_df.columns:
             # add weekday column
-            metrics_df['weekday'] = metrics_df['date'].apply(pd_date_to_weekday, args=(date_fmt, 'pt'))
+            metrics_df[WEEKDAY_COL] = metrics_df[DATE_COL].apply(pd_date_to_weekday, args=(date_fmt, 'pt'))
 
         # sort the dataFrame by the subject_id, date, and session
         metrics_df = _sort_metrics_df(metrics_df)
@@ -91,9 +92,9 @@ def load_or_generate_csv(csv_dir: str | Path, filename: str, oh_profile_path: st
         metrics_df = pd.read_csv(csv_path)
 
     # check if the df contains the weekday column
-    if "weekday" in metrics_df.columns:
+    if WEEKDAY_COL in metrics_df.columns:
         # transform to ordered categorical to ensure that when using groupby the correct ordering is being used
-        metrics_df['weekday'] = pd.Categorical(metrics_df['weekday'], categories=WEEKDAYS_PT, ordered=True)
+        metrics_df[WEEKDAY_COL] = pd.Categorical(metrics_df[WEEKDAY_COL], categories=WEEKDAYS_PT, ordered=True)
 
     return metrics_df
 
@@ -362,16 +363,16 @@ def _sort_metrics_df(metrics_df: pd.DataFrame) -> pd.DataFrame:
     metrics_df['subject_id'] = pd.to_numeric(metrics_df['subject_id'], errors='coerce')
 
     # check whether the date column exists
-    if 'date' in metrics_df.columns:
+    if DATE_COL in metrics_df.columns:
 
         # create additional columns that store the date and time as datetime objects.
         # these are preferred for sorting
-        metrics_df['date_dt'] = pd.to_datetime(metrics_df['date'], format="%d-%m-%Y")
+        metrics_df['date_dt'] = pd.to_datetime(metrics_df[DATE_COL], format="%d-%m-%Y")
         metrics_df = metrics_df.sort_values(by=["subject_id", "date_dt"])
 
 
-        if 'session' in metrics_df.columns:
-            metrics_df['session_dt'] = pd.to_datetime(metrics_df['session'], format="%H-%M-%S").dt.time
+        if SESSION_TIME_COL in metrics_df.columns:
+            metrics_df['session_dt'] = pd.to_datetime(metrics_df[SESSION_TIME_COL], format="%H-%M-%S").dt.time
             metrics_df = metrics_df.sort_values(by=["subject_id", "date_dt", "session_dt"])
             metrics_df = metrics_df.drop(columns=["session_dt"])
 

@@ -29,7 +29,9 @@ ENVIRONMENT_MAPPING = {
 EMG_MAPPING = {
 
     "typical_high_pct": {"pt": "typical_high_pct", "eng": "typical_high_pct"},
-    "high_for_you_pct": {"pt": "high_for_you_pct", "eng": "high_for_you_pct"}
+    "high_for_you_pct": {"pt": "high_for_you_pct", "eng": "high_for_you_pct"},
+    "typical_low_pct": {"pt": "typical_low_pct", "eng": "typical_low_pct"},
+    "below_usual_pct": {"pt": "below_usual_pct", "eng": "below_usual_pct"},
 
 }
 

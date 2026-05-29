@@ -117,9 +117,16 @@ vis.group.plot_session_trajectories_by_worktype(wrist_data_df, metric_column='WR
 # ------------------------------------------------------------------------------------------------------------------- #
 # Heart rate
 # ------------------------------------------------------------------------------------------------------------------- #
-
 hr_data_df = recommender.load.generate_hr_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
 vis.group.plot_hr_ranges_by_worktype(hr_data_df, save_path=PLOT_PATH, show=False)
 vis.group.plot_hr_circular_distribution_by_worktype(hr_data_df, save_path=PLOT_PATH, show=False, language='pt')
 vis.group.plot_elevated_hr_trajectories_by_worktype(hr_data_df, save_path=PLOT_PATH, show=False)
 # vis.group.plot_hr_circular_distribution(hr_data_df[hr_data_df['subject_id'] == 81], language='pt', show_time_legend=True)
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+# EMG
+# ------------------------------------------------------------------------------------------------------------------- #
+emg_data_df = recommender.load.generate_emg_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
+vis.group.plot_emg_relative_intensity_by_worktype(emg_data_df, save_path=PLOT_PATH, show=False)
+vis.group.plot_emg_relative_intensity(emg_data_df[emg_data_df['subject_id'] == 81], language='pt')

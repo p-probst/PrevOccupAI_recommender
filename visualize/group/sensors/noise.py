@@ -8,7 +8,7 @@ import matplotlib.ticker as mticker
 
 from pathlib import Path
 
-from constants import STRONG_GREEN, PALE_GREEN, YELLOW, RED, FILE_FORMAT
+from constants import STRONG_GREEN, PALE_GREEN, YELLOW, RED, FILE_FORMAT, WEEKDAY_COL, WORKTYPE_COL
 from .plot_utils import plot_raincloud_by_day, seconds_to_hhmm, plot_stacked_bar_chart
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -47,8 +47,8 @@ def plot_noise_distribution_by_worktype(metrics_df: pd.DataFrame, save_path: str
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # get relevant columns indices
     relevant_col_idx = [num for num, col in enumerate(metrics_df.columns) if col.startswith("Noise_distributions")]
@@ -60,7 +60,7 @@ def plot_noise_distribution_by_worktype(metrics_df: pd.DataFrame, save_path: str
     relevant_cols = [metrics_df.columns[idx] for idx in relevant_col_idx]
 
     # cycle over the work_type
-    for work_type, group_df in metrics_df.groupby('work_type', sort=False, observed=False):
+    for work_type, group_df in metrics_df.groupby(WORKTYPE_COL, sort=False, observed=False):
 
         # generate figure
         fig, ax = plot_stacked_bar_chart(group_df, relevant_cols, NOISE_CLASS_ORDER, NOISE_CLASS_COLORS, LEGEND_PATCHES)
@@ -90,8 +90,8 @@ def plot_elevated_noise_duration_by_worktype(metrics_df: pd.DataFrame, save_path
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # clean the column names
     metrics_df.columns = [col.split(".")[1] if col.startswith('Noise_durations') else col for col in
@@ -101,7 +101,7 @@ def plot_elevated_noise_duration_by_worktype(metrics_df: pd.DataFrame, save_path
     metrics_df[SUM_LOUD_NOISE_DURATION] = metrics_df['Ruído incomodativo_duration_sec'] + metrics_df['Ruído elevado_duration_sec']
 
     # collect the necessary columns
-    noise_df = metrics_df[[SUM_LOUD_NOISE_DURATION, 'weekday', 'work_type']]
+    noise_df = metrics_df[[SUM_LOUD_NOISE_DURATION, WEEKDAY_COL, WORKTYPE_COL]]
 
     fig, ax = plot_raincloud_by_day(noise_df, metric=SUM_LOUD_NOISE_DURATION)
 

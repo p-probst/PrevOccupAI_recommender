@@ -11,7 +11,8 @@ from pathlib import Path
 from matplotlib.lines import Line2D
 
 # internal imports
-from constants import FILE_FORMAT, WORK_TYPE_COLORS
+from constants import FILE_FORMAT, WORK_TYPE_COLORS, WEEKDAY_COL, WORKTYPE_COL, SUBJECT_ID_COL, DATE_COL
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -79,8 +80,8 @@ def plot_workload_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, l
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # get the labels according to the language
     lang_cfg = LANG_MAPPING.get(language, LANG_MAPPING["eng"])
@@ -91,19 +92,19 @@ def plot_workload_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, l
     metrics_df = metrics_df.drop(columns=["open_question"])
 
     # filter out columns that are not part of the workload questionnaire
-    relevant_cols = [c for c in metrics_df.columns if c not in ("subject_id", "date", "work_type", "weekday")]
+    relevant_cols = [c for c in metrics_df.columns if c not in (SUBJECT_ID_COL, DATE_COL, WORKTYPE_COL, WEEKDAY_COL)]
 
     # cycle over the work_type
-    for work_type, group_df in metrics_df.groupby("work_type"):
+    for work_type, group_df in metrics_df.groupby(WORKTYPE_COL):
 
         # generate the plot
-        fig, axes = plt.subplots(1, len(metrics_df["weekday"].unique()), figsize=(18, 6), sharey=True)
+        fig, axes = plt.subplots(1, len(metrics_df[WEEKDAY_COL].unique()), figsize=(18, 6), sharey=True)
 
         # flatten axes for easier
         axes = axes.flatten()
         x_labels = []
 
-        for ax, (weekday, day_df) in zip(axes, group_df.groupby("weekday", sort=False, observed=False)):
+        for ax, (weekday, day_df) in zip(axes, group_df.groupby(WEEKDAY_COL, sort=False, observed=False)):
 
             # calculate the mean of the work type
             work_type_mean = day_df[relevant_cols].mean(axis=0).round(2)

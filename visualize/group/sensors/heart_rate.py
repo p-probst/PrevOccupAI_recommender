@@ -11,25 +11,27 @@ from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from datetime import datetime, timedelta
 
-from constants import PALE_GREEN, YELLOW, RED, LIGHT_GRAY, GRAY, LIGHT_RED, DEEP_RED, FILE_FORMAT
+from constants import PALE_GREEN, YELLOW, RED, LIGHT_GRAY, GRAY, LIGHT_RED, DEEP_RED, FILE_FORMAT, WEEKDAY_COL, \
+    SESSION_NUM_COL, SESSION_TIME_COL, WORKTYPE_COL, NO_DATA_COL
 from .plot_utils import ROMAN_NUMERALS, plot_session_trajectories_by_worktype
 from recommender.load.language_mappings import HEART_RATE_MAPPING
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
+# TODO: swap these for the keys defined in OH-profile when integrating it into the project
 HR_NORMAL_KEY = 'Normal'
 HR_POTENTIALLY_ELEVATED_KEY = 'Ligeiramente elevado'
 HR_ELEVATED_KEY = 'Elevado'
-NO_DATA = 'Sem dados'
 
-HEART_RATE_CLASS_ORDER = [HR_NORMAL_KEY, HR_POTENTIALLY_ELEVATED_KEY, HR_ELEVATED_KEY, NO_DATA]
+
+HEART_RATE_CLASS_ORDER = [HR_NORMAL_KEY, HR_POTENTIALLY_ELEVATED_KEY, HR_ELEVATED_KEY, NO_DATA_COL]
 
 
 HR_CLASS_COLORS = {
     HR_NORMAL_KEY: PALE_GREEN,                # green
     HR_POTENTIALLY_ELEVATED_KEY: YELLOW,  # orange
     HR_ELEVATED_KEY: RED,              # red
-    NO_DATA: LIGHT_GRAY                 # light gray
+    NO_DATA_COL: LIGHT_GRAY                 # light gray
 }
 
 # values for HR range plot
@@ -50,12 +52,12 @@ def plot_hr_circular_distribution_by_worktype(metrics_df: pd.DataFrame, save_pat
     :return: None
     """
 
+    # check for work_type column
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
+
     # copy dataframe to ensure that it is not changed
     metrics_df = metrics_df.copy()
-
-    # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
 
     # get relevant columns indices
     relevant_col_idx = [num for num, col in enumerate(metrics_df.columns) if col.startswith("HR_distributions")]
@@ -71,10 +73,10 @@ def plot_hr_circular_distribution_by_worktype(metrics_df: pd.DataFrame, save_pat
     metrics_df[relevant_cols] = metrics_df[relevant_cols].fillna(0)
 
     # cycle over the work_type
-    for work_type, group_df in metrics_df.groupby("work_type", sort=False, observed=False):
+    for work_type, group_df in metrics_df.groupby(WORKTYPE_COL, sort=False, observed=False):
 
         # calculate the mean values by day and session
-        data_df = group_df.groupby(["weekday", "Session"], observed=False)[relevant_cols].mean()
+        data_df = group_df.groupby([WEEKDAY_COL, SESSION_NUM_COL], observed=False)[relevant_cols].mean()
 
         # reinstate the index to full columns (weekday and Session)
         # this is to have the same structure as if it were single subject
@@ -141,7 +143,7 @@ def plot_hr_circular_distribution(data_df: pd.DataFrame, lower_limit: int=30, up
     separator_pos = _draw_day_separators(angles, width, len(weekdays), lower_limit, upper_limit, ax)
 
     # add session nums at the bottom of each bar
-    _show_session_labels(angles, data_df["Session"].replace(ROMAN_NUMERALS), ax, lower_limit, fontsize + 4)
+    _show_session_labels(angles, data_df[SESSION_NUM_COL].replace(ROMAN_NUMERALS), ax, lower_limit, fontsize + 4)
 
     # add day labels
     _show_day_labels(weekdays, np.append(separator_pos, separator_pos[0] + 2 * np.pi), 1.05, ax, fontsize=fontsize + 4)
@@ -150,7 +152,7 @@ def plot_hr_circular_distribution(data_df: pd.DataFrame, lower_limit: int=30, up
     if show_time_legend:
 
         # check for weekday and session column
-        if all(column in data_df.columns for column in ["weekday", "session"]):
+        if all(column in data_df.columns for column in [WEEKDAY_COL, SESSION_TIME_COL]):
 
             # adjust plot to accommodate label
             fig.subplots_adjust(left=0.02, right=0.78, top=0.88, bottom=0.25)
@@ -175,18 +177,18 @@ def plot_hr_ranges_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, 
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
 
     # set the relevant columns
     relevant_cols = ["HR_BPM_stats.max", "HR_BPM_stats.min"]
 
     # cycle over the work_type
-    for work_type, group_df in metrics_df.groupby("work_type", sort=False, observed=False):
+    for work_type, group_df in metrics_df.groupby(WORKTYPE_COL, sort=False, observed=False):
 
         # calculate the mean min and max value by session and day
-        data_df = group_df.groupby(["weekday", "Session"])[relevant_cols].mean()
+        data_df = group_df.groupby([WEEKDAY_COL, SESSION_NUM_COL])[relevant_cols].mean()
 
         # reinstate the index to full columns (weekday and Session)
         # this is to have the same structure as if it were single subject
@@ -223,7 +225,7 @@ def plot_hr_ranges(data_df: pd.DataFrame) -> Tuple[Figure, Axes]:
     """
 
     # get the weekdays
-    weekdays = list(data_df["weekday"].cat.categories)
+    weekdays = list(data_df[WEEKDAY_COL].cat.categories)
 
     # set the number of sessions
     sessions = list(range(1, 5))
@@ -256,8 +258,8 @@ def plot_elevated_hr_trajectories_by_worktype(metrics_df: pd.DataFrame, save_pat
     metrics_df = metrics_df.copy()
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # fill nan values
     metrics_df[['HR_distributions.Ligeiramente elevado', 'HR_distributions.Elevado']] = metrics_df[['HR_distributions.Ligeiramente elevado', 'HR_distributions.Elevado']].fillna(0)
@@ -282,24 +284,24 @@ def _fill_missing_data(data_df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
     """
 
     # get the weekdays
-    weekdays = list(data_df["weekday"].cat.categories)
+    weekdays = list(data_df[WEEKDAY_COL].cat.categories)
 
     # set the number of sessions
     sessions = list(range(1, 5))
 
     # build the full grid of expected (weekday, Session) pairs
-    full_index = pd.MultiIndex.from_product([weekdays, sessions], names=['weekday', 'Session'])
+    full_index = pd.MultiIndex.from_product([weekdays, sessions], names=[WEEKDAY_COL, SESSION_NUM_COL])
 
     # reindex against it — missing rows show up as NaN
-    data_df = data_df.set_index(['weekday', 'Session']).reindex(full_index)
+    data_df = data_df.set_index([WEEKDAY_COL, SESSION_NUM_COL]).reindex(full_index)
 
     # flag missing rows before filling
-    data_df[NO_DATA] = data_df.isna().all(axis=1).astype(int)
+    data_df[NO_DATA_COL] = data_df.isna().all(axis=1).astype(int)
 
     # check for session column (has the session time)
-    if "session" in data_df.columns:
+    if SESSION_TIME_COL in data_df.columns:
 
-        data_df.loc[data_df[NO_DATA] == 1, 'session'] = 'missing'
+        data_df.loc[data_df[NO_DATA_COL] == 1, SESSION_TIME_COL] = 'missing'
 
     # fill the numeric columns with 0
     data_df = data_df.fillna(0).reset_index()
@@ -472,25 +474,25 @@ def _generate_acquisition_time_labels(data_df: pd.DataFrame, language: str = 'pt
     """
 
     # copy the needed columns into a sub_df
-    sub_df = data_df[["weekday", "session", "Session"]].copy()
+    sub_df = data_df[[WEEKDAY_COL, SESSION_TIME_COL, SESSION_NUM_COL]].copy()
 
     # transform session times to HH:MM — HH:MM (start time - end time)
-    sub_df["session"] = sub_df["session"].apply(_generate_start_end_time_string, args=(language,))
+    sub_df[SESSION_TIME_COL] = sub_df[SESSION_TIME_COL].apply(_generate_start_end_time_string, args=(language,))
 
     # transform session num to Roman numerals
-    sub_df["Session"] = sub_df["Session"].replace(ROMAN_NUMERALS)
+    sub_df[SESSION_NUM_COL] = sub_df[SESSION_NUM_COL].replace(ROMAN_NUMERALS)
 
     # list for holding the final labels
     labels = []
 
     # cycle over the weekdays
-    for weekday, session_time_df in sub_df.groupby("weekday", sort=False, observed=False):
+    for weekday, session_time_df in sub_df.groupby(WEEKDAY_COL, sort=False, observed=False):
 
         label_string = [f"{weekday}:"]
 
         # get the session and time
-        session_times = session_time_df["session"].to_list()
-        session_nums = session_time_df["Session"].to_list()
+        session_times = session_time_df[SESSION_TIME_COL].to_list()
+        session_nums = session_time_df[SESSION_NUM_COL].to_list()
 
         for session_num, session_time in zip(session_nums, session_times):
 
@@ -511,7 +513,7 @@ def _generate_start_end_time_string(acq_time: str, language: str = 'pt')-> str:
     # check whether there is a time (in case there isn't, the string is 'missing')
     if acq_time.startswith("missing"):
 
-        return HEART_RATE_MAPPING[NO_DATA][language]
+        return HEART_RATE_MAPPING[NO_DATA_COL][language]
 
     else:
 
@@ -620,7 +622,7 @@ def _draw_range_bars(ax: Axes, data_df: pd.DataFrame, weekdays: List[str], sessi
         for session in sessions:
 
             # get the row
-            plot_data = data_df[(data_df["weekday"] == weekday) & (data_df["Session"] == session)]
+            plot_data = data_df[(data_df[WEEKDAY_COL] == weekday) & (data_df[SESSION_NUM_COL] == session)]
 
             if plot_data.empty:
 

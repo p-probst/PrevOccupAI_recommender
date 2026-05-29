@@ -7,7 +7,8 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 
 from .plot_utils import plot_stacked_bar_chart
-from constants import BLUE_STATE, PALE_GREEN, SALMON, FILE_FORMAT
+from constants import BLUE_STATE, PALE_GREEN, SALMON, FILE_FORMAT, WORKTYPE_COL
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -39,8 +40,8 @@ def plot_activity_distributuions_by_worktype(metrics_df: pd.DataFrame, save_path
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # get relevant columns indices
     relevant_col_idx = [num for num, col in enumerate(metrics_df.columns) if col.startswith("HAR_distributions")]
@@ -53,7 +54,7 @@ def plot_activity_distributuions_by_worktype(metrics_df: pd.DataFrame, save_path
     relevant_cols = [metrics_df.columns[idx] for idx in relevant_col_idx]
 
     # cycle over the work_type
-    for work_type, group_df in metrics_df.groupby('work_type', sort=False, observed=False):
+    for work_type, group_df in metrics_df.groupby(WORKTYPE_COL, sort=False, observed=False):
 
         # generate figure
         fig, ax = plot_stacked_bar_chart(group_df, relevant_cols, ACTIVITY_CLASS_ORDER, ACTIVITY_CLASS_COLORS, LEGEND_PATCHES)

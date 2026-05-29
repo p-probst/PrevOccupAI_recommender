@@ -8,6 +8,7 @@ from typing import Dict
 # internal imports
 from .language_mappings import NOISE_MAPPING, EMG_MAPPING, POSTURE_MAPPING, HAR_MAPPING, HEART_RATE_MAPPING
 from recommender.utils import load_or_generate_csv, get_language_mapper_values
+from constants import SESSION_NUM_COL, SESSION_TIME_COL, DATE_COL
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -71,7 +72,7 @@ def generate_noise_csv(noise_risk_csv_path: str | Path, oh_profile_path: str, la
     df_noise_metrics = load_or_generate_csv(csv_dir=noise_risk_csv_path, filename=NOISE_CSV_FILENAME,
                                             oh_profile_path=oh_profile_path,
                                             oh_metric_hierarchy="sensor_metrics.noise",
-                                            level_names=["date", "session"],
+                                            level_names=[DATE_COL, SESSION_TIME_COL],
                                             value_paths=['Noise_distributions.*',
                                                          'Noise_durations.*'],
                                             metadata_dict=metadata_dict)
@@ -111,7 +112,7 @@ def generate_har_csv(har_data_csv_path: str | Path, oh_profile_path: str, langua
     df_har_metrics = load_or_generate_csv(csv_dir=har_data_csv_path, filename=HAR_CSV_FILENAME,
                                           oh_profile_path=oh_profile_path,
                                           oh_metric_hierarchy="sensor_metrics.human_activities",
-                                          level_names=["date", "session"],
+                                          level_names=[DATE_COL, SESSION_TIME_COL],
                                           value_paths=[f"HAR_distributions.{values_to_extract[0]}",
                                                        f"HAR_distributions.{values_to_extract[1]}",
                                                        f"HAR_distributions.{values_to_extract[4]}",
@@ -143,7 +144,7 @@ def generate_posture_csv(posture_data_csv_path: str | Path, oh_profile_path: str
     df_posture_metrics = load_or_generate_csv(csv_dir=posture_data_csv_path, filename=POSTURE_CSV_FILENAME,
                                               oh_profile_path=oh_profile_path,
                                               oh_metric_hierarchy="sensor_metrics.posture",
-                                              level_names=["date", "session"],
+                                              level_names=[DATE_COL, SESSION_TIME_COL],
                                               value_paths=values_to_extract,
                                               metadata_dict=metadata_dict)
 
@@ -171,11 +172,17 @@ def generate_emg_csv(emg_data_csv_path: str | Path, oh_profile_path: str, langua
     df_emg_metrics = load_or_generate_csv(csv_dir=emg_data_csv_path, filename=EMG_CSV_FILENAME,
                                           oh_profile_path=oh_profile_path,
                                           oh_metric_hierarchy="sensor_metrics.emg",
-                                          level_names=["date", "session"],
+                                          level_names=[DATE_COL, SESSION_TIME_COL],
                                           value_paths=[f"left.EMG_relative_bins.{values_to_extract[0]}",
                                                        f"right.EMG_relative_bins.{values_to_extract[0]}",
                                                        f"left.EMG_relative_bins.{values_to_extract[1]}",
-                                                       f"right.EMG_relative_bins.{values_to_extract[1]}"],
+                                                       f"right.EMG_relative_bins.{values_to_extract[1]}",
+                                                       f"left.EMG_relative_bins.{values_to_extract[2]}",
+                                                       f"right.EMG_relative_bins.{values_to_extract[2]}",
+                                                       f"left.EMG_relative_bins.{values_to_extract[3]}",
+                                                       f"right.EMG_relative_bins.{values_to_extract[3]}",
+                                                       f"left.{SESSION_NUM_COL}",
+                                                       f"right.{SESSION_NUM_COL}"],
                                           exclude_patterns=["EMG_daily_metrics", "EMG_weekly_metrics"],
                                           metadata_dict=metadata_dict)
 
@@ -199,13 +206,13 @@ def generate_hr_csv(hr_data_csv_path: str | Path, oh_profile_path: str, language
     df_hr_metrics = load_or_generate_csv(csv_dir=hr_data_csv_path, filename=HR_CSV_FILENAME,
                                          oh_profile_path=oh_profile_path,
                                          oh_metric_hierarchy="sensor_metrics.heart_rate",
-                                         level_names=["date", "session"],
+                                         level_names=[DATE_COL, SESSION_TIME_COL],
                                          value_paths=[f"HR_BPM_stats.{values_to_extract[0]}",
                                                       f"HR_BPM_stats.{values_to_extract[4]}",
                                                       f"HR_distributions.{values_to_extract[1]}",
                                                       f"HR_distributions.{values_to_extract[2]}",
                                                       f"HR_distributions.{values_to_extract[3]}",
-                                                      "Session"],
+                                                      SESSION_NUM_COL],
                                          metadata_dict=metadata_dict)
 
     return df_hr_metrics
@@ -223,7 +230,7 @@ def generate_wrist_csv(wrist_data_csv_path: str | Path, oh_profile_path: str, la
     return load_or_generate_csv(csv_dir=wrist_data_csv_path, filename=WRIST_CSV_FILENAME,
                                 oh_profile_path=oh_profile_path,
                                 oh_metric_hierarchy="sensor_metrics.wrist_activities",
-                                level_names=["date", "session"],
+                                level_names=[DATE_COL, SESSION_TIME_COL],
                                 value_paths=[".*"],
                                 metadata_dict=metadata_dict)
 

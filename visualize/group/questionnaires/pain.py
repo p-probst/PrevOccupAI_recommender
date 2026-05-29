@@ -10,7 +10,8 @@ import seaborn as sns
 import numpy as np
 
 # internal imports
-from constants import BO_COLOR, FO_COLOR, EDGE_COLOR, WORK_TYPES, VIABLE_PAIN_DIMENSIONS, FILE_FORMAT
+from constants import BO_COLOR, FO_COLOR, EDGE_COLOR, WORK_TYPES, VIABLE_PAIN_DIMENSIONS, FILE_FORMAT, WORKTYPE_COL, \
+    SUBJECT_ID_COL
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -53,8 +54,8 @@ def plot_pain_localization_perception_by_work_type(metrics_df: pd.DataFrame, q_t
         raise ValueError(f"q_type must be either {pain_dimensions}. Provided value: {q_type}")
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     if q_type == "localização":
         num_workers_pain = _get_num_workers_with_pain(metrics_df)
@@ -62,10 +63,10 @@ def plot_pain_localization_perception_by_work_type(metrics_df: pd.DataFrame, q_t
         print(f"Number of workers pain: {num_workers_pain}")
 
     # filter out columns that are not body regions
-    relevant_cols = [c for c in metrics_df.columns if c not in ("subject_id", "work_type")]
+    relevant_cols = [c for c in metrics_df.columns if c not in (SUBJECT_ID_COL, WORKTYPE_COL)]
 
     # Count number of 'Y' entries for each column and work_type
-    counts = (metrics_df.groupby("work_type")[relevant_cols].apply(lambda g: g.eq("Y").sum()))
+    counts = (metrics_df.groupby(WORKTYPE_COL)[relevant_cols].apply(lambda g: g.eq("Y").sum()))
 
     # transpose counts to have work_type as columns and body region counts as rows
     # ensure the order FO, BO
@@ -134,11 +135,11 @@ def plot_pain_levels_by_work_type(metrics_df: pd.DataFrame, q_type: str, eval_le
         raise ValueError(f"q_type must be either {pain_dimensions}. Provided value: {q_type}")
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # Body-region columns = everything except the identifier and the grouping column.
-    region_cols = [c for c in metrics_df.columns if c not in ("subject_id", "work_type")]
+    region_cols = [c for c in metrics_df.columns if c not in (SUBJECT_ID_COL, WORKTYPE_COL)]
 
     # count pain level occurrences
     pain_level_counts_dict = _create_pain_level_counts_dict(metrics_df, region_cols, eval_levels)
@@ -231,7 +232,7 @@ def _get_num_workers_with_pain(metrics_df: pd.DataFrame) -> Dict[str, int]:
     """
 
     # filter out columns that are not body regions
-    relevant_cols = [c for c in metrics_df.columns if c not in ("subject_id", "work_type")]
+    relevant_cols = [c for c in metrics_df.columns if c not in (SUBJECT_ID_COL, WORKTYPE_COL)]
 
     # get columns with at leat one "Y" response
     has_pain = metrics_df[relevant_cols].eq("Y").any(axis=1)
@@ -239,9 +240,9 @@ def _get_num_workers_with_pain(metrics_df: pd.DataFrame) -> Dict[str, int]:
     # tuple to hold the result
     num_workers_pain = {}
 
-    for work_type in metrics_df["work_type"].unique():
+    for work_type in metrics_df[WORKTYPE_COL].unique():
 
-        num_workers_pain[work_type] = len(metrics_df.loc[has_pain & (metrics_df["work_type"] == work_type), "subject_id"].unique())
+        num_workers_pain[work_type] = len(metrics_df.loc[has_pain & (metrics_df[WORKTYPE_COL] == work_type), SUBJECT_ID_COL].unique())
 
     return num_workers_pain
 
@@ -269,7 +270,7 @@ def _create_pain_level_counts_dict(metrics_df: pd.DataFrame, region_cols: List[s
     for worky_type in WORK_TYPES:
 
         # obtain dataframe containing only the values for the work type
-        sub = metrics_df[metrics_df["work_type"] == worky_type]
+        sub = metrics_df[metrics_df[WORKTYPE_COL] == worky_type]
 
         # cycle over the columns
         for region in region_cols:

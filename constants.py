@@ -32,6 +32,17 @@ NO_RECOMMENDATIONS = {
 # pain questionnaire
 VIABLE_PAIN_DIMENSIONS = ["localização", "tempo", "incapacidade", "sofrimento", "intensidade", "perceção"]
 
+# DataFrame columns
+DATE_COL = "date"
+SESSION_TIME_COL = "session"
+SESSION_NUM_COL = "Session"
+WEEKDAY_COL = "weekday"
+SUBJECT_ID_COL = "subject_id"
+WORKTYPE_COL = "work_type"
+NO_DATA_COL = 'Sem dados' #TODO: translation dict necessary
+
+
+
 # colors for plotting
 BO_COLOR = "#4d92d0"
 FO_COLOR = "#06171c"
@@ -39,8 +50,8 @@ FO_COLOR = "#06171c"
 WORK_TYPE_COLORS = {'FO': FO_COLOR, 'BO': BO_COLOR}
 EDGE_COLOR = "#222e35"
 
-GREEN = "#81C784"
-PALE_GREEN = "#A5D6A7"
+GREEN = "#A5D6A7"
+PALE_GREEN = "#C8E6C9"
 STRONG_GREEN = "#3F8D43"
 YELLOW = "#FFCC80"
 RED = "#EF9A9A"

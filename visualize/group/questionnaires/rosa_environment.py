@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import Dict
 from matplotlib.axes import Axes
 
-from constants import FILE_FORMAT, FO_COLOR, BO_COLOR, EDGE_COLOR, WORK_TYPES, GREEN, YELLOW, RED
+from constants import FILE_FORMAT, FO_COLOR, BO_COLOR, EDGE_COLOR, WORK_TYPES, GREEN, YELLOW, RED, WORKTYPE_COL, \
+    SUBJECT_ID_COL
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -54,11 +55,11 @@ def plot_rosa_environment(metrics_df: pd.DataFrame, q_type: str, is_rosa: bool, 
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # filter out columns that are not body regions
-    relevant_cols = [c for c in metrics_df.columns if c not in ("subject_id", "work_type")]
+    relevant_cols = [c for c in metrics_df.columns if c not in (SUBJECT_ID_COL, WORKTYPE_COL)]
 
     # calculate the mean for the entire population
     population_mean = metrics_df[relevant_cols].mean(axis=0).to_frame().T
@@ -67,7 +68,7 @@ def plot_rosa_environment(metrics_df: pd.DataFrame, q_type: str, is_rosa: bool, 
     _generate_heatmap(population_mean, save_path, q_type, population_level="population", is_rosa=is_rosa)
 
     # group by work-type
-    for work_type, group_df in metrics_df.groupby("work_type"):
+    for work_type, group_df in metrics_df.groupby(WORKTYPE_COL):
 
         # calculate the work type mean
         work_type_mean = group_df[relevant_cols].mean(axis=0).to_frame().T
@@ -88,14 +89,14 @@ def plot_environment_sensors_by_worktype(metrics_df: pd.DataFrame, save_path: st
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # clean column names
-    metrics_df.columns = [col.split("_")[0] if col not in ("subject_id", "work_type") else col for col in metrics_df.columns]
+    metrics_df.columns = [col.split("_")[0] if col not in (SUBJECT_ID_COL, WORKTYPE_COL) else col for col in metrics_df.columns]
 
     # filter out columns that are not body regions
-    relevant_cols = [c for c in metrics_df.columns if c not in ("subject_id", "work_type")]
+    relevant_cols = [c for c in metrics_df.columns if c not in (SUBJECT_ID_COL, WORKTYPE_COL)]
 
     # define indices of list with plots that should be plotted together
     plot_indices = [[6, 0, 7], [1, 2, 3], [4, 5]]
@@ -117,7 +118,7 @@ def plot_environment_sensors_by_worktype(metrics_df: pd.DataFrame, save_path: st
             _plot_reference_values(ax, REFERENCE_VALUES[col])
 
             # get sub-dataframe
-            sub_df = metrics_df[[col, "work_type"]]
+            sub_df = metrics_df[[col, WORKTYPE_COL]]
 
             # keep only unique values. For these sensors the measurement was only done once in the entire office
             # meaning that all workers within the same office have the same value
@@ -128,7 +129,7 @@ def plot_environment_sensors_by_worktype(metrics_df: pd.DataFrame, save_path: st
             med_line_color = EDGE_COLOR if sub_df[col].sum() == 0 else "white"
 
             # generate box plot
-            sns.boxplot(x="work_type", y=col, hue="work_type", data=sub_df, ax=ax, palette=[FO_COLOR, BO_COLOR],
+            sns.boxplot(x=WORKTYPE_COL, y=col, hue=WORKTYPE_COL, data=sub_df, ax=ax, palette=[FO_COLOR, BO_COLOR],
                         hue_order=WORK_TYPES, linecolor=EDGE_COLOR, medianprops={"color": med_line_color,"linewidth": 1.5},
                         legend=False)
 

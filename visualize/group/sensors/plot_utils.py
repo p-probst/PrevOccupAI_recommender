@@ -15,8 +15,7 @@ from matplotlib.colors import to_rgb
 from typing import Tuple, List, Dict
 from pathlib import Path
 
-from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT, WORK_TYPE_COLORS
-
+from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT, WORK_TYPE_COLORS, SESSION_NUM_COL, WEEKDAY_COL, WORKTYPE_COL
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -41,11 +40,11 @@ def plot_sensor_metric_by_worktype(metrics_df: pd.DataFrame, metric_column: str,
     """
 
     # check for work_type column
-    if "work_type" not in metrics_df.columns:
-        raise KeyError("Input CSV must contain a 'work_type' column.")
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
 
     # collect the necessary columns
-    metric_df = metrics_df[[metric_column, 'weekday', 'work_type']]
+    metric_df = metrics_df[[metric_column, WEEKDAY_COL, WORKTYPE_COL]]
 
     if lower_outlier_limit:
         # remove outlier from seated data (this one happened due to the phone acquisition time being incorrectly set)
@@ -92,7 +91,7 @@ def plot_raincloud_by_day(metrics_df: pd.DataFrame, metric: str, fontsize: int=1
     fig, ax = plt.subplots(figsize=(16, 12))
 
     # generate raincloud plot
-    pt.RainCloud(x='weekday', y=metric, data=metrics_df, hue='work_type', hue_order=WORK_TYPES, orient='h',
+    pt.RainCloud(x=WEEKDAY_COL, y=metric, data=metrics_df, hue=WORKTYPE_COL, hue_order=WORK_TYPES, orient='h',
                  palette=[FO_COLOR, BO_COLOR], alpha=0.8, move=0.25, bw=0.2, point_size=4, dodge=True, ax=ax,
                 width_box=0.25)
 
@@ -134,7 +133,7 @@ def plot_stacked_bar_chart(metrics_df: pd.DataFrame, relevant_cols: List[str], m
     fig, ax = plt.subplots(figsize=(14, 8))
 
     # calculate the mean and convert to percentage
-    work_type_mean_df = metrics_df.groupby('weekday', observed=False)[relevant_cols].mean().round(4).mul(100)
+    work_type_mean_df = metrics_df.groupby(WEEKDAY_COL, observed=False)[relevant_cols].mean().round(4).mul(100)
 
     # ensure correct ordering of the noise classes within the dataframe
     work_type_mean_df = work_type_mean_df[metric_class_order]
@@ -201,7 +200,7 @@ def plot_session_trajectories_by_worktype(metrics_df:pd.DataFrame, metric_column
     """
 
     # get weekdays
-    weekdays = list(metrics_df["weekday"].cat.categories)
+    weekdays = list(metrics_df[WEEKDAY_COL].cat.categories)
 
     # get number of rows
     n_rows = len(weekdays)
@@ -210,7 +209,7 @@ def plot_session_trajectories_by_worktype(metrics_df:pd.DataFrame, metric_column
     fig, axes = plt.subplots(n_rows, 2, figsize=(14, row_height * n_rows), sharex=True, sharey=True)
 
     # group by work_type and weekday
-    grouped_df = metrics_df.groupby(["work_type", "weekday"], observed=False)
+    grouped_df = metrics_df.groupby([WORKTYPE_COL, WEEKDAY_COL], observed=False)
 
     # cycle over the weekdays
     for row_idx, weekday in enumerate(weekdays):
@@ -344,13 +343,13 @@ def _plot_tracjectories(ax: Axes, data_df: pd.DataFrame, metric_column: str, wor
     for _, subject_df in data_df.groupby("subject_id"):
 
         # sort the dataFrame by session to ensure correct order
-        subject_df = subject_df.sort_values("Session")
+        subject_df = subject_df.sort_values(SESSION_NUM_COL)
 
         # plot the session data as a line
-        ax.plot(subject_df["Session"], subject_df[metric_column], color=light_color, alpha=0.5, linewidth=1)
+        ax.plot(subject_df[SESSION_NUM_COL], subject_df[metric_column], color=light_color, alpha=0.5, linewidth=1)
 
     # calculate mean and std for each session (over all subjects)
-    stats = data_df.groupby("Session")[metric_column].agg(["mean", "std", "count"])
+    stats = data_df.groupby(SESSION_NUM_COL)[metric_column].agg(["mean", "std", "count"])
 
     # retrieve values to plot
     x_vals = stats.index.to_numpy()
