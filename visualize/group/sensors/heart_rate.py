@@ -162,7 +162,7 @@ def plot_hr_circular_distribution(data_df: pd.DataFrame, lower_limit: int=30, up
             legends_to_print = _generate_acquisition_time_labels(data_df, language=language)
             _print_acquisition_time_labels(legends_to_print, fig, fontsize + 4)
 
-    fig.tight_layout()
+    #fig.tight_layout()
 
     return fig, ax
 
@@ -188,7 +188,7 @@ def plot_hr_ranges_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, 
     for work_type, group_df in metrics_df.groupby(WORKTYPE_COL, sort=False, observed=False):
 
         # calculate the mean min and max value by session and day
-        data_df = group_df.groupby([WEEKDAY_COL, SESSION_NUM_COL])[relevant_cols].mean()
+        data_df = group_df.groupby([WEEKDAY_COL, SESSION_NUM_COL], observed=False)[relevant_cols].mean()
 
         # reinstate the index to full columns (weekday and Session)
         # this is to have the same structure as if it were single subject

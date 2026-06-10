@@ -9,9 +9,11 @@ from typing import Tuple, List
 from pathlib import Path
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
+from matplotlib.gridspec import GridSpec, SubplotSpec
 
-from constants import WEEKDAY_COL, SESSION_NUM_COL, WORKTYPE_COL, NO_DATA_COL, SESSION_TIME_COL, PT, ENG, PALE_GREEN, GREEN, YELLOW, RED, LIGHT_GRAY
-from visualize.group.sensors.plot_utils import ROMAN_NUMERALS
+from constants import WEEKDAY_COL, SESSION_NUM_COL, WORKTYPE_COL, NO_DATA_COL, SESSION_TIME_COL, PT, ENG, PALE_GREEN, \
+    GREEN, YELLOW, RED, LIGHT_GRAY, FILE_FORMAT
+from visualize.group.sensors.plot_utils import ROMAN_NUMERALS, plot_session_trajectories_by_worktype
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -67,12 +69,13 @@ SUB_FIGURE_TITLES = {
 def plot_emg_relative_intensity_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, show: bool = True,
                                             language: str = 'pt'):
     """
-
-    :param metrics_df:
-    :param save_path:
-    :param show:
+    plots the relative EMG intensity for the left and right placements, for each day and session, by calculating the
+    mean over each work type.
+    :param metrics_df: pandas.DataFrame containing the EMG metrics
+    :param save_path: Path to where the figure will be written.
+    :param show: Indicates whether to show the figure.
     :param language: Output language code ('pt' or 'eng'). Default: 'pt'
-    :return:
+    :return: None
     """
 
     # check for work_type column
@@ -97,28 +100,37 @@ def plot_emg_relative_intensity_by_worktype(metrics_df: pd.DataFrame, save_path:
         # this is to have the same structure as if it were single subject
         data_df = data_df.reset_index()
 
-        fig = plot_emg_relative_intensity(data_df, language=language)
+        fig = plot_emg_relative_intensity(data_df, language=language, show_sup_title=False)
 
-        print('test')
+        # save plot if necessary
+        if save_path is not None:
+            file_path = Path(save_path) / f'emg_relative_bins_{work_type}{FILE_FORMAT}'
+            # Make sure the destination directory exists before writing.
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            fig.savefig(file_path, dpi=300, bbox_inches='tight')
 
+        if show:
+            plt.show()
+
+        # ensure figure is closed
+        plt.close(fig)
 
 
 def plot_emg_relative_intensity(data_df: pd.DataFrame, language: str='pt', show_sup_title: bool=True, fontsize: int=12)-> Figure:
     """
-
-    :rtype: Figure
-    :param data_df:
+    plots the relative EMG intensity for the left and right placements, for each day and session.
+    :param data_df: pandas.DataFrame containing the EMG related metrics
     :param language: Output language code ('pt' or 'eng'). Default: 'pt'
     :param show_sup_title: controls whether to show the figure sup-title or not
-    :para fontsize: the fontsize to be used in the plot
-    :return:
+    :param fontsize: the fontsize to be used in the plot
+    :return: figure containing the plot
     """
 
     # fill in missing data
     data_df, weekdays = _fill_missing_data(data_df)
 
     # create figure to hold plot
-    fig = plt.figure(figsize=(12, 20))
+    fig = plt.figure(figsize=(12, 10))
 
     # add title
     if show_sup_title:
@@ -130,6 +142,9 @@ def plot_emg_relative_intensity(data_df: pd.DataFrame, language: str='pt', show_
     num_rows = 3
     num_plots_per_col = 2
     outer_grid = fig.add_gridspec(num_rows, num_plots_per_col * 2, wspace=0.35, hspace=0.6)
+
+    # dict to capture legend handles - these will be later added to the fig
+    legend_handles = {}
 
     # cycle over the weekdays
     for idx, weekday in enumerate(weekdays):
@@ -167,9 +182,17 @@ def plot_emg_relative_intensity(data_df: pd.DataFrame, language: str='pt', show_
             # cycle over through the columns
             for column, values in side_df.items():
 
+                # get the label
+                label = LABEL_MAPPER[column][language]
+
                 # plot the bars
-                ax.barh(y=y_pos, width=values, left=bar_left_pos, label=LABEL_MAPPER[column][language],
+                ax.barh(y=y_pos, width=values, left=bar_left_pos, label=label,
                         color=EMG_CLASS_COLORS[column], height=0.6)
+
+                # collect the legend handles
+                if label not in legend_handles:
+                    legend_handles[label] = ax.patches[-1] # this gets the last plotted bar color
+
 
                 # update the bar pos for stacking
                 bar_left_pos += values
@@ -177,22 +200,50 @@ def plot_emg_relative_intensity(data_df: pd.DataFrame, language: str='pt', show_
             # style session axis
             _style_session_axis(ax, side, y_pos, language=language, fontsize=fontsize)
 
-
         # add session labels
         _add_session_labels(day_df, label_ax, y_pos, fontsize=fontsize-2)
 
         # style day plot
         _style_day_plot(left_ax, label_ax, right_ax, weekday, fontsize=fontsize-2)
 
-
-
-    plt.show()
-
-
-
-
+    # add the legends
+    fig.legend(handles=legend_handles.values(), labels=legend_handles.keys(), loc="lower center",
+               bbox_to_anchor=(0.5, 0.02), ncol=len(legend_handles.keys()), prop={"size": fontsize - 2})
 
     return fig
+
+def plot_elevated_emg_trajectories_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, show: bool = True) -> None:
+    """
+
+    :param metrics_df:
+    :param save_path:
+    :param show:
+    :return:
+    """
+
+    # copy dataframe
+    metrics_df = metrics_df.copy()
+
+    # check for work_type column
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
+
+    # cycle over left and right
+    for side in ['left', 'right']:
+
+        # fill nan values
+        metrics_df[[f'{side}.EMG_relative_bins.typical_high_pct', f'{side}.EMG_relative_bins.high_for_you_pct',]] = metrics_df[[f'{side}.EMG_relative_bins.typical_high_pct', f'{side}.EMG_relative_bins.high_for_you_pct',]].fillna(0)
+
+        # calculate the sum of the elevated classes
+        metrics_df[f'{side}_EMG_sum_high'] = metrics_df[f'{side}.EMG_relative_bins.typical_high_pct'] + metrics_df[f'{side}.EMG_relative_bins.high_for_you_pct']
+        # fill missing session numbers
+        metrics_df[SESSION_NUM_COL] = metrics_df[f'left.{SESSION_NUM_COL}'].combine_first(
+            metrics_df[f'right.{SESSION_NUM_COL}']).astype(int)
+
+
+        # plot the trajectories
+        plot_session_trajectories_by_worktype(metrics_df, f'{side}_EMG_sum_high', save_path=save_path, show=show)
+
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
@@ -271,20 +322,20 @@ def _fill_missing_data(data_df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
     return data_df, weekdays
 
 
-def _create_day_plot_grid(outer_grid, fig, num_weekdays, num_cols: int, idx: int) -> Tuple:
+def _create_day_plot_grid(outer_grid: GridSpec, fig: Figure, num_weekdays: int, num_cols_outer_grid: int, idx: int) -> Tuple[Axes, Axes, Axes]:
     """
     generates a subgrid to hold the day plot
-    :param outer_grid:
-    :param fig:
-    :param num_weekdays:
-    :param num_cols:
-    :param idx:
-    :return:
+    :param outer_grid: the outer grid holding the grids for each day plot
+    :param fig: the figure
+    :param num_weekdays: the number of weekdays to plot
+    :param num_cols_outer_grid: the number of columns in the outer grid
+    :param idx: the index of the current day, obtained through enumerate(weekdays)
+    :return: tuple containing the axis of the day plot in the order left_ax, label_ax, right_ax
     """
 
     # calculate the row and col position
-    row_num = idx // num_cols
-    col_num = idx % num_cols
+    row_num = idx // num_cols_outer_grid
+    col_num = idx % num_cols_outer_grid
 
     # calculate offset for centering
     offset = 1 if idx == num_weekdays - 1 else 0
@@ -292,8 +343,6 @@ def _create_day_plot_grid(outer_grid, fig, num_weekdays, num_cols: int, idx: int
     # calculate the start and end of the column for slicing
     col_start = offset + col_num * 2
     col_end = col_start + 2
-
-    print(f"col_start={col_start}, col_end={col_end}")
 
     # create subgridspec that spans two columns within the outer grid
     # the subgrid has three columns left_ax, right_ax, and label_ax for displaying the left data, right data, and the corresponding labels
@@ -311,12 +360,12 @@ def _create_day_plot_grid(outer_grid, fig, num_weekdays, num_cols: int, idx: int
 
 def _style_session_axis(ax: Axes, side: str, y_positions: np.ndarray, language: str = 'pt', fontsize: int = 12) -> None:
     """
-
-    :param ax:
-    :param side:
-    :param y_positions:
-    :param language:
-    :return:
+    Styles the session subplot
+    :param ax: the axis containing the session subplot
+    :param side: the muscleBAN placement side, either 'left' or 'right'
+    :param y_positions: the y-positions of the bars
+    :param language: Output language code ('pt' or 'eng'). Default: 'pt'
+    :return: None
     """
 
     # set axis title
@@ -342,12 +391,12 @@ def _style_session_axis(ax: Axes, side: str, y_positions: np.ndarray, language: 
 
 def _add_session_labels(day_df: pd.DataFrame, label_ax, y_positions:np.ndarray, fontsize: int=12) -> None:
     """
-
-    :param day_df:
-    :param label_ax:
-    :param y_positions:
-    :param fontsize:
-    :return:
+    adds the session time labels to the label_ax.
+    :param day_df: pandas.DataFrame containing the day data
+    :param label_ax: the for displaying the labels
+    :param y_positions: the y-positions of the bars
+    :param fontsize: the fontsize of the labels
+    :return: None
     """
 
 
@@ -372,9 +421,9 @@ def _add_session_labels(day_df: pd.DataFrame, label_ax, y_positions:np.ndarray, 
 
 def _generate_acquisition_time_labels(acq_time: str) -> str:
     """
-
-    :param session_times:
-    :return:
+    transforms an acquisition time label from the format HH-MM-SS into a format HH:MM.
+    :param acq_time: the acquisition time label:
+    :return: the formatted acquisition time label
     """
 
     if acq_time.startswith("missing"):
@@ -394,13 +443,13 @@ def _to_roman_numerals(session_num: int) -> str:
 
 def _style_day_plot(left_ax, label_ax, right_ax, weekday: str, fontsize: int = 12) -> None:
     """
-
-    :param left_ax:
-    :param label_ax:
-    :param right_ax:
-    :param weekday:
-    :param fontsize:
-    :return:
+    styles the day plot
+    :param left_ax: left axis of the day plot
+    :param label_ax: label axis of the day plot
+    :param right_ax: right axis of the day plot
+    :param weekday: the weekday corresponding to the plot
+    :param fontsize: the font size of the labels
+    :return: None
     """
 
     # style day plot
