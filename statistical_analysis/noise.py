@@ -4,11 +4,14 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-from constants import SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SESSION_TIME_COL
+
 
 # internal imports
-from statistical_analysis.lmm import compute_icc, select_fixed_effects, fit_lmm
+from statistical_analysis.models import lmm as lmm
+from statistical_analysis.utils import transform_time_to_shift, get_back_transform
+from constants import SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SESSION_TIME_COL, FILE_FORMAT
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -20,7 +23,7 @@ SHIFT_COL = "shift"
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def perform_noise_exposure_analysis(df: pd.DataFrame) -> None:
+def perform_noise_exposure_analysis(df: pd.DataFrame, save_path: str | Path, show: bool=False) -> None:
     """
     Run the full FO vs BO noise-exposure analysis on the loud-vs-quiet
     ILR balance.
@@ -28,7 +31,7 @@ def perform_noise_exposure_analysis(df: pd.DataFrame) -> None:
     Pipeline
     --------
     1. Compute the balance (preprocessing).
-    2. Precondition checks: Shapiro-Wilk normality per group, ICC.
+    2. Precondition checks: ICC.
     3. Fixed-effect model selection: compare base model:
                                      ``b ~ work_type + (1|subject_id)``
                                      against the weekday-adjusted models
@@ -40,47 +43,65 @@ def perform_noise_exposure_analysis(df: pd.DataFrame) -> None:
     4. Refit selected model with REML for final inference.
     5. Diagnostic plots: residuals vs fitted, Q-Q residuals, Q-Q BLUPs.
     6. Effect size: Cohen's d (marginal SD denominator).
-    7. Compile and return results summary.
 
-    :param df: Raw noise_subject_metrics DataFrame as loaded from
-        noise_subject_metrics.csv.
-    :returns: Dictionary with keys:
-        - ``"data"``         : preprocessed DataFrame fed to the LMM
-        - ``"normality"``    : Shapiro-Wilk results per group (DataFrame)
-        - ``"icc"``          : intraclass correlation coefficient (float)
-        - ``"model_selection"``  : dict with keys selected_formula,
-          model_table (AIC/BIC per model), lrt_table (LRT comparisons)
-        - ``"selected_formula"``: formula string used for final model (str)
-        - ``"fit"``          : fitted MixedLMResults object
-        - ``"cohens_d"``     : Cohen's d for the work_type effect (float)
-        - ``"summary"``      : tidy results table (DataFrame)
+    :param df: Raw noise_subject_metrics DataFrame as loaded from noise_subject_metrics.csv.
+    :param save_path: Path to save the figure to.
+    :param show: If True, show the figure.
+    :returns: None
 
-    :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects
-        Models in S and S-PLUS*. Springer.
+    :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models in S and S-PLUS*. Springer.
     """
     # (1) preprocessing
-    analysis_data_df = _compute_noise_balance(df)
-    analysis_data_df[SHIFT_COL] = analysis_data_df[SESSION_TIME_COL].apply(_transform_time_to_shift)
+    analysis_data_df = _compute_noise_balance_ilr(df)
+
+    analysis_data_df[SHIFT_COL] = analysis_data_df[SESSION_TIME_COL].apply(transform_time_to_shift)
+
+    # count the sifts per subject (this has only be done once for the entire dataset)
+    shift_counts = analysis_data_df.groupby([SUBJECT_ID_COL, SHIFT_COL]).size().unstack(fill_value=0)
 
     # (2) precondition checks
-    icc = compute_icc(analysis_data_df, outcome=NOISE_BALANCE_COL, subject_col=SUBJECT_ID_COL)
+    icc = lmm.compute_icc(analysis_data_df, outcome=NOISE_BALANCE_COL, subject_col=SUBJECT_ID_COL)
 
     # (3) fixed-effects model selection
-    best_formula, model_comparison_df = select_fixed_effects(analysis_data_df, outcome=NOISE_BALANCE_COL,
-                                                             group_col=WORKTYPE_COL, subject_col=SUBJECT_ID_COL,
-                                                             optional_covariates=[WEEKDAY_COL, SHIFT_COL])
+    best_formula, model_comparison_df = lmm.select_fixed_effects(analysis_data_df, outcome=NOISE_BALANCE_COL,
+                                                                 group_col=WORKTYPE_COL, subject_col=SUBJECT_ID_COL,
+                                                                 optional_covariates=[WEEKDAY_COL, SHIFT_COL])
 
     # (4) fit the selected model
-    results_df, fig = fit_lmm(analysis_data_df, formula=best_formula, subject_col=SUBJECT_ID_COL, icc=icc)
+    results_df, fig = lmm.fit_lmm(analysis_data_df, formula=best_formula, subject_col=SUBJECT_ID_COL, icc=icc)
 
-    plt.show()
+    # (5) perform back transform of ILR
+    results_df = get_back_transform(results_df, is_ilr=True)
 
-    print('test')
+    # show plot
+    if show:
+        plt.show()
+
+    # save the results and the plot
+    if save_path:
+
+        # create folder
+        folder_path = Path(save_path) / 'noise'
+
+        # make sure the directory exists
+        folder_path.mkdir(parents=True, exist_ok=True)
+
+        # store the plot
+        fig.savefig(folder_path / f'noise_diagnostics{FILE_FORMAT}')
+
+        # store the dataframes
+        model_comparison_df.to_csv(folder_path / f'noise_model_comparison.csv', index=False)
+        results_df.to_csv(folder_path / f'noise_llm_results.csv', index=False)
+        shift_counts.to_csv(folder_path / f'shift_counts.csv', index=True)
+
+    # close the figure
+    plt.close(fig)
+
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def _compute_noise_balance(df: pd.DataFrame) -> pd.DataFrame:
+def _compute_noise_balance_ilr(df: pd.DataFrame) -> pd.DataFrame:
     """
     Prepare the noise DataFrame for LMM analysis.
 
@@ -123,24 +144,6 @@ def _compute_noise_balance(df: pd.DataFrame) -> pd.DataFrame:
     return df[[SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SESSION_TIME_COL, NOISE_BALANCE_COL]].copy()
 
 
-def _transform_time_to_shift(acq_time: str) -> str:
-    """
 
-    :param acq_time:
-    :return:
-    """
 
-    # only use the hour
-    acq_hour = int(acq_time.split("-")[0])
 
-    # check the time
-    if acq_hour < 10:
-        shift = "morning"
-
-    elif acq_hour < 13:
-        shift = "midday"
-
-    else:
-        shift = "afternoon"
-
-    return shift

@@ -6,7 +6,10 @@ import numpy as np
 from typing import Dict
 from scipy.stats import fisher_exact
 from scipy.stats.contingency import odds_ratio
+from pathlib import Path
 
+
+# internal imports
 from constants import SUBJECT_ID_COL, WORKTYPE_COL
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -21,10 +24,11 @@ BODY_REGIONS = {
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def perform_pain_location_analysis(pain_locations_df: pd.DataFrame) -> None:
+def perform_pain_location_analysis(pain_locations_df: pd.DataFrame, save_path: str | Path) -> None:
     """
     perform pain location comparative analysis using Fisher's exact test with Benjamini-Hochberg FDR correction.
     :param pain_locations_df: pandas.DataFrame containing pain locations
+    :param save_path: path to save the result
     :return: None
     """
 
@@ -71,10 +75,21 @@ def perform_pain_location_analysis(pain_locations_df: pd.DataFrame) -> None:
 
 
     # transform rows list to dataframe
-    results = pd.DataFrame(result_rows)
+    results_df = pd.DataFrame(result_rows)
 
     # apply FDR correction
-    results["fisher_p_adj"] = _bh_adjust(results["fisher_p_value"].to_list())
+    results_df["fisher_p_adj"] = _bh_adjust(results_df["fisher_p_value"].to_list())
+
+    # save the results and the plot
+    if save_path:
+        # create folder
+        folder_path = Path(save_path) / 'pain'
+
+        # make sure the directory exists
+        folder_path.mkdir(parents=True, exist_ok=True)
+
+        # store the dataframe
+        results_df.to_csv(folder_path / f'pain_models_result.csv', index=False)
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions

@@ -1,3 +1,7 @@
+"""
+Implementation of linear mixed models (LMM)
+"""
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -16,7 +20,8 @@ from statsmodels.regression.mixed_linear_model import MixedLMResults
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-
+FORMULA_COL = "formula"
+RESTRICTED_MODEL_COL = "restricted"
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -101,7 +106,7 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
         lrt_result = _compute_lrt(base_fit, fit)
 
         # add the base formula
-        lrt_result['restricted'] = base_formula
+        lrt_result[RESTRICTED_MODEL_COL] = base_formula
 
         # append the evaluation criteria
         model_records.append(_structure_comparative_lmm_results(formula, fit, lrt_result))
@@ -123,19 +128,80 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
         # test compound model against single-layer models
         for cov, (single_fe_formula, single_fe_fit) in single_fe_llms.items():
 
-            # perfrom lrt
+            # perform lrt
             lrt_result = _compute_lrt(single_fe_fit, compound_fit)
 
             # add the single fe model formula
-            lrt_result['restricted'] = single_fe_formula
+            lrt_result[RESTRICTED_MODEL_COL] = single_fe_formula
 
             # append the evaluation criteria
             model_records.append(_structure_comparative_lmm_results(compound_formula, compound_fit, lrt_result))
 
-
     # generate result comparison dataframe
     comparison_df = pd.DataFrame(model_records).sort_values("AIC").reset_index(drop=True)
-    best_formula = comparison_df.iloc[0]["formula"]
+    best_formula = comparison_df.iloc[0][FORMULA_COL]
+
+    return best_formula, comparison_df
+
+
+def test_interaction(df: pd.DataFrame, comparison_df: pd.DataFrame, best_formula: str, group_col: str,
+                     interaction_cov: str, subject_col: str) -> tuple[str, pd.DataFrame]:
+    """
+    Test whether adding a group x covariate interaction term improves the selected additive model, and append the
+    result to the existing model comparison table.
+
+    The interaction model is built by extending the best additive model (as selected by :func:`select_fixed_effects`)
+    with an interaction term between ``group_col`` and ``interaction_cov``:
+
+        * additive:    outcome ~ group + C(interaction_cov) [+ other covariates]
+        * interaction: additive + group:C(interaction_cov)
+
+    Both models are fit with ML and compared via LRT, since REML likelihoods are not comparable across models with
+    different fixed-effect structures (Pinheiro & Bates, 2000, ch. 2). The interaction model is nested in the additive
+    model, so the LRT directly tests whether the effect of ``interaction_cov`` differs by ``group_col`` (i.e. effect
+    modification), rather than whether ``interaction_cov`` matters at all.
+
+    :param df: Long-format DataFrame.
+    :param comparison_df: Model comparison DataFrame as returned by :func:`select_fixed_effects`. The interaction
+                          model's row is appended to this table.
+    :param best_formula: Selected additive formula string as returned by :func:`select_fixed_effects`
+                         (without the random-effects term).
+    :param outcome: Column name of the continuous outcome.
+    :param group_col: Column name of the primary fixed effect (binary group).
+    :param interaction_cov: Column name of the covariate to interact with ``group_col``. Must already be present as a
+                            C() term in ``best_formula``.
+    :param subject_col: Column name of the subject identifier.
+    :returns: ``comparison_df`` with one additional row for the interaction model, including its LRT against the additive model.
+
+    :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models in S and S-PLUS*. Springer.
+    """
+    # refit the selected additive model with ML, as a basis for the LRT
+    additive_fit = smf.mixedlm(formula=best_formula, data=df, groups=df[subject_col]).fit(reml=False, disp=False)
+
+    # extend the additive formula with the group x covariate interaction term
+    interaction_formula = f"{best_formula} + {group_col}:C({interaction_cov})"
+
+    # fit the interaction model
+    interaction_fit = smf.mixedlm(formula=interaction_formula, data=df, groups=df[subject_col]).fit(reml=False,
+                                                                                                    disp=False)
+
+    # perform lrt: interaction model (full) vs additive model (restricted)
+    lrt_result = _compute_lrt(additive_fit, interaction_fit)
+
+    # add the restricted model formula
+    lrt_result[RESTRICTED_MODEL_COL] = best_formula
+
+    # append the evaluation criteria
+    new_row = _structure_comparative_lmm_results(interaction_formula, interaction_fit, lrt_result)
+
+    # append to the existing comparison dataframe and re-sort by AIC
+    comparison_df = pd.concat([comparison_df, pd.DataFrame([new_row])], ignore_index=True)
+    comparison_df = comparison_df.sort_values("AIC").reset_index(drop=True)
+
+    best_formula = comparison_df.iloc[0][FORMULA_COL]
+
+    # add the grouping to the formula (only doing it here as the formula in python has to be without it)
+    # comparison_df[FORMULA_COL] = comparison_df[FORMULA_COL] + f' + (1 | {subject_col})'
 
     return best_formula, comparison_df
 
@@ -154,7 +220,7 @@ def fit_lmm(df: pd.DataFrame, formula: str, subject_col: str, icc: float) -> Tup
     :param formula: Patsy-style formula string (e.g. "b ~ work_type").
     :param subject_col: Column name of the subject identifier.
     :param icc: Inter class correlation coefficient.
-    :returns: Fitted MixedLMResults object.
+    :returns: results of the model as a pandas.DataFrame and a figure object displaying the residuals of the model.
 
     :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models
         in S and S-PLUS*. Springer.
@@ -176,9 +242,6 @@ def fit_lmm(df: pd.DataFrame, formula: str, subject_col: str, icc: float) -> Tup
     results_df = _summarise_lmm_results(lmm_fit, icc, cohens_d)
 
     return results_df, fig
-
-
-
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
@@ -262,15 +325,16 @@ def _plot_lmm_diagnostics(fit: MixedLMResults, formula: str) -> Figure:
 
     :param fit: Fitted MixedLMResults object.
     :param formula: Label string used in plot titles.
+    :return: figure containing the plots
 
     :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models
         in S and S-PLUS*. Springer, ch. 4.
     """
     residuals = fit.resid
     fitted = fit.fittedvalues
-    random_effects = np.array([v[0] for v in fit.random_effects.values()])
+    random_effects = np.array([effect_value.iloc[0] for effect_value in fit.random_effects.values()])
 
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+    fig, axes = plt.subplots(1, 3, figsize=(15, 6))
 
     # add super title
     fig.suptitle(f"{formula}")
@@ -304,12 +368,12 @@ def _structure_comparative_lmm_results(formula: str, fit: MixedLMResults, lrt_re
     :return: dictionary containing the lmm results
     """
     if lrt_result:
-        return {"formula": formula, "n_fe_params": len(fit.fe_params), "llf": round(fit.llf, 4),
+        return {FORMULA_COL: formula, "n_fe_params": len(fit.fe_params), "llf": round(fit.llf, 4),
                 "AIC": round(fit.aic, 2), "BIC": round(fit.bic, 2),
                 **lrt_result}
 
     else:
-        return {"formula": formula, "n_fe_params": len(fit.fe_params), "llf": round(fit.llf, 4),
+        return {FORMULA_COL: formula, "n_fe_params": len(fit.fe_params), "llf": round(fit.llf, 4),
                 "AIC": round(fit.aic, 2), "BIC": round(fit.bic, 2),
                 "restricted": "None", "lrt_stat": np.nan, "delta_lrt_df": np.nan, "lrt_p_value": np.nan}
 
@@ -336,7 +400,7 @@ def _summarise_lmm_results(fit: MixedLMResults, icc: float, d: float) -> pd.Data
     for param in fit.fe_params.index:
         records.append({
             "term": param,
-            "estimate": round(fit.fe_params[param], 4),
+            "estimate": round(fit.fe_params[param], 8),
             "SE": round(fit.bse[param], 4),
             "CI_lower_95": round(ci.loc[param, 0], 4),
             "CI_upper_95": round(ci.loc[param, 1], 4),
@@ -347,13 +411,7 @@ def _summarise_lmm_results(fit: MixedLMResults, icc: float, d: float) -> pd.Data
     summary = pd.DataFrame(records)
 
     # Append model-level quantities as separate rows for readability
-    meta = pd.DataFrame([
-        {"term": "ICC", "estimate": icc,
-         "SE": None, "CI_lower_95": None, "CI_upper_95": None,
-         "z": None, "p_value": None},
-        {"term": f"Cohen's d (work_type)", "estimate": d,
-         "SE": None, "CI_lower_95": None, "CI_upper_95": None,
-         "z": None, "p_value": None},
-    ])
+    meta = pd.DataFrame([{"term": "ICC", "estimate": icc},
+                         {"term": f"Cohen's d (work_type)", "estimate": d}])
 
     return pd.concat([summary, meta], ignore_index=True)

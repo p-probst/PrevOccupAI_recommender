@@ -214,11 +214,13 @@ def plot_emg_relative_intensity(data_df: pd.DataFrame, language: str='pt', show_
 
 def plot_elevated_emg_trajectories_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, show: bool = True) -> None:
     """
-
-    :param metrics_df:
-    :param save_path:
-    :param show:
-    :return:
+    Generates a subplot of shape (5, 2) containing session trajectories for each day and worktype . The trajectories
+    show the evolution of the chosen metric throughout the day (each session). For each subject a thin line is plotted.
+    The population mean is shown with a thick line and the standard deviation is plotted as a shaded area.
+    :param metrics_df: pandas.DataFrame containing the EMG related metrics
+    :param save_path: Path to where the figure will be written.
+    :param show: Indicates whether to show the figure.
+    :return: None
     """
 
     # copy dataframe
@@ -436,6 +438,11 @@ def _generate_acquisition_time_labels(acq_time: str) -> str:
 
 
 def _to_roman_numerals(session_num: int) -> str:
+    """
+    Transforms a session number to roman numerals.
+    :param session_num: the session number
+    :return: the roman numeral
+    """
 
     return ROMAN_NUMERALS[session_num]
 

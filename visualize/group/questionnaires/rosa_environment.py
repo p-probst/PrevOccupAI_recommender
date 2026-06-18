@@ -65,7 +65,7 @@ def plot_rosa_environment(metrics_df: pd.DataFrame, q_type: str, is_rosa: bool, 
     population_mean = metrics_df[relevant_cols].mean(axis=0).to_frame().T
 
     # generate population level visualisation
-    _generate_heatmap(population_mean, save_path, q_type, population_level="population", is_rosa=is_rosa)
+    _generate_heatmap(population_mean, save_path, q_type, work_type="population", is_rosa=is_rosa)
 
     # group by work-type
     for work_type, group_df in metrics_df.groupby(WORKTYPE_COL):
@@ -74,7 +74,7 @@ def plot_rosa_environment(metrics_df: pd.DataFrame, q_type: str, is_rosa: bool, 
         work_type_mean = group_df[relevant_cols].mean(axis=0).to_frame().T
 
         # generate population level visualisation
-        _generate_heatmap(work_type_mean, save_path, q_type, population_level=work_type, is_rosa=is_rosa)
+        _generate_heatmap(work_type_mean, save_path, q_type, work_type=work_type, is_rosa=is_rosa)
 
 
 def plot_environment_sensors_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path = None, show: bool = False,
@@ -160,15 +160,15 @@ def plot_environment_sensors_by_worktype(metrics_df: pd.DataFrame, save_path: st
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def _generate_heatmap(df: pd.DataFrame, save_path: str, q_type: str, population_level: str, is_rosa: bool) -> None:
+def _generate_heatmap(df: pd.DataFrame, save_path: str, q_type: str, work_type: str, is_rosa: bool) -> None:
     """
-
-    :param df:
-    :param save_path:
-    :param q_type:
-    :param population_level:
-    :param is_rosa:
-    :return:
+    generates the traffic-light style risk level visualisations for the ROSA and environment questionnaire data
+    :param df: single-row DataFrame with columns corresponding to questionnaire items
+    :param save_path: Path to where the figure will be written.
+    :param q_type: Type of questionnaire.
+    :param work_type: the work type. Either "FO" or "BO"
+    :param is_rosa: if True, handle the ROSA_final_normalized column specially (default=False)
+    :return: None
     """
 
     # substitute the scores in the df with a discrete scale (0,1,2) depending on the interval. This is used for the colormap
@@ -199,7 +199,7 @@ def _generate_heatmap(df: pd.DataFrame, save_path: str, q_type: str, population_
     cmap = clr.LinearSegmentedColormap.from_list('name', ['gray', GREEN, YELLOW, RED], N=4)
 
     # generate heat map
-    _create_heat_map(df, save_path, f"{q_type}_plot_{population_level}{FILE_FORMAT}", color_map=cmap, vmin=-1,
+    _create_heat_map(df, save_path, f"{q_type}_plot_{work_type}{FILE_FORMAT}", color_map=cmap, vmin=-1,
                      vmax=2, is_rosa=is_rosa)
 
 

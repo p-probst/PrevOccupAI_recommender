@@ -40,7 +40,7 @@ WEEKDAY_COL = "weekday"
 SUBJECT_ID_COL = "subject_id"
 WORKTYPE_COL = "work_type"
 NO_DATA_COL = 'Sem dados' #TODO: translation dict necessary
-
+SHIFT_COL = "shift"
 
 
 # colors for plotting

@@ -319,12 +319,13 @@ def _add_percentage_labels(ax: Axes, values: np.ndarray, min_display_percentage:
 
 def _plot_tracjectories(ax: Axes, data_df: pd.DataFrame, metric_column: str, work_type: str, fontsize: int=12) -> None:
     """
-
-    :param ax:
-    :param data_df:
-    :param metric_column:
-    :param color:
-    :param work_type:
+    plots the trajectories for into the provided axes. The trajectories show the evolution of the chosen metric
+    throughout the day (each session). For each subject a thin line is plotted.
+    The population mean is shown with a thick line and the standard deviation is plotted as a shaded area.
+    :param ax: matplotlib.axes object into which the plot will be drawn
+    :param data_df: pandas.DataFrame containing the data to plot.
+    :param metric_column: the metric to plot
+    :param work_type: the work type. Either "BO" or "FO"
     :return:
     """
 

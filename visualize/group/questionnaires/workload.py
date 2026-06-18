@@ -70,13 +70,15 @@ QUESTION_LABEL_MAPPING = {
 # ------------------------------------------------------------------------------------------------------------------- #
 def plot_workload_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, language: str = "pt", add_error_bars: bool = True) -> None:
     """
-
-    :param metrics_df:
-    :param save_path:
-    :param language:
-    :param color:
-    :param add_error_bars:
-    :return:
+    Generates the workload plot. The plot displays the results of the workload questionnaires.
+    A subplot is generated for each day. On the x-axis of the plot the different items are displayed
+    The y-axis represents the likert-scale level that was chosen by the worker. The levels are displayed as horizontal bars.
+    Standard-deviation whiskers are added to each bar based on the population, if specified.
+    :param metrics_df: pandas.DataFrame containing the workload metrics
+    :param save_path: Path to where the figure will be written.
+    :param language: language to be used in the plot. Defaults to "pt".
+    :param add_error_bars: Whether to add error bars. Defaults to True
+    :return: None
     """
 
     # check for work_type column
