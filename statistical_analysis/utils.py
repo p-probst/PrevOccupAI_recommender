@@ -1,49 +1,141 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
+import sys
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.special import expit
-
+from typing import Dict
 
 # internal imports
-from constants import SUBJECT_ID_COL
+from constants import SUBJECT_ID_COL, SESSION_TIME_COL, SHIFT_COL, DATE_COL, WORK_TYPES, WORKTYPE_COL, SESSION_NUM_COL, USER
+
+
+# external imports
+project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
+sys.path.append(str(project_path))
+from oh_parser import load_profiles, extract
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
 TOTAL_DURATION_COL = "total_duration_hour"
-
 MIN_DURATION_H = 1
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def transform_time_to_shift(acq_time: str) -> str:
+def print_populations_statistics(oh_profile_path: str, metadata_dict: Dict[str, str]) -> None:
     """
-    Transforms the string to a shift period of either "morning", "midday2, or "afternoon".
+    prints populations statistics, such as age, gender, etc.
+    :param oh_profile_path: Path to folder containing the OH profiles of all subjects.
+    :param metadata_dict: dictionary defining which metadata should be displayed.
+    :return: None
+    """
+
+    # parse the OH profiles
+    profiles = load_profiles(oh_profile_path)
+
+    # extract metadata
+    metadata_df = extract(profiles, paths=metadata_dict)
+
+    # change dexterity to english
+    metadata_df["dominant_hand"] = metadata_df["dominant_hand"].replace({"D": "R", "E": "L", "O": "A"})
+
+    # calculate BMI
+    metadata_df["BMI"] = metadata_df["weight"] / (metadata_df["height"] / 100)**2
+
+    # print the metrics
+    print("=" * 60)
+    print("Generating population statistics")
+    print("=" * 60)
+    print(f"number of workers in the work types: {metadata_df[WORKTYPE_COL].value_counts()}")
+    print(f"\n{metadata_df.groupby(WORKTYPE_COL)[["age", "BMI"]].agg(["mean", "std", "min", "max"]).round(2)}")
+    print(f"\n{metadata_df.groupby(WORKTYPE_COL)[["sex"]].value_counts()}")
+    print(f"\n{metadata_df.groupby(WORKTYPE_COL)[["dominant_hand"]].value_counts()}")
+    print("\n")
+
+
+
+def get_shifts_from_phone_df(phone_df: pd.DataFrame, cml_shifts: bool = True) -> pd.DataFrame:
+    """
+    extracts the shifts from a dataframe containing sensor metrics extracted from the phone.
+    This function can be used to obtain shift information for watch or muscleBAN data.
+    :param phone_df: pandas.DataFrame
+    :param cml_shifts:
+    :return:
+    """
+
+    # get the relevant columns
+    shift_df = phone_df[[SUBJECT_ID_COL, DATE_COL, SESSION_TIME_COL]].copy()
+
+    # extract the shift time
+    shift_df[SHIFT_COL] = shift_df[SESSION_TIME_COL].apply(transform_time_to_shift, cml_shifts=cml_shifts)
+
+    return shift_df
+
+def transform_time_to_shift(acq_time, cml_shifts: bool = True) -> str:
+    """
+    Transforms the string to a shift. Two shift transformations are available:
+    (1) cml_shifts == True: "morning" - "midday" - "afternoon"
+    (2) cml_shifts == False: "morning" - "afternoon"
     :param acq_time: the acquisition time. It is assumed that the string has the format "HH-MM-SS"
+    :param cml_shifts: whether to use the actual CML shifts (morning, midday, afternoon) or a simplified (morning, afternoon)
     :return: string with shift period.
     """
 
-    # only use the hour
-    acq_hour = int(acq_time.split("-")[0])
-
-    # check the time
-    if acq_hour < 10:
-        shift = "morning"
-
-    elif acq_hour < 13:
-        shift = "midday"
+    if cml_shifts:
+        shift = _transform_time_to_cml_shift(acq_time)
 
     else:
-        shift = "afternoon"
+        shift = _transform_time_to_ma_shift(acq_time)
 
     return shift
+
+def get_shift_counts(analysis_data_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    gets the shift counts for each subject and also prints the total shift counts per group, as well as per session,
+    if the session column is available in the DataFrame. If the DataFrame does not contain the 'shift' column, then
+    an empty DataFrame is returned.
+    :param analysis_data_df: pre-processed analysis data. The DataFrame should contain the 'shift' column
+    :return:
+    """
+
+    if SHIFT_COL in analysis_data_df.columns:
+        # count the sifts per subject (this has only to be done once for the phone derived sensors in the dataset)
+        shift_counts = analysis_data_df.groupby([SUBJECT_ID_COL, SHIFT_COL]).size().unstack(fill_value=0)
+
+        print("----")
+        print(f"shift counts per group: \n{analysis_data_df.groupby([WORKTYPE_COL, SHIFT_COL]).size().unstack(fill_value=0)}")
+
+        if SESSION_NUM_COL in analysis_data_df.columns:
+
+            # cycle over the work types
+            for work_type in WORK_TYPES:
+
+                # get dataframe only containing the data of the corresponding work type
+                sub_df = analysis_data_df[analysis_data_df[WORKTYPE_COL] == work_type]
+                # check data distribution
+                print(f"Crosstab of session_num and shift for {work_type}: \n{pd.crosstab(sub_df[SESSION_NUM_COL], sub_df[SHIFT_COL])}")
+
+
+    else:
+        print("No \'shift\' column in the analysis data frame. Returning empty DataFrame.")
+        # return empty dataframe
+        shift_counts = pd.DataFrame()
+
+
+
+    return shift_counts
+
 
 def drop_short_recordings(df: pd.DataFrame, duration_s_col, class_distribution_col) -> pd.DataFrame:
     """
     removes recordings that shorter than 1 hour
     :param df: Raw har_subject_metrics DataFrame.
+    :param duration_s_col: column name of the duration column.
+    :param class_distribution_col: column name of the class distribution column.
     :return: the dataframe with short recordings removed.
     """
 
@@ -113,9 +205,11 @@ def get_absolute_rate(beta_sum, is_ilr: bool = False):
     :param is_ilr: whether to calculate ILR or not.
     :return:  absolute rate for log transform
     """
+    # ILR transform
     if is_ilr:
         return expit(beta_sum * np.sqrt(2))
 
+    # log transform
     return np.exp(beta_sum)
 
 
@@ -133,9 +227,49 @@ def get_odds_ratio_and_ci(beta: float, ci_low: float, ci_upper: float, is_ilr: b
 
     return np.exp(beta), np.exp(ci_low), np.exp(ci_upper)
 
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
+def _transform_time_to_cml_shift(acq_time: str) -> str:
+    """
+    Transforms the string to a shift period of either "morning", "midday", or "afternoon".
+    :param acq_time: the acquisition time. It is assumed that the string has the format "HH-MM-SS"
+    :return: string with shift period.
+    """
 
+    # only use the hour
+    acq_hour = int(acq_time.split("-")[0])
+
+    # check the time
+    if acq_hour < 10:
+        shift = "morning"
+
+    elif acq_hour < 13:
+        shift = "midday"
+
+    else:
+        shift = "afternoon"
+
+    return shift
+
+def _transform_time_to_ma_shift(acq_time: str) -> str:
+    """
+    Transforms the string to a shift period of either "morning", or "afternoon".
+    :param acq_time: the acquisition time. It is assumed that the string has the format "HH-MM-SS"
+    :return: string with shift period.
+    """
+
+    # only use the hour
+    acq_hour = int(acq_time.split("-")[0])
+
+    # check the time
+    if acq_hour < 12:
+        shift = "morning"
+
+    else:
+        shift = "afternoon"
+
+    return shift
 
 

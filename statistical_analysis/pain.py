@@ -150,13 +150,13 @@ def _fisher_with_ci(contingency_table: np.ndarray) -> Dict[str, float]:
     """
 
     # perform fisher's exact
-    fisher_result = fisher_exact(contingency_table, alternative="less")
+    fisher_result = fisher_exact(contingency_table, alternative="two-sided")
 
     # calculate the odds ratio
     or_result = odds_ratio(contingency_table, kind="conditional")
 
     # calculate the confidence interval
-    ci = or_result.confidence_interval(confidence_level=0.95, alternative="less")
+    ci = or_result.confidence_interval(confidence_level=0.95, alternative="two-sided")
 
     return {"odds_ratio": or_result.statistic, "ci_lower": ci.low, "ci_upper": ci.high, "fisher_odds_ratio": fisher_result.statistic, "fisher_p_value": fisher_result.pvalue}
 

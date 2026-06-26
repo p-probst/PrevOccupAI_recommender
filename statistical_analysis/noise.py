@@ -10,7 +10,7 @@ from pathlib import Path
 
 # internal imports
 from statistical_analysis.models import lmm as lmm
-from statistical_analysis.utils import transform_time_to_shift, get_back_transform
+from statistical_analysis.utils import transform_time_to_shift, get_shift_counts, get_back_transform
 from constants import SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SESSION_TIME_COL, FILE_FORMAT
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -23,7 +23,8 @@ SHIFT_COL = "shift"
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def perform_noise_exposure_analysis(df: pd.DataFrame, save_path: str | Path, show: bool=False) -> None:
+def perform_noise_exposure_analysis(df: pd.DataFrame, save_path: str | Path, cml_shifts: bool = True,
+                                    show: bool=False) -> None:
     """
     Run the full FO vs BO noise-exposure analysis on the loud-vs-quiet
     ILR balance.
@@ -46,18 +47,19 @@ def perform_noise_exposure_analysis(df: pd.DataFrame, save_path: str | Path, sho
 
     :param df: Raw noise_subject_metrics DataFrame as loaded from noise_subject_metrics.csv.
     :param save_path: Path to save the figure to.
+    :param cml_shifts: whether to use the actual CML shifts (morning, midday, afternoon) or a simplified (morning, afternoon)
     :param show: If True, show the figure.
     :returns: None
 
     :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models in S and S-PLUS*. Springer.
     """
+    print("\nPerforming noise exposure analysis: loud vs. quiet ILR balance")
+
     # (1) preprocessing
-    analysis_data_df = _compute_noise_balance_ilr(df)
+    analysis_data_df = _pre_process_noise_data(df, cml_shifts)
 
-    analysis_data_df[SHIFT_COL] = analysis_data_df[SESSION_TIME_COL].apply(transform_time_to_shift)
-
-    # count the sifts per subject (this has only be done once for the entire dataset)
-    shift_counts = analysis_data_df.groupby([SUBJECT_ID_COL, SHIFT_COL]).size().unstack(fill_value=0)
+    # count the sifts per subject (this has only to be done once for the phone derived sensors in the dataset)
+    shift_counts = get_shift_counts(analysis_data_df)
 
     # (2) precondition checks
     icc = lmm.compute_icc(analysis_data_df, outcome=NOISE_BALANCE_COL, subject_col=SUBJECT_ID_COL)
@@ -101,7 +103,7 @@ def perform_noise_exposure_analysis(df: pd.DataFrame, save_path: str | Path, sho
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def _compute_noise_balance_ilr(df: pd.DataFrame) -> pd.DataFrame:
+def _pre_process_noise_data(df: pd.DataFrame, cml_shifts: bool = True) -> pd.DataFrame:
     """
     Prepare the noise DataFrame for LMM analysis.
 
@@ -122,6 +124,7 @@ def _compute_noise_balance_ilr(df: pd.DataFrame) -> pd.DataFrame:
     3. Retain only the columns required by the LMM.
 
     :param df: Raw noise_subject_metrics DataFrame.
+    :param cml_shifts: whether to use the actual CML shifts (morning, midday, afternoon) or a simplified (morning, afternoon)
     :returns: Tidy DataFrame with columns
         [subject_id, work_type, weekday, b_loud_quiet].
 
@@ -140,8 +143,11 @@ def _compute_noise_balance_ilr(df: pd.DataFrame) -> pd.DataFrame:
 
     df[NOISE_BALANCE_COL] = (1 / np.sqrt(2)) * np.log(loud / quiet)
 
+    # derive shift
+    df[SHIFT_COL] = df[SESSION_TIME_COL].apply(transform_time_to_shift, cml_shifts=cml_shifts)
+
     # Step 3: retain only LMM-relevant columns
-    return df[[SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SESSION_TIME_COL, NOISE_BALANCE_COL]].copy()
+    return df[[SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SHIFT_COL, NOISE_BALANCE_COL]].copy()
 
 
 

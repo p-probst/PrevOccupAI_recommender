@@ -14,7 +14,7 @@ from recommender.utils import  get_language_mapper_values, build_sensor_recommen
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
-POSTURE_MIN_ELLIPSE_AREA_THRESHOLD = 0.6 # square meters
+POSTURE_MIN_ELLIPSE_AREA_THRESHOLD = 0.012 # square meters
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions

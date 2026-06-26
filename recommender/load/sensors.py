@@ -18,6 +18,7 @@ NOISE_CSV_FILENAME = "noise_subject_metrics.csv"
 HAR_CSV_FILENAME = "har_subject_metrics.csv"
 POSTURE_CSV_FILENAME = "posture_subject_metrics.csv"
 EMG_CSV_FILENAME = 'emg_subject_metrics.csv'
+EMG_APDF_CSV_FILENAME = 'emg_apdf_subject_metrics.csv'
 HR_CSV_FILENAME = "hr_subject_metrics.csv"
 WRIST_CSV_FILENAME = "wrist_subject_metrics.csv"
 
@@ -181,6 +182,38 @@ def generate_emg_csv(emg_data_csv_path: str | Path, oh_profile_path: str, langua
                                                        f"right.EMG_relative_bins.{values_to_extract[2]}",
                                                        f"left.EMG_relative_bins.{values_to_extract[3]}",
                                                        f"right.EMG_relative_bins.{values_to_extract[3]}",
+                                                       f"left.{SESSION_NUM_COL}",
+                                                       f"right.{SESSION_NUM_COL}"],
+                                          exclude_patterns=["EMG_daily_metrics", "EMG_weekly_metrics"],
+                                          metadata_dict=metadata_dict)
+
+    return df_emg_metrics
+
+def generate_emg_apdf_csv(emg_data_csv_path: str | Path, oh_profile_path: str, language: str='pt', metadata_dict: Dict[str, str]=None) -> pd.DataFrame:
+    """
+    Load or generate the EMG subject-metrics CSV. This is generated based on the OH-profiles of the entire worker
+    population. The metrics are extracted for the left and the right positioning of the muscleBAN
+
+    If the CSV does not yet exist at the specified path, the OH profiles are parsed and the resulting DataFrame is saved.
+    On subsequent calls the cached file is read directly, avoiding repeated profile parsing.
+    :param emg_data_csv_path: Directory in which the CSV is stored (or will be created)
+    :param oh_profile_path: Path to folder containing the OH profile data of all subjects.
+    :param language: the language in which the OH-profiles is written ('pt' or 'eng'). Default: 'pt'
+    :param metadata_dict: dictionary defining which metadata should be extracted and added to the DataFrame. Default: None
+    :return: pandas.DataFrame containing per-subject EMG metrics.
+    """
+
+    # extract the metric
+    df_emg_metrics = load_or_generate_csv(csv_dir=emg_data_csv_path, filename=EMG_APDF_CSV_FILENAME,
+                                          oh_profile_path=oh_profile_path,
+                                          oh_metric_hierarchy="sensor_metrics.emg",
+                                          level_names=[DATE_COL, SESSION_TIME_COL],
+                                          value_paths=[f"left.EMG_apdf.active.p10",
+                                                       f"right.EMG_apdf.active.p10",
+                                                       f"left.EMG_apdf.active.p50",
+                                                       f"right.EMG_apdf.active.p50",
+                                                       f"left.EMG_apdf.active.p90",
+                                                       f"right.EMG_apdf.active.p90",
                                                        f"left.{SESSION_NUM_COL}",
                                                        f"right.{SESSION_NUM_COL}"],
                                           exclude_patterns=["EMG_daily_metrics", "EMG_weekly_metrics"],

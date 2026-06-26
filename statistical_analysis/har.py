@@ -10,7 +10,7 @@ from pathlib import Path
 
 # internal imports
 from constants import SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SESSION_TIME_COL, SHIFT_COL, FILE_FORMAT
-from statistical_analysis.utils import transform_time_to_shift, get_back_transform, drop_short_recordings
+from statistical_analysis.utils import transform_time_to_shift, get_shift_counts, get_back_transform, drop_short_recordings
 from statistical_analysis.models import lmm
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -27,36 +27,47 @@ WALKING_COL = "HAR_distributions.Andar"
 ACTIVE_SUM_COL = "sum_active"
 ILR_COL  = "ILR_sitting_vs_active"
 
-
-
 MIN_DURATION_H = 1
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def perform_step_count_analysis(df: pd.DataFrame, save_path: str | Path, show: bool = False) -> None:
+def perform_step_count_analysis(df: pd.DataFrame, save_path: str | Path, cml_shifts: bool = True, show: bool = False) -> None:
     """
-    Run the full FO vs BO step-count analysis via a Poisson GEE with a recording-duration offset.
+    Run the full FO vs BO step-count analysis via LMM.
 
     Pipeline
     --------
     1. Preprocessing: derive total recording duration, drop short recordings, build log(steps/hour).
-    2. Fit Poisson LMM: ``num_steps ~ work_type``, grouped by ``subject_id``, exchangeable working correlation,
-                        offset = log(total_duration_sec).
-
-    3. Diagnostics: Pearson dispersion statistic and residuals-vs-fitted plot.
-    4. Results summary: coefficient, robust SE, z, p-value, incidence rate ratio (IRR) and 95% CI per term.
+    2. Precondition checks: ICC.
+    3. Fixed-effect model selection: compare base model:
+                                     ``b ~ work_type + (1|subject_id)``
+                                     against the weekday-adjusted models
+                                     ``b ~ work_type + C(weekday) + (1|subject_id)``
+                                     ``b ~ work_type + C(shift) + (1|subject_id)``
+                                     and weekday-adjusted models against a compound model
+                                     ``b ~ work_type + C(weekday) + C(shift) + (1|subject_id)``
+                                     via AIC/BIC and LRT on ML fits.
+    4. Refit selected model with REML for final inference.
+    5. Diagnostic plots: residuals vs fitted, Q-Q residuals, Q-Q BLUPs.
+    6. Effect size: Cohen's d (marginal SD denominator).
 
     :param df: Raw har_subject_metrics DataFrame as loaded from har_subject_metrics.csv.
     :param save_path: Path to save the figure and result tables to.
+    :param cml_shifts: whether to use the actual CML shifts (morning, midday, afternoon) or a simplified (morning, afternoon)
     :param show: If True, show the figure.
     :returns: None
 
     :reference: Liang, K.-Y., & Zeger, S. L. (1986). Longitudinal data analysis using generalized linear models.
                 Biometrika, 73(1), 13-22. https://doi.org/10.1093/biomet/73.1.13
+    :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models in S and S-PLUS*. Springer
     """
+    print("\nPerforming step count analysis: log(step_count)")
 
     # (1) preprocessing
-    analysis_data_df = _pre_process_step_count_data(df)
+    analysis_data_df = _pre_process_step_count_data(df, cml_shifts)
+
+    # count the sifts per subject (this has only to be done once for the phone derived sensors in the dataset)
+    _ = get_shift_counts(analysis_data_df)
 
     # (2) preconditions check
     icc = lmm.compute_icc(analysis_data_df, outcome=LOG_STEP_RATE_HOURS_COL, subject_col=SUBJECT_ID_COL)
@@ -71,7 +82,6 @@ def perform_step_count_analysis(df: pd.DataFrame, save_path: str | Path, show: b
 
     # (5) perform back transform of log transform
     results_df = get_back_transform(results_df)
-
 
     # show plot
     if show:
@@ -97,7 +107,7 @@ def perform_step_count_analysis(df: pd.DataFrame, save_path: str | Path, show: b
 
 
 
-def perform_har_proportions_analysis(df: pd.DataFrame, save_path: str | Path, show: bool = False) -> None:
+def perform_har_proportions_analysis(df: pd.DataFrame, save_path: str | Path, cml_shifts: bool = True, show: bool = False) -> None:
     """
     Run the full FO vs BO HAR proportions analysis on the sitting-vs-active ILR balance
 
@@ -118,15 +128,20 @@ def perform_har_proportions_analysis(df: pd.DataFrame, save_path: str | Path, sh
     6. Effect size: Cohen's d (marginal SD denominator).
     :param df: pandas.DataFrame containing the HAR metrics
     :param save_path: Path to save the figure to.
+    :param cml_shifts: whether to use the actual CML shifts (morning, midday, afternoon) or a simplified (morning, afternoon)
     :param show: If True, show the figure.
     :return: None
 
     :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models in S and S-PLUS*. Springer
     """
-
+    print("\nPerforming HAR proportions analysis: sitting vs. active ILR balance")
     # (1) pre-processing
-    analysis_data_df = _pre_process_har_proportions_data(df)
+    analysis_data_df = _pre_process_har_proportions_data(df, cml_shifts)
 
+    # count the sifts per subject (this has only to be done once for the phone derived sensors in the dataset)
+    _ = get_shift_counts(analysis_data_df)
+
+    # (2) pre-conditions check
     icc = lmm.compute_icc(analysis_data_df, outcome=ILR_COL, subject_col=SUBJECT_ID_COL)
 
     # (3) fixed-effects model selection
@@ -158,9 +173,6 @@ def perform_har_proportions_analysis(df: pd.DataFrame, save_path: str | Path, sh
         model_comparison_df.to_csv(folder_path / f'har_prop_model_comparison.csv', index=False)
         results_df.to_csv(folder_path / 'har_prop_lmm_results.csv', index=False)
 
-
-
-
         # close the figure
         plt.close(fig)
 
@@ -168,9 +180,9 @@ def perform_har_proportions_analysis(df: pd.DataFrame, save_path: str | Path, sh
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def _pre_process_step_count_data(df: pd.DataFrame) -> pd.DataFrame:
+def _pre_process_step_count_data(df: pd.DataFrame, cml_shifts: bool = True) -> pd.DataFrame:
     """
-    Prepare the HAR DataFrame for the step-count GEE.
+    Prepare the HAR DataFrame for the step-count LMM.
 
     Steps
     -----
@@ -194,6 +206,7 @@ def _pre_process_step_count_data(df: pd.DataFrame) -> pd.DataFrame:
     5. Print simple missing-data and distribution summaries.
 
     :param df: Raw har_subject_metrics DataFrame.
+    :param cml_shifts: whether to use the actual CML shifts (morning, midday, afternoon) or a simplified (morning, afternoon)
     :returns: Tidy DataFrame with columns [subject_id, work_type, weekday, shift, num_steps, log_duration].
 
     :reference: Liang, K.-Y., & Zeger, S. L. (1986). Longitudinal data analysis using generalized linear models.
@@ -204,12 +217,12 @@ def _pre_process_step_count_data(df: pd.DataFrame) -> pd.DataFrame:
     # recover total recording duration (convert it to hours) + drop short recordings (MCAR, e.g. subject 126)
     df = drop_short_recordings(df, duration_s_col="HAR_durations.Sentado_duration_sec", class_distribution_col="HAR_distributions.Sentado")
 
+    # derive shift
+    df[SHIFT_COL] = df[SESSION_TIME_COL].apply(transform_time_to_shift, cml_shifts=cml_shifts)
+
     # calculate step rate and its log
     df[STEP_RATE_HOURS_COL] = df[NUM_STEPS_COL] / df[TOTAL_DURATION_COL]
     df[LOG_STEP_RATE_HOURS_COL] = np.log(df[STEP_RATE_HOURS_COL])
-
-    # derive shift
-    df[SHIFT_COL] = df[SESSION_TIME_COL].apply(transform_time_to_shift)
 
     # simple distribution checks
     print(f"step_rate_hours: "
@@ -219,10 +232,11 @@ def _pre_process_step_count_data(df: pd.DataFrame) -> pd.DataFrame:
     return df[[SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SHIFT_COL, LOG_STEP_RATE_HOURS_COL]].copy()
 
 
-def _pre_process_har_proportions_data(df: pd.DataFrame) -> pd.DataFrame:
+def _pre_process_har_proportions_data(df: pd.DataFrame, cml_shifts: bool = True) -> pd.DataFrame:
     """
     pre-processes the HAR proportions data and calculates a ILR transform based on sitting vs active
     :param df: Raw har_subject_metrics DataFrame.
+    :param cml_shifts: whether to use the actual CML shifts (morning, midday, afternoon) or a simplified (morning, afternoon)
     :return: pre-processed HAR proportions DataFrame, containing the calculated ILR transform
     """
 
@@ -232,13 +246,12 @@ def _pre_process_har_proportions_data(df: pd.DataFrame) -> pd.DataFrame:
     df = drop_short_recordings(df, duration_s_col="HAR_durations.Sentado_duration_sec", class_distribution_col="HAR_distributions.Sentado")
 
     # derive shift
-    df[SHIFT_COL] = df[SESSION_TIME_COL].apply(transform_time_to_shift)
+    df[SHIFT_COL] = df[SESSION_TIME_COL].apply(transform_time_to_shift, cml_shifts=cml_shifts)
 
     # compute ilr
     df = _compute_ilr_har(df)
 
     return df[[SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SHIFT_COL, ILR_COL]]
-
 
 
 def _compute_ilr_har(df: pd.DataFrame) -> pd.DataFrame:
@@ -291,4 +304,3 @@ def _compute_ilr_har(df: pd.DataFrame) -> pd.DataFrame:
     df[ILR_COL] = (1 / np.sqrt(2)) * np.log(sitting / active)
 
     return df
-

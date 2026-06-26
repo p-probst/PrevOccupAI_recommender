@@ -15,13 +15,12 @@ from typing import Tuple
 from matplotlib.pyplot import Figure
 from statsmodels.regression.mixed_linear_model import MixedLMResults
 
-
-
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
 FORMULA_COL = "formula"
 RESTRICTED_MODEL_COL = "restricted"
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -47,8 +46,15 @@ def compute_icc(df: pd.DataFrame, outcome: str, subject_col: str) -> float:
     """
 
     # fit null model to estimate between subject variance and residual variance
-    null_model = smf.mixedlm(formula=f"{outcome} ~ 1", data=df, groups=df[subject_col])
+    formula = f"{outcome} ~ 1"
+    null_model = smf.mixedlm(formula=formula, data=df, groups=df[subject_col])
     null_fit = null_model.fit(reml=True, disp=False)
+
+    # print the model stats
+    # print('\n--------')
+    # print(f'model {formula}')
+    # print(f'cov_re: {null_fit.cov_re}')
+    # print(f'scale: {null_fit.scale}')
 
     # get the corresponding variances
     between_subject_var = float(null_fit.cov_re.iloc[0, 0])
@@ -114,6 +120,12 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
         # store the model and formula for comparison against double-layered models
         single_fe_llms[cov] = (formula, fit)
 
+        # print the model stats
+        # print('\n--------')
+        # print(f'model {formula}')
+        # print(f'cov_re: {fit.cov_re}')
+        # print(f'scale: {fit.scale}')
+
 
     # check whether there is more than one covariate
     if len(optional_covariates) > 1:
@@ -124,6 +136,12 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
 
         # fit the model
         compound_fit = smf.mixedlm(formula=compound_formula, data=df, groups=df[subject_col]).fit(reml=False, disp=False)
+
+        # print the model stats
+        # print('\n--------')
+        # print(f'model {compound_formula}')
+        # print(f'cov_re: { compound_fit.cov_re}')
+        # print(f'scale: { compound_fit.scale}')
 
         # test compound model against single-layer models
         for cov, (single_fe_formula, single_fe_fit) in single_fe_llms.items():
