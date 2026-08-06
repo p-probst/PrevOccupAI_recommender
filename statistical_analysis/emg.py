@@ -5,12 +5,14 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
 # internal imports
-from constants import SUBJECT_ID_COL, WORK_TYPES, DATE_COL, SESSION_NUM_COL, WORKTYPE_COL, WEEKDAY_COL, SHIFT_COL, FILE_FORMAT
-from statistical_analysis.utils import get_shift_counts, get_back_transform
+from constants import SUBJECT_ID_COL, WORK_TYPES, DATE_COL, SESSION_NUM_COL, WORKTYPE_COL, WEEKDAY_COL, SHIFT_COL, SUBJECT_DAY_COL, FILE_FORMAT
+from statistical_analysis.utils import get_shift_counts, get_back_transform, generate_subject_day_column, generate_file_prefix, centring_decomposition, centring_decomposition_agg_day
 from statistical_analysis.models import lmm
+from statistical_analysis.work_load import WORKLOAD_MEAN, WORKLOAD_DEV, COMPOSITE_COL
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -26,7 +28,7 @@ MAX_NUM_SESSIONS_SUBJECT = 20 # (4 sessions per day, five days in a week)
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def perform_emg_apdf_analysis(df: pd.DataFrame, shift_df: pd.DataFrame, save_path: str | Path, show: bool=False) -> None:
+def perform_emg_apdf_analysis(df: pd.DataFrame, shift_df: pd.DataFrame, save_path: str | Path, show: bool=False, nested:bool = False) -> None:
     """
     Run the full EMG APDF analysis. The analysis is performed for the left and right separately.
     IMPORTANT: Due to different data loss rates for left and right EMG, the two analyses use different cohorts of data.
@@ -52,23 +54,28 @@ def perform_emg_apdf_analysis(df: pd.DataFrame, shift_df: pd.DataFrame, save_pat
     :param shift_df: DataFrame containing the shifts of each subject. This DataFrame should be extracted from a phone sensor.
     :param save_path: Path to save the figure and result tables to.
     :param show: If True, show the Diagnostics plots
+    :param nested: if true the analysis will use a nested random effect (1 | subject_id/weekday)
     :return: None
     """
-    print("Performing EMG APDF analysis")
+    print(f"\nPerforming EMG APDF analysis: nested = {nested}")
 
     # (0) check data availability
     _summarise_emg_availability(df)
 
-    # (1) pre-process
-    analysis_data_df, var_cols = _pre_process_emg_data(df, shift_df)
+    # define vc_formula for nested random effect
+    vc_formula = {SUBJECT_DAY_COL: f"0 + C({SUBJECT_DAY_COL})"} if nested else None
 
-    print(analysis_data_df[["log_left_p10", "log_right_p10"]].min())
+
+    # (1) pre-process
+    analysis_data_df = _pre_process_emg_data(df, shift_df, nested)
+
+    #print(analysis_data_df[["log_left_p10", "log_right_p10"]].min())
 
     # cycle over the positions
     for placement, opp_placement in [(LEFT, RIGHT), (RIGHT, LEFT)]:
 
         print(f"\n---- Analysis for MBAN placement: {placement} ---- ")
-        # get the columns
+        # get the columns (remove columns of the opposite side
         placement_cols = [col for col in analysis_data_df.columns if opp_placement not in col]
 
         # get the data that belongs to the placement
@@ -82,14 +89,15 @@ def perform_emg_apdf_analysis(df: pd.DataFrame, shift_df: pd.DataFrame, save_pat
             placement_outcome = f"log_{placement}_{outcome}"
 
             # (2) pre-conditions check
-            icc = lmm.compute_icc(placement_data_df, outcome=placement_outcome, subject_col=SUBJECT_ID_COL)
+            icc = lmm.compute_icc(placement_data_df, outcome=placement_outcome, subject_col=SUBJECT_ID_COL, vc_formula=vc_formula)
 
             # (3) fixed-effects model selection
             best_formula, model_comparison_df = lmm.select_fixed_effects(placement_data_df, outcome=placement_outcome,
                                                                          group_col=WORKTYPE_COL,
                                                                          subject_col=SUBJECT_ID_COL,
                                                                          optional_covariates=[WEEKDAY_COL, SHIFT_COL,
-                                                                                              SESSION_NUM_COL])
+                                                                                              SESSION_NUM_COL],
+                                                                         vc_formula=vc_formula)
 
             # for left the shift model was chosen as best, however it is not significant and BIC and AIC are only marginally better
             # thus the simple model that just differentiates based on the work type is chosen
@@ -97,9 +105,9 @@ def perform_emg_apdf_analysis(df: pd.DataFrame, shift_df: pd.DataFrame, save_pat
                 best_formula = model_comparison_df['formula'].loc[1]
 
             # (4) fit the selected model
-            results_df, fig = lmm.fit_lmm(placement_data_df, formula=best_formula, subject_col=SUBJECT_ID_COL, icc=icc)
+            results_df, fig = lmm.fit_lmm(placement_data_df, formula=best_formula, subject_col=SUBJECT_ID_COL,
+                                          icc=icc, vc_formula=vc_formula)
 
-            # (5) potential back transform
             # (5) back transform
             results_df = get_back_transform(results_df)
 
@@ -114,15 +122,171 @@ def perform_emg_apdf_analysis(df: pd.DataFrame, shift_df: pd.DataFrame, save_pat
                 # make sure the directory exists
                 folder_path.mkdir(parents=True, exist_ok=True)
 
+                # generate file prefix
+                file_prefix = generate_file_prefix(placement_outcome, vc_formula=vc_formula)
+
+
                 # store the plot
-                fig.savefig(folder_path / f'{placement_outcome}_diagnostics{FILE_FORMAT}')
+                fig.savefig(folder_path / f'{file_prefix}_diagnostics{FILE_FORMAT}')
+
 
                 # store the results
-                model_comparison_df.to_csv(folder_path / f'{placement_outcome}_model_comparison.csv', index=False)
-                results_df.to_csv(folder_path / f'{placement_outcome}_lmm_results.csv', index=False)
+                model_comparison_df.to_csv(folder_path / f'{file_prefix}_model_comparison.csv', index=False)
+                results_df.to_csv(folder_path / f'{file_prefix}_lmm_results.csv', index=False)
                 shift_counts.to_csv(folder_path / f'{placement}_shift_counts.csv', index=True)
 
-    print('test')
+
+def perform_workload_from_right_emg_analysis(df: pd.DataFrame, workload_composite_df: pd.DataFrame,
+                                             save_path: str | Path, show: bool=False,
+                                             aggregate_sessions: bool = False, vc_formula: Dict[str, str] = None) -> None:
+    """
+
+    :param df:
+    :param workload_composite_df:
+    :param save_path:
+    :param show:
+    :param aggregate_sessions:
+    :param vc_formula:
+    :return:
+    """
+
+    print("\nPerforming workload from right EMG analysis")
+
+    # (1) pre-process
+    analysis_data_df = _pre_process_right_emg_data(df, workload_composite_df)
+
+    # cycle over the outcomes
+    for fixed_effect in [P_10, P_50, P_90]:
+
+        # generate outcome based on placement
+        placement_fixed_effect = f"log_{RIGHT}_{fixed_effect}"
+
+        # apply centring
+        if aggregate_sessions:
+            centring_df = centring_decomposition_agg_day(analysis_data_df[[SUBJECT_ID_COL, WEEKDAY_COL, COMPOSITE_COL, placement_fixed_effect]],placement_fixed_effect)
+            folder_name = 'workload_emg_agg'
+        else:
+
+            centring_df = centring_decomposition(analysis_data_df[[SUBJECT_ID_COL, WEEKDAY_COL, COMPOSITE_COL, placement_fixed_effect]], placement_fixed_effect)
+            folder_name = 'workload_emg'
+
+        # (2) pre-conditions check
+        icc = lmm.compute_icc(centring_df, outcome=COMPOSITE_COL, subject_col=SUBJECT_ID_COL,
+                              vc_formula=vc_formula)
+
+        # (3) fixed-effects model selection
+        best_formula, model_comparison_df = lmm.compare_fixed_effects(centring_df,
+                                                                      base_formula=f"{COMPOSITE_COL} ~ {placement_fixed_effect}_between",
+                                                                      subject_col=SUBJECT_ID_COL,
+                                                                      covariate_col=f"{placement_fixed_effect}_within",
+                                                                      vc_formula=vc_formula)
+
+        if P_10 and not aggregate_sessions:
+
+            best_formula = model_comparison_df['formula'].loc[1]
+
+        # (4) fit the selected model
+        results_df, fig = lmm.fit_lmm(centring_df, formula=best_formula, subject_col=SUBJECT_ID_COL, icc=icc,
+                                      vc_formula=vc_formula)
+
+        # (5) back transform
+        #results_df = get_back_transform(results_df)
+
+        # show plot
+        if show:
+            plt.show()
+
+        if save_path:
+
+            # create folder
+            folder_path = Path(save_path) / folder_name
+
+            # make sure the directory exists
+            folder_path.mkdir(parents=True, exist_ok=True)
+
+            # generate the file prefix
+            file_prefix = generate_file_prefix(placement_fixed_effect, vc_formula=vc_formula)
+
+            # store the plot
+            fig.savefig(folder_path / f'{file_prefix}_model_diagnostics{FILE_FORMAT}')
+
+            # store the results
+            model_comparison_df.to_csv(folder_path / f'{file_prefix}_model_comparison.csv', index=False)
+            results_df.to_csv(folder_path / f'{file_prefix}_lmm_results.csv', index=False)
+
+
+
+
+
+def perform_right_emg_workload_analysis(df: pd.DataFrame, workload_composite_df: pd.DataFrame, save_path: str | Path, show: bool=False) -> None:
+    """
+
+    :param df:
+    :param workload_composite_df:
+    :param save_path:
+    :param show:
+    :return:
+    """
+
+    print("\nPerforming EMG right APDF + workload analysis")
+
+    # define vc_formula
+    vc_formula = {SUBJECT_DAY_COL: f"0 + C({SUBJECT_DAY_COL})"}
+
+    # (1) pre-process
+    analysis_data_df = _pre_process_right_emg_data(df, workload_composite_df)
+
+    # cycle over the outcomes
+    for outcome in [P_10, P_50, P_90]:
+
+        # generate outcome based on placement
+        placement_outcome = f"log_{RIGHT}_{outcome}"
+
+        # (2) pre-conditions check
+        icc = lmm.compute_icc(analysis_data_df, outcome=placement_outcome, subject_col=SUBJECT_ID_COL, vc_formula=vc_formula)
+
+        # (3) fixed-effects model selection
+        best_formula, model_comparison_df = lmm.compare_fixed_effects(analysis_data_df,
+                                                                      base_formula=f"{placement_outcome} ~ {WORKTYPE_COL} + C({WEEKDAY_COL}) + {WORKLOAD_MEAN}",
+                                                                      subject_col=SUBJECT_ID_COL,
+                                                                      covariate_col=WORKLOAD_DEV,
+                                                                      vc_formula=vc_formula)
+
+        # (4) fit the selected model
+        results_df, fig = lmm.fit_lmm(analysis_data_df, formula=best_formula, subject_col=SUBJECT_ID_COL, icc=icc,
+                                      vc_formula=vc_formula)
+
+        # (5) back transform
+        results_df = get_back_transform(results_df)
+
+        # show plot
+        if show:
+            plt.show()
+
+        if save_path:
+            # create folder
+            folder_path = Path(save_path) / 'emg_extended'
+
+            # make sure the directory exists
+            folder_path.mkdir(parents=True, exist_ok=True)
+
+            # generate the file prefix
+            file_prefix = generate_file_prefix(placement_outcome, vc_formula=vc_formula)
+
+            # store the plot
+            fig.savefig(folder_path / f'{file_prefix}_model_diagnostics{FILE_FORMAT}')
+
+            # store the results
+            model_comparison_df.to_csv(folder_path / f'{file_prefix}_model_comparison.csv', index=False)
+            results_df.to_csv(folder_path / f'{file_prefix}_lmm_results.csv', index=False)
+
+
+
+
+
+
+
+
 # ------------------------------------------------------------------------------------------------------------------- #
 # private functions
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -221,7 +385,7 @@ def _summarise_emg_availability(df: pd.DataFrame) -> None:
         print(f"Overall both : {acquisition_coverage['both'].sum()} / {len(acquisition_coverage) * MAX_NUM_SESSIONS_SUBJECT} ({(acquisition_coverage['both'].sum() / (len(acquisition_coverage) * MAX_NUM_SESSIONS_SUBJECT)) * 100:.1f}%)")
 
 
-def _pre_process_emg_data(df: pd.DataFrame, shift_df: pd.DataFrame ) -> Tuple[pd.DataFrame, List[str]]:
+def _pre_process_emg_data(df: pd.DataFrame, shift_df: pd.DataFrame, nested: bool = False) -> pd.DataFrame:
     """
     pre-processes the EMG data, by
     (1) adding shift column
@@ -230,6 +394,7 @@ def _pre_process_emg_data(df: pd.DataFrame, shift_df: pd.DataFrame ) -> Tuple[pd
     (4) apply log-transform
     :param df: pandas.DataFrame containing the EMF APDF data
     :param shift_df: pandas.DataFrame containing the shifts of each subject. This DataFrame should be extracted from a phone sensor.
+    :param nested: if true, subject_day column is added to the df for allowing to test for nested random effect (1 | subject_id/weekday)
     :return: pre-processed EMG data
     """
 
@@ -239,9 +404,7 @@ def _pre_process_emg_data(df: pd.DataFrame, shift_df: pd.DataFrame ) -> Tuple[pd
     df = df.merge(shift_df, on=[SUBJECT_ID_COL, DATE_COL], how='left', validate='many_to_one')
 
     # rename columns
-    df_cols = df.columns.tolist()
-    df_cols = [f"{col.split('.')[0]}_{col.split('.')[-1]}" if ".EMG" in col else col for col in df_cols]
-    df.columns = df_cols
+    df.columns = df.columns = _rename_df_cols(df.columns.tolist())
 
     # unify session num col
     df[SESSION_NUM_COL] = df[f'{LEFT}.{SESSION_NUM_COL}'].combine_first(df[f'{RIGHT}.{SESSION_NUM_COL}']).astype(int)
@@ -251,7 +414,10 @@ def _pre_process_emg_data(df: pd.DataFrame, shift_df: pd.DataFrame ) -> Tuple[pd
     # get column names that start with left or right
     var_cols = [col for col in df.columns if col.startswith((f"{LEFT}_", f"{RIGHT}_"))]
 
-    log_var_cols = []
+    if nested:
+        # generate subject_day column
+        df = generate_subject_day_column(df)
+
     # apply log transform
     for col in var_cols:
 
@@ -259,10 +425,76 @@ def _pre_process_emg_data(df: pd.DataFrame, shift_df: pd.DataFrame ) -> Tuple[pd
         log_col = f'log_{col}'
 
         df[log_col] = np.log(df[col])
-        log_var_cols.append(log_col)
 
-    # define columns to keep
-    cols_to_keep = [SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SHIFT_COL, SESSION_NUM_COL]
-    cols_to_keep.extend(log_var_cols)
+    return df.drop(columns=var_cols)
 
-    return df[cols_to_keep], log_var_cols
+def _pre_process_right_emg_data(df: pd.DataFrame, workload_composite_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    pre-processes the right EMG data, by
+    (1) removing left EMG APDF columns
+    (2) adding workload composite columns
+    (3) rename columns for easier handling
+    (4) apply log-transform
+
+    :param df: pandas.DataFrame containing the EMF APDF data
+    :param workload_composite_df: pandas.DataFrame containing the workload composite data.
+    :return: pre-processed EMG data
+    """
+
+    # copy dataframe
+    df = df.copy()
+
+    # drop left columns by just keeping columns that do not contain left
+    # get the columns (remove columns of the opposite side
+    analysis_cols = [col for col in df.columns if LEFT not in col]
+    df = df[analysis_cols]
+
+    # merge emg data with workload composite
+    # merge shift onto df
+    df = df.merge(workload_composite_df, on=[SUBJECT_ID_COL, WEEKDAY_COL], how='left', validate='many_to_one')
+
+    # drop nan columns (not needed for analysis)
+    df = df.dropna().reset_index(drop=True)
+
+    # rename the columns (for simpler processing)
+    df.columns = _rename_df_cols(df.columns.tolist())
+
+    # generate session col
+    df[SESSION_NUM_COL] = df[f"{RIGHT}.{SESSION_NUM_COL}"].astype(int)
+    df = df.drop(columns=[f"{RIGHT}.{SESSION_NUM_COL}"])
+
+    # generate subject_day column
+    df = generate_subject_day_column(df)
+
+    cols_to_drop = []
+    # apply log transform
+    for col in df.columns:
+
+        if col.startswith(f"{RIGHT}_"):
+
+            # create new column name
+            log_col = f'log_{col}'
+
+            # apply log transform
+            df[log_col] = np.log(df[col])
+
+            # register columns to drop
+            cols_to_drop.append(col)
+
+    return df.drop(columns=cols_to_drop)
+
+
+def _rename_df_cols(df_cols: List[str]) -> List[str]:
+    """
+    renames the EMG columns from e.g., left.EMG_apdf.active.p10 to left_p10
+    :param df_cols: the dataframe column names as a list
+    :return: the renamed dataframe columns
+    """
+
+    # rename columns
+    df_cols = [f"{col.split('.')[0]}_{col.split('.')[-1]}" if ".EMG" in col else col for col in df_cols]\
+
+    return df_cols
+
+
+

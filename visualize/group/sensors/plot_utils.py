@@ -15,7 +15,8 @@ from matplotlib.colors import to_rgb
 from typing import Tuple, List, Dict
 from pathlib import Path
 
-from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT, WORK_TYPE_COLORS, SESSION_NUM_COL, WEEKDAY_COL, WORKTYPE_COL
+from constants import WORK_TYPES, FO_COLOR, BO_COLOR, FILE_FORMAT, WORK_TYPE_COLORS, SESSION_NUM_COL, WEEKDAY_COL, \
+    WORKTYPE_COL, SUBJECT_ID_COL
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -341,7 +342,7 @@ def _plot_tracjectories(ax: Axes, data_df: pd.DataFrame, metric_column: str, wor
     light_color = _lighten(color, amount=0.55)
 
     # plot line per subject
-    for _, subject_df in data_df.groupby("subject_id"):
+    for _, subject_df in data_df.groupby(SUBJECT_ID_COL):
 
         # sort the dataFrame by session to ensure correct order
         subject_df = subject_df.sort_values(SESSION_NUM_COL)

@@ -137,4 +137,7 @@ vis.group.plot_emg_relative_intensity_by_worktype(emg_data_df, save_path=PLOT_PA
 vis.group.plot_elevated_emg_trajectories_by_worktype(emg_data_df, save_path=PLOT_PATH, show=False)
 #vis.group.plot_emg_relative_intensity(emg_data_df[emg_data_df['subject_id'] == 81], language='eng')
 
+emg_apdf_data_df = recommender.load.generate_emg_apdf_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
+vis.group.plot_apdf_emg_trajectories_by_worktype(emg_apdf_data_df, save_path=PLOT_PATH, show=False)
+
 

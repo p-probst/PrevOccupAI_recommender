@@ -46,7 +46,7 @@ print("\n----------- Workload -----------")
 workload_data_df = recommender.load.generate_workload_csv(cwd_, OH_PROFILES_PATH, metadata_dict=metadata_dict)
 
 # perform workload composite analysis
-stats.perform_workload_analysis(workload_data_df, save_path=STATISTICS_PATH, show=False)
+workload_composite_df = stats.perform_workload_analysis(workload_data_df, save_path=STATISTICS_PATH, show=False)
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # SENSOR DATA
@@ -109,5 +109,11 @@ emg_data_df = recommender.load.generate_emg_apdf_csv(cwd_, OH_PROFILES_PATH, met
 
 # perform APDF EMG analysis
 stats.perform_emg_apdf_analysis(emg_data_df, shift_df, save_path=STATISTICS_PATH, show=False)
+stats.perform_emg_apdf_analysis(emg_data_df, shift_df, save_path=STATISTICS_PATH, show=False, nested=True)
 
-print("test")
+# perform right EMG APDF with workload analysis
+stats.perform_right_emg_workload_analysis(emg_data_df, workload_composite_df, save_path=STATISTICS_PATH, show=False)
+
+stats.perform_workload_from_right_emg_analysis(emg_data_df, workload_composite_df, save_path=STATISTICS_PATH, show=False,
+                                               aggregate_sessions=False)
+

@@ -28,10 +28,12 @@ COMPOSITE_ITEMS = [
 ]
 
 COMPOSITE_COL = "workload_composite"
+WORKLOAD_MEAN = "workload_mean_subj"
+WORKLOAD_DEV = "workload_dev"
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def perform_workload_analysis(df: pd.DataFrame, save_path: str | Path, show: bool=False) -> None:
+def perform_workload_analysis(df: pd.DataFrame, save_path: str | Path, show: bool=False) -> pd.DataFrame:
     """
     Run the full workload analysis.
 
@@ -50,7 +52,7 @@ def perform_workload_analysis(df: pd.DataFrame, save_path: str | Path, show: boo
     :param df: Raw workload_subject_metrics DataFrame as loaded from hr_subject_metrics.csv.
     :param save_path: Path to save the figure and result tables to.
     :param show: If True, show the Diagnostics plots
-    :return: None
+    :return: pandas.DataFrame containing the workload subject mean and deviation for each subject and weekday
     """
 
     print("\nPerforming EMG workload analysis")
@@ -58,6 +60,8 @@ def perform_workload_analysis(df: pd.DataFrame, save_path: str | Path, show: boo
     # (1) preprocessing
     analysis_data_df = _pre_process_workload(df)
 
+    # add workload mean and deviation (this is needed for analyses where the workload is used as a co-variate in other models)
+    workload_composite_df = _add_workload_centring(analysis_data_df)
 
     # (2) precondition checks
     icc = lmm.compute_icc(analysis_data_df, outcome=COMPOSITE_COL, subject_col=SUBJECT_ID_COL)
@@ -91,6 +95,8 @@ def perform_workload_analysis(df: pd.DataFrame, save_path: str | Path, show: boo
 
     # close the figure
     plt.close(fig)
+
+    return workload_composite_df
 
 
 
@@ -199,3 +205,34 @@ def _check_reliability(df: pd.DataFrame, items: list[str]) -> None:
     print("           measures data (Geldhof et al., 2014).")
     print("=" * 60)
     print()
+
+
+def _add_workload_centring(analysis_data_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add within-person centring columns.
+
+    Three columns are added to the dataframe:
+
+    - ``workload_mean_subj``: each subject's mean composite across all their
+      valid days (between-person component).
+    - ``workload_dev``: daily deviation from the subject mean (within-person component); ``workload_composite - workload_mean_subj``.
+
+    Person-mean centring decomposes the composite into orthogonal between- and within-person components, ensuring that
+    the coefficient of ``workload_dev`` in a subsequent LMM estimates the within-person workload-EMG association without
+    confounding by stable between-subject differences in workload perception (Curran & Bauer, 2011).
+
+    :param analysis_data_df: pre-processed workload data. Already contains the composite workload item
+    :returns: Copy of ``df`` with the new columns appended.
+
+    :reference: Curran, P. J., & Bauer, D. J. (2011). The disaggregation of within-person and between-person effects in
+                longitudinal models of change. *Annual Review of Psychology*, *62*, 583–619.
+                https://doi.org/10.1146/annurev.psych.093008.100356
+    """
+    analysis_data_df = analysis_data_df.copy()
+
+    subj_mean = analysis_data_df.groupby(SUBJECT_ID_COL)[COMPOSITE_COL].transform("mean")
+
+    analysis_data_df[WORKLOAD_MEAN] = subj_mean
+    analysis_data_df[WORKLOAD_DEV] = analysis_data_df[COMPOSITE_COL] - subj_mean
+
+    return analysis_data_df[[SUBJECT_ID_COL, WEEKDAY_COL, COMPOSITE_COL, WORKLOAD_MEAN, WORKLOAD_DEV]]

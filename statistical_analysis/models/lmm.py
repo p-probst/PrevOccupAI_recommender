@@ -1,7 +1,7 @@
 """
 Implementation of linear mixed models (LMM)
 """
-
+import pandas
 # ------------------------------------------------------------------------------------------------------------------- #
 # imports
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -11,9 +11,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from scipy import stats
-from typing import Tuple
+from typing import Tuple, Dict, Optional
 from matplotlib.pyplot import Figure
 from statsmodels.regression.mixed_linear_model import MixedLMResults
+from itertools import combinations
+
+from constants import SUBJECT_ID_COL, WEEKDAY_COL
 
 # ------------------------------------------------------------------------------------------------------------------- #
 # constants
@@ -24,30 +27,64 @@ RESTRICTED_MODEL_COL = "restricted"
 # ------------------------------------------------------------------------------------------------------------------- #
 # public functions
 # ------------------------------------------------------------------------------------------------------------------- #
-def compute_icc(df: pd.DataFrame, outcome: str, subject_col: str) -> float:
+def compute_icc(df: pd.DataFrame, outcome: str, subject_col: str, vc_formula: Dict[str, str] = None) -> Tuple[float, Optional[float]]:
     """
-    Estimate the intraclass correlation coefficient (ICC) from a null
-    (intercept-only) random-intercept model.
+    Estimate intraclass correlation coefficient(s) from a null (intercept-only) model, supporting both single-level and
+    nested random-effects structures.
 
-    ICC = between_subject_var / (between_subject_var + residual_var)
+    For a subject-only random intercept ``(1 | subject_id)``, a single ICC is returned::
 
-    Quantifies what proportion of total outcome variance is attributable to
-    stable between-subject differences. A high ICC (e.g. > 0.3) confirms
-    that observations within the same subject are meaningfully correlated and
-    that the random intercept is essential, i.e., usage of (1 | subject_id).
+        ICC_subject = between_subject_var / (between_subject_var + residual_var)
 
-    :param df: Long-format DataFrame.
+    quantifying the proportion of total outcome variance attributable to stable between-subject differences; a high
+    value (e.g. > 0.3) confirms that within-subject observations are meaningfully correlated and that the random
+    intercept is warranted.
+
+    When a nested structure is supplied via ``vc_formula`` (e.g.
+    ``(1 | subject_id/day)``), the variance partitions into three components — subject, subject:day, and residual —
+    and two conditional ICCs are returned::
+
+        ICC_subject     = sigma2_subject /
+                          (sigma2_subject + sigma2_subject_day + sigma2_resid)
+        ICC_subject_day = (sigma2_subject + sigma2_subject_day) /
+                          (sigma2_subject + sigma2_subject_day + sigma2_resid)
+
+    ``ICC_subject`` is the correlation between two observations from the same subject on different days;
+    ``ICC_subject_day`` is the (always larger) correlation between two observations from the same subject on the same
+    day.
+
+    Note that ``ICC_subject`` from a nested model is computed against a three-component denominator and is therefore
+    not directly comparable to the single-level ``ICC_subject`` returned for a subject-only model.
+
+    The null model is fit with REML, which gives less biased variance-component estimates than ML.
+
+    :param df: Long-format DataFrame. Assumed to contain any grouping column referenced by ``vc_formula``
+               (e.g. ``subject_day``).
+
     :param outcome: Column name of the continuous outcome.
     :param subject_col: Column name of the subject identifier.
-    :returns: ICC as a float in [0, 1].
+    :param vc_formula: Optional variance-component specification for an additional nested random effect, as a single-entry
+                       dict mapping a grouping column name to its formula (e.g. ``{"subject_day": "0 + C(subject_day)"}``).
+                       Assumes a single variance-component term; only the first is read. If ``None``, only the subject-level
+                       random intercept is fit.
 
-    :reference: Laird, N. M., & Ware, J. H. (1982). Random-effects models for longitudinal data.
-                *Biometrics*, 38(4), 963–974. https://doi.org/10.2307/2529876
+    :returns: Tuple ``(icc_subject, icc_subject_day)``, each rounded to 4 decimals. ``icc_subject_day`` is ``None`` when
+              no nested structure is supplied.
+
+    .. rubric:: References
+
+    Laird, N. M., & Ware, J. H. (1982). Random-effects models for longitudinal data. *Biometrics*, *38*\\(4), 963–974.
+    https://doi.org/10.2307/2529876
+
+    Nakagawa, S., Johnson, P. C. D., & Schielzeth, H. (2017). The coefficient of determination R² and intra-class
+    correlation coefficient from generalized linear mixed-effects models revisited and expanded.
+    *Journal of the Royal Society Interface*, *14*(134), 20170213. https://doi.org/10.1098/rsif.2017.0213
     """
 
     # fit null model to estimate between subject variance and residual variance
     formula = f"{outcome} ~ 1"
-    null_model = smf.mixedlm(formula=formula, data=df, groups=df[subject_col])
+    null_model = smf.mixedlm(formula=formula, data=df, groups=df[subject_col],
+                             re_formula="1", vc_formula=vc_formula)
     null_fit = null_model.fit(reml=True, disp=False)
 
     # print the model stats
@@ -59,12 +96,35 @@ def compute_icc(df: pd.DataFrame, outcome: str, subject_col: str) -> float:
     # get the corresponding variances
     between_subject_var = float(null_fit.cov_re.iloc[0, 0])
     residual_var = float(null_fit.scale)
-    icc = between_subject_var / (between_subject_var + residual_var)
-    return round(icc, 4)
+
+
+    # check whether vc formula was passed
+    if vc_formula:
+
+        # get subject_day variance
+        subject_day_var = float(null_fit.vcomp[0])
+
+        # get the total (sum of vairances)
+        total = between_subject_var + residual_var + subject_day_var
+
+        ## calculate ICC for subject_day
+        icc_subject_day = round((between_subject_var + subject_day_var) / total, 4)
+
+    # no vc formula passed
+    else:
+
+        total = between_subject_var + residual_var
+
+        # set ICC for subject day to 0
+        icc_subject_day = None
+
+    # calculate ICC for the subject
+    icc_subject = round(between_subject_var / total, 4)
+    return icc_subject, icc_subject_day
 
 
 def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject_col: str,
-                         optional_covariates: list[str]) -> tuple[str, pd.DataFrame]:
+                         optional_covariates: list[str], vc_formula: Dict[str, str] = None) -> tuple[str, pd.DataFrame]:
     """
     Compare a base model (outcome ~ group) against models that add each
     optional covariate in turn, using maximum-likelihood (ML) fits and Akaike Information Criterion (AIC)/
@@ -83,6 +143,9 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
     :param subject_col: Column name of the subject identifier.
     :param optional_covariates: List of column names to evaluate as optional fixed-effect covariates (each tested
                                 individually against the base).
+    :param vc_formula: formula to add more complex random effects (e.g., (1 | subject_id/weekday)). The dictionary defines
+                       the column name and the additional formula (e.g., {"subject_day": "0 + C(subject_day)"}). It is
+                       assumed that the df contains the necessary column for modelling.
     :returns: Tuple of (selected_formula_string, comparison_DataFrame).
 
     :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models
@@ -91,7 +154,8 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
 
     # define formula for the base model: worky_type + (1 | subject_id)
     base_formula = f"{outcome} ~ {group_col}"
-    base_fit = smf.mixedlm(formula=base_formula, data=df, groups=df[subject_col]).fit(reml=False, disp=False)
+    base_fit = smf.mixedlm(formula=base_formula, data=df, groups=df[subject_col],
+                           re_formula="1", vc_formula=vc_formula).fit(reml=False, disp=False)
 
     # store the evaluation criteria
     model_records = [_structure_comparative_lmm_results(base_formula, base_fit)]
@@ -106,7 +170,8 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
         formula = f"{outcome} ~ {group_col} + C({cov})"
 
         # fit the model
-        fit = smf.mixedlm(formula=formula, data=df, groups=df[subject_col]).fit(reml=False, disp=False)
+        fit = smf.mixedlm(formula=formula, data=df, groups=df[subject_col],
+                          re_formula="1", vc_formula=vc_formula).fit(reml=False, disp=False)
 
         # perform lrt
         lrt_result = _compute_lrt(base_fit, fit)
@@ -135,7 +200,8 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
         compound_formula = f"{outcome} ~ {group_col} + {covariate_terms}"
 
         # fit the model
-        compound_fit = smf.mixedlm(formula=compound_formula, data=df, groups=df[subject_col]).fit(reml=False, disp=False)
+        compound_fit = smf.mixedlm(formula=compound_formula, data=df, groups=df[subject_col],
+                                   re_formula="1", vc_formula=vc_formula).fit(reml=False, disp=False)
 
         # print the model stats
         # print('\n--------')
@@ -160,6 +226,48 @@ def select_fixed_effects(df: pd.DataFrame, outcome: str, group_col: str, subject
     best_formula = comparison_df.iloc[0][FORMULA_COL]
 
     return best_formula, comparison_df
+
+
+def compare_fixed_effects(df: pd.DataFrame, base_formula: str, subject_col: str,
+                          covariate_col: str, vc_formula: Dict[str, str] = None) -> tuple[str, pd.DataFrame]:
+    """
+    Compares fixed effects for a given outcome and base formula to the passed co-variate. This is a straigfoward
+    two model comparison. The models are fitted under ML and then compared to each other.
+    :param df: Long-format DataFrame.
+    :param base_formula: the base formula as a string.
+    Column name of the continuous outcome.
+    :param group_col: Column name of the primary fixed effect (binary group).
+    :param subject_col: Column name of the subject identifier.
+    :param covariate_col: Column name of the additional co-variate to be tested
+    :param vc_formula: formula to add more complex random effects (e.g., (1 | subject_id/weekday)). The dictionary defines
+                       the column name and the additional formula (e.g., {"subject_day": "0 + C(subject_day)"}). It is
+                       assumed that the df contains the necessary column for modelling.
+    :return: Tuple of (selected_formula_string, comparison_DataFrame).
+    """
+
+    # fit base model
+    base_fit = smf.mixedlm(formula=base_formula, data=df, groups=df[subject_col],
+                           re_formula="1", vc_formula=vc_formula).fit(reml=False, disp=False)
+
+    # extend base formula and fit extended model
+    extended_formula = f"{base_formula} + {covariate_col}"
+    extended_fit = smf.mixedlm(formula=extended_formula, data=df, groups=df[subject_col],
+                           re_formula="1", vc_formula=vc_formula).fit(reml=False, disp=False)
+
+    # compute LRT
+    lrt_result = _compute_lrt(base_fit, extended_fit)
+
+    # structure the outputs
+    model_records = [_structure_comparative_lmm_results(base_formula, base_fit), _structure_comparative_lmm_results(extended_formula, extended_fit, lrt_result)]
+
+    # generate result comparison dataframe
+    comparison_df = pd.DataFrame(model_records).sort_values("AIC").reset_index(drop=True)
+    best_formula = comparison_df.iloc[0][FORMULA_COL]
+
+    return best_formula, comparison_df
+
+
+
 
 
 def test_interaction(df: pd.DataFrame, comparison_df: pd.DataFrame, best_formula: str, group_col: str,
@@ -224,7 +332,7 @@ def test_interaction(df: pd.DataFrame, comparison_df: pd.DataFrame, best_formula
     return best_formula, comparison_df
 
 
-def fit_lmm(df: pd.DataFrame, formula: str, subject_col: str, icc: float) -> Tuple[pd.DataFrame, Figure]:
+def fit_lmm(df: pd.DataFrame, formula: str, subject_col: str, icc: Tuple[float, float], vc_formula: Dict[str, str] = None) -> Tuple[pd.DataFrame, Figure]:
     """
     Fit the selected linear mixed-effects model with REML.
 
@@ -238,6 +346,9 @@ def fit_lmm(df: pd.DataFrame, formula: str, subject_col: str, icc: float) -> Tup
     :param formula: Patsy-style formula string (e.g. "b ~ work_type").
     :param subject_col: Column name of the subject identifier.
     :param icc: Inter class correlation coefficient.
+    :param vc_formula: formula to add more complex random effects (e.g., (1 | subject_id/weekday)). The dictionary defines
+                       the column name and the additional formula (e.g., {"subject_day": "0 + C(subject_day)"}). It is
+                       assumed that the df contains the necessary column for modelling.
     :returns: results of the model as a pandas.DataFrame and a figure object displaying the residuals of the model.
 
     :reference: Pinheiro, J. C., & Bates, D. M. (2000). *Mixed-Effects Models
@@ -245,7 +356,7 @@ def fit_lmm(df: pd.DataFrame, formula: str, subject_col: str, icc: float) -> Tup
     """
 
     # define the model
-    model = smf.mixedlm(formula=formula, data=df, groups=df[subject_col])
+    model = smf.mixedlm(formula=formula, data=df, groups=df[subject_col], re_formula="1", vc_formula=vc_formula)
 
     # fit the model
     lmm_fit = model.fit(reml=True, disp=False)
@@ -258,6 +369,9 @@ def fit_lmm(df: pd.DataFrame, formula: str, subject_col: str, icc: float) -> Tup
 
     # collect all results in a single DataFrame
     results_df = _summarise_lmm_results(lmm_fit, icc, cohens_d)
+
+    # print outliers
+    _print_outliers(df, lmm_fit, formula)
 
     return results_df, fig
 
@@ -396,7 +510,7 @@ def _structure_comparative_lmm_results(formula: str, fit: MixedLMResults, lrt_re
                 "restricted": "None", "lrt_stat": np.nan, "delta_lrt_df": np.nan, "lrt_p_value": np.nan}
 
 
-def _summarise_lmm_results(fit: MixedLMResults, icc: float, d: float) -> pd.DataFrame:
+def _summarise_lmm_results(fit: MixedLMResults, icc: Tuple[float, float], d: float) -> pd.DataFrame:
     """
     Collect the key inferential quantities from the fitted model into a
     single tidy DataFrame suitable for reporting.
@@ -429,7 +543,31 @@ def _summarise_lmm_results(fit: MixedLMResults, icc: float, d: float) -> pd.Data
     summary = pd.DataFrame(records)
 
     # Append model-level quantities as separate rows for readability
-    meta = pd.DataFrame([{"term": "ICC", "estimate": icc},
+    meta = pd.DataFrame([{"term": "ICC_subject", "estimate": icc[0]},
+                         {"term": "ICC_subject_day", "estimate": icc[1]},
                          {"term": f"Cohen's d (work_type)", "estimate": d}])
 
     return pd.concat([summary, meta], ignore_index=True)
+
+def _print_outliers(df: pandas.DataFrame, fit: MixedLMResults, formula: str) -> None:
+    """
+    prints the outliers of the fitted model
+    :param df:
+    :param fit:
+    :param formula:
+    :return:
+    """
+
+    resid = fit.resid
+    z = (resid - resid.mean()) / resid.std()
+
+    # get the outcome variable
+    outcome = formula.split("~")[0].strip()
+
+    # align back to df by index, not position
+    flagged_idx = z.index[z.abs() > 3]
+    outliers = df.loc[flagged_idx, [SUBJECT_ID_COL, WEEKDAY_COL, outcome]].copy()
+    outliers["resid"] = resid.loc[flagged_idx]
+    outliers["resid_z"] = z.loc[flagged_idx]
+    print("\n--Outliers:--")
+    print(outliers)

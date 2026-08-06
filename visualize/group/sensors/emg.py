@@ -12,7 +12,7 @@ from matplotlib.axes import Axes
 from matplotlib.gridspec import GridSpec, SubplotSpec
 
 from constants import WEEKDAY_COL, SESSION_NUM_COL, WORKTYPE_COL, NO_DATA_COL, SESSION_TIME_COL, PT, ENG, PALE_GREEN, \
-    GREEN, YELLOW, RED, LIGHT_GRAY, FILE_FORMAT
+    GREEN, YELLOW, RED, LIGHT_GRAY, FILE_FORMAT, SUBJECT_ID_COL
 from visualize.group.sensors.plot_utils import ROMAN_NUMERALS, plot_session_trajectories_by_worktype
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -245,6 +245,47 @@ def plot_elevated_emg_trajectories_by_worktype(metrics_df: pd.DataFrame, save_pa
 
         # plot the trajectories
         plot_session_trajectories_by_worktype(metrics_df, f'{side}_EMG_sum_high', save_path=save_path, show=show)
+
+
+def plot_apdf_emg_trajectories_by_worktype(metrics_df: pd.DataFrame, save_path: str | Path, show: bool = True) -> None:
+    """
+    Generates a subplot of shape (5, 2) containing session trajectories for each day and work type for the APDF metrics
+    (P10, P50, and P90), for the left and right positioning.
+    The trajectories show the evolution of the chosen metric throughout the day (each session). For each subject a thin line is plotted.
+    The population mean is shown with a thick line and the standard deviation is plotted as a shaded area.
+    :param metrics_df: pandas.DataFrame containing the EMG related metrics
+    :param save_path: Path to where the figure will be written.
+    :param show: Indicates whether to show the figure.
+    :return: None
+    """
+
+    # copy dataframe
+    metrics_df = metrics_df.copy()
+
+    # check for work_type column
+    if WORKTYPE_COL not in metrics_df.columns:
+        raise KeyError(f"Input CSV must contain a {WORKTYPE_COL} column.")
+
+    # combine session metrics column
+    metrics_df[SESSION_NUM_COL] = (metrics_df[f'left.{SESSION_NUM_COL}']
+                                   .combine_first(metrics_df[f'right.{SESSION_NUM_COL}']).astype(int))
+
+    # cycle ober the APDF metrics
+    for apdf_metric in ['p10', 'p50', 'p90']:
+
+        # cycle over left and right
+        for side in ['left', 'right']:
+
+            # get column name
+            metric_column_name = f'{side}.EMG_apdf.active.{apdf_metric}'
+
+            # get only the relevant columns
+            apdf_metric_df = metrics_df[[SUBJECT_ID_COL, WORKTYPE_COL, WEEKDAY_COL, SESSION_NUM_COL, metric_column_name]]
+
+            # plot the trajectories
+            plot_session_trajectories_by_worktype(apdf_metric_df, metric_column_name, save_path=save_path, show=show)
+
+
 
 
 # ------------------------------------------------------------------------------------------------------------------- #

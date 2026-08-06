@@ -9,8 +9,9 @@ from scipy.special import expit
 from typing import Dict
 
 # internal imports
-from constants import SUBJECT_ID_COL, SESSION_TIME_COL, SHIFT_COL, DATE_COL, WORK_TYPES, WORKTYPE_COL, SESSION_NUM_COL, USER
-
+from constants import SUBJECT_ID_COL, SESSION_TIME_COL, SHIFT_COL, DATE_COL, WORK_TYPES, WORKTYPE_COL, SESSION_NUM_COL, \
+    USER, SUBJECT_DAY_COL, WEEKDAY_COL
+from statistical_analysis.work_load import COMPOSITE_COL
 
 # external imports
 project_path = Path(f"C:/Users/{USER}/PycharmProjects/OH_Toolkit")
@@ -151,6 +152,115 @@ def drop_short_recordings(df: pd.DataFrame, duration_s_col, class_distribution_c
 
     return df
 
+def generate_subject_day_column(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    generates a column containing a subject_day identifier. This is needed for LLMs that try to model
+    (1 | subject_id/weekday) to account for within day subject data correlation. This can be used when modelling data
+    that has been collected per session (e.g., heart rate, EMG)
+    :param df: pandas.DataFrame containing population data that is supposed to be used as input to an LMM. It is expected
+               that the df has the `subject_id` and `weekday` columns.
+    :return: pandas.DataFrame with the addition subject_id/weekday column.
+    """
+
+    # generate column
+    df[SUBJECT_DAY_COL] = df[SUBJECT_ID_COL].astype(str) + "_" + df[WEEKDAY_COL].astype(str)
+
+    return df
+
+
+def centring_decomposition(analysis_data_df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """
+    Add within-person centring columns.
+
+    Three columns are added to the dataframe:
+
+    - ``{column_name}_mean_subj``: each subject's mean composite across all their valid days (between-person component).
+    - ``workload_dev``: daily deviation from the subject mean (within-person component); ``workload_composite - workload_mean_subj``.
+
+    Person-mean centring decomposes the composite into orthogonal between- and within-person components, ensuring that
+    the coefficient of ``workload_dev`` in a subsequent LMM estimates the within-person workload-EMG association without
+    confounding by stable between-subject differences in workload perception (Curran & Bauer, 2011).
+
+    :param analysis_data_df: pre-processed workload data. Already contains the composite workload item
+    :param column_name: column name of column to decompose
+    :returns: Copy of ``df`` with the new columns appended.
+
+    :reference: Curran, P. J., & Bauer, D. J. (2011). The disaggregation of within-person and between-person effects in
+                longitudinal models of change. *Annual Review of Psychology*, *62*, 583–619.
+                https://doi.org/10.1146/annurev.psych.093008.100356
+    """
+    analysis_data_df = analysis_data_df.copy()
+
+    subj_mean = analysis_data_df.groupby(SUBJECT_ID_COL)[column_name].transform("mean")
+
+    # create column names
+    between_component = f"{column_name}_between"
+    within_component = f"{column_name}_within"
+
+    analysis_data_df[between_component] = subj_mean
+    analysis_data_df[within_component] = analysis_data_df[column_name] - subj_mean
+
+    return analysis_data_df
+
+
+def centring_decomposition_agg_day(analysis_data_df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """
+    Add within-person centring columns.
+
+    Three columns are added to the dataframe:
+
+    - ``{column_name}_mean_subj``: each subject's mean composite across all their valid days (between-person component).
+    - ``workload_dev``: daily deviation from the subject mean (within-person component); ``workload_composite - workload_mean_subj``.
+
+    Person-mean centring decomposes the composite into orthogonal between- and within-person components, ensuring that
+    the coefficient of ``workload_dev`` in a subsequent LMM estimates the within-person workload-EMG association without
+    confounding by stable between-subject differences in workload perception (Curran & Bauer, 2011).
+
+    :param analysis_data_df: pre-processed workload data. Already contains the composite workload item
+    :param column_name: column name of column to decompose
+    :returns: Copy of ``df`` with the new columns appended.
+
+    :reference: Curran, P. J., & Bauer, D. J. (2011). The disaggregation of within-person and between-person effects in
+                longitudinal models of change. *Annual Review of Psychology*, *62*, 583–619.
+                https://doi.org/10.1146/annurev.psych.093008.100356
+    """
+    analysis_data_df = analysis_data_df.copy()
+
+    day_agg_col = f"{column_name}_day"
+    # aggregate the data over the day (calculate mean for EMG, get the first entry for the workload, since they are all the same)
+    day_agg_df = analysis_data_df.groupby([SUBJECT_ID_COL, WEEKDAY_COL]).agg(**{COMPOSITE_COL: (COMPOSITE_COL, "first"),
+                                                                              day_agg_col: (column_name, "mean")}).reset_index()
+
+    # calculate the mean over the week
+    subj_mean = day_agg_df.groupby(SUBJECT_ID_COL)[day_agg_col].transform("mean")
+
+    # create column names
+    between_component = f"{column_name}_between"
+    within_component = f"{column_name}_within"
+
+    day_agg_df[between_component] = subj_mean
+    day_agg_df[within_component] = day_agg_df[day_agg_col] - subj_mean
+
+    return day_agg_df.dropna()
+
+
+def generate_file_prefix(outcome: str, vc_formula: Dict[str, str] = None) -> str:
+    """
+    generates file name pre-fix based on outcome and vc_formula.
+    :param outcome: outcome variable
+    :param vc_formula: formula to add more complex random effects (e.g., (1 | subject_id/weekday)). The dictionary defines
+                       the column name and the additional formula (e.g., {"subject_day": "0 + C(subject_day)"}). It is
+                       assumed that the df contains the necessary column for modelling.
+    :return: file prefix as string
+    """
+
+    if vc_formula:
+
+        return f"{outcome}_{list(vc_formula.keys())[0]}"
+
+    else:
+
+        return f"{outcome}"
 
 def get_back_transform(results_df: pd.DataFrame, is_ilr: bool = False) -> pd.DataFrame:
     """
